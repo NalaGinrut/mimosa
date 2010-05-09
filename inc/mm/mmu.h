@@ -189,11 +189,14 @@ struct Segdesc {
 #define SEG_NULL	(struct Segdesc){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 // Segment that is loadable but faults when used
 #define SEG_FAULT	(struct Segdesc){ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
-// Normal segment
-#define SEG(type, base, lim, dpl) (struct Segdesc)			\
-{ ((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,	\
-    type, 1, dpl, 1, (unsigned) (lim) >> 28, 0, 0, 1, 1,		\
-    (unsigned) (base) >> 24 }
+
+
+// SEG macro handles to fix the segment_descriptor a regular one;
+#define SEG(type ,base ,lim ,dpl ,s ,p ,a ,r ,db ,g) (struct Segdesc)	\
+{((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff ,	\
+	(type) ,(s) ,(dpl) ,(p), (unsigned) (lim) >> 28 ,(a) ,		\
+	(r) ,(db) ,(g) ,(unsigned) (base) >> 24 }			\
+
 #define SEG16(type, base, lim, dpl) (struct Segdesc)			\
 { (lim) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,		\
     type, 1, dpl, 1, (unsigned) (lim) >> 16, 0, 0, 1, 0,		\

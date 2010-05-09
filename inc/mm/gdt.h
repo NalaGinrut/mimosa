@@ -33,7 +33,7 @@ typedef struct SEG_DESC
 	unsigned limit : 20; // segment offset limit;
 	unsigned type : 4; // segment type;
 	unsigned system : 1; // 0 for system, 1 for application;
-	unsigned dpl : 3; // descriptor privilege level;
+	unsigned dpl : 2; // descriptor privilege level;
 	unsigned present : 1; // segment present;
 	unsigned available : 1; // available for software use;
 	unsigned reserved : 1; // bit for reserved;
@@ -41,6 +41,36 @@ typedef struct SEG_DESC
 	unsigned g : 1; // granularity, 0 for 1B per offset-limit, 1 for 4K per offset-limit;
 }seg_des_t ,seg_des_tp;
 
+
+// should we need such a Inner_Seg_Desc struct ???;
+typedef struct Inner_Seg_Desc
+{
+	uint32 low_16;
+	uint32 high_16;
+}inner_seg_desc_t ,*inner_seg_desc_tp;
+//-----------------------------------------------
+
+static __inline__ 
+u64_t SEG_DESC_FIX(set_des_t sd)
+{    
+	return SEG(sd.type ,
+		   sd.base ,
+		   sd.lim ,
+		   sd.dpl ,
+		   sd.system ,
+		   sd.present ,
+		   sd.available ,
+		   sd.reserved ,
+		   db ,g);
+}
+
+
+
 #endif // End of ifdef MIMOSA_ADDRESS_64;
+
+
+
+
+
 
 #endif // End of MIMOSA_GDT_H;
