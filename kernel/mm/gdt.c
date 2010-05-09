@@ -14,17 +14,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-
-#ifndef OS_CONFIG_H
-#define OS_CONFIG_H
-
-
-// Enable Assembler:
-#define __ASSEMBLER__
-
-// Enable ARCH 64bit address:
-//#define MIMOSA_ADDRESS_64
+#include "mm/gdt.h"
+#include "types.h"
 
 
-
-#endif // End of OS_CONFIG_H;
