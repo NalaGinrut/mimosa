@@ -41,17 +41,35 @@ typedef struct SEG_DESC
 	unsigned g : 1; // granularity, 0 for 1B per offset-limit, 1 for 4K per offset-limit;
 }seg_des_t ,seg_des_tp;
 
+#include <inc/types.h>
 
-// should we need such a Inner_Seg_Desc struct ???;
-typedef struct Inner_Seg_Desc
-{
-	uint32 low_16;
-	uint32 high_16;
-}inner_seg_desc_t ,*inner_seg_desc_tp;
-//-----------------------------------------------
+// Segment Descriptors
+struct Inner_Seg_Desc {
+	unsigned sd_lim_15_0 : 16;  // Low bits of segment limit
+	unsigned sd_base_15_0 : 16; // Low bits of segment base address
+	unsigned sd_base_23_16 : 8; // Middle bits of segment base address
+	unsigned sd_type : 4;       // Segment type (see STS_ constants)
+	unsigned sd_s : 1;          // 0 = system, 1 = application
+	unsigned sd_dpl : 2;        // Descriptor Privilege Level
+	unsigned sd_p : 1;          // Present
+	unsigned sd_lim_19_16 : 4;  // High bits of segment limit
+	unsigned sd_avl : 1;        // Unused (available for software use)
+	unsigned sd_rsv1 : 1;       // Reserved
+	unsigned sd_db : 1;         // 0 = 16-bit segment, 1 = 32-bit segment
+	unsigned sd_g : 1;          // Granularity: limit scaled by 4K when set
+	unsigned sd_base_31_24 : 8; // High bits of segment base address
+}inner_seg_desc_;
 
+// Null segment
+#define SEG_NULL	(struct Segdesc){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+// Segment that is loadable but faults when used
+#define SEG_FAULT	(struct Segdesc){ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
+
+
+
+// functions:
 static __inline__ 
-u64_t SEG_DESC_FIX(set_des_t sd)
+inner_seg_desc_t SEG_DESC_FIX(set_des_t sd)
 {    
 	return SEG(sd.type ,
 		   sd.base ,
@@ -61,8 +79,10 @@ u64_t SEG_DESC_FIX(set_des_t sd)
 		   sd.present ,
 		   sd.available ,
 		   sd.reserved ,
-		   db ,g);
+		   sd.db ,
+		   sd.g);
 }
+
 
 
 
