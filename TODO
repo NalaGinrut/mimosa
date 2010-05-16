@@ -2,5 +2,5 @@
 # Date:		2010.5.16	  #
 # NalaGinrut<NalaGinrut@gmail.com>#
 ###################################
-I want enclose all the platform-dependency code into a "bsp" dir. That contains only HEAD file(for define consts) and ASSEMBLEY code(for functions).
+I want enclose all the platform-dependency code into a "bsp" dir. That contains only HEAD file(for define consts) and ASSEMBLEY code(for low-level functions).
 Maybe I should do that latter. Because it causes deeper dirs tree. Hardly handle that with git-mv if do little one time. 
