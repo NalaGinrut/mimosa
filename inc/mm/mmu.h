@@ -152,6 +152,7 @@
  *
  */
 
+// FIXME: I want put these code into gdt.h
 #ifdef __ASSEMBLER__
 
 /*
@@ -161,15 +162,11 @@
 	.word 0, 0;						\
 	.byte 0, 0, 0, 0
 
-// We just can't make assembler_SEG like C_SEG, it's too complicated;
-// While we use assembler_SEG, leave some value default;
-#define SEG(type,base,lim)					\
+// SET_INIT is just used for P_MODE during BOOT time;
+#define SEG_INIT(type,base,lim)					\
 	.word (((lim) >> 12) & 0xffff), ((base) & 0xffff);	\
 	.byte (((base) >> 16) & 0xff), (0x90 | (type)),		\
 		(0xC0 | (((lim) >> 28) & 0xf)), (((base) >> 24) & 0xff)
-
-#else	// not __ASSEMBLER__
-
 
 // SEG macro handles to fix the segment_descriptor a regular one;
 #define SEG(type ,base ,lim ,dpl ,s ,p ,a ,r ,db ,g) (struct Segdesc)	\
@@ -182,7 +179,7 @@
     type, 1, dpl, 1, (unsigned) (lim) >> 16, 0, 0, 1, 0,		\
     (unsigned) (base) >> 24 }
 
-#endif /* !__ASSEMBLER__ */
+#endif // End of __ASSEMBLER__
 
 // Application segment type bits
 #define STA_X		0x8	    // Executable segment
