@@ -16,6 +16,7 @@
 
 #include "inc/mm/mmu.h"
 
+	
 .set PMODE_CSEG,0x8	# code segment selector 
 .set PMODE_DSEG,0x10	# data segment selector
 .set CR0_PE_ON,0x01	# protected mode enable flag
