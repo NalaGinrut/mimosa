@@ -20,6 +20,9 @@
 #ifndef MIMOSA_BITS_H
 #define MIMOSA_BITS_H
 
+#include "inc/types.h"
+
+
 // FIXME: Maybe we need 8/16/64 bits' CHECK_FLAG?
 // Note: CHK_FLAG is used during if/while judgement, DO NOT use "do{}while(0)";
 #define CHK_FLAG(des ,f)	\
@@ -32,6 +35,20 @@
   ( (reg) &= (f) );
 
 
+#ifdef MIMOSA_ADDRESS_64
+#define FLAG_BASE	0xFFFFFFFFFFFFFFFFuL // make sure unsigned long!!!;
+#else
+#define FLAG_BASE	0xFFFFFFFFuL // make sure unsigned long!!!;
+#endif // End of !MIMOSA_ADDRESS_64;
+
+/* use FLAG_FIX for FLAG value set. E.g: FLAG_FIX(3 ,5 ,32) stands for 
+   "this flag is 3bits length and start from 5th bit of 32bits integer";
+*/
+#define FLAG_FIX(len ,start ,bit)			\
+  ( ((FLAG_BASE)>>((bit)-start))<<(len) )
+
+#define F_FIX32(len ,start)	FLAG_FIX(len ,start ,32)
+#define F_FIX64(len ,start)	FLAG_FIX(len ,start ,64)
 
 
 #endif // End of MIMOSA_BITS_H;
