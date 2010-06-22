@@ -1,0 +1,4 @@
+DATE:	2010-6-22
+ADD: 	debug/trace module
+	bsp/x86
+	PLAN TO design a BSP framework

@@ -14,15 +14,18 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-/* This file is a generic CPU controller for any platform,
- */
-#ifndef MIMOSA_CPU_H
-#define MIMOSA_CPU_H
 
-#include "now/_cpu.h"
+/* This file contains all types depends on platform. you must modify it
+   every time you port MIMOSA to a new platform or rewrite BSP.
+*/
+#ifndef MIMOSA_BSP_TYPES_H
+#define MIMOSA_BSP_TYPES_H
+
+#include "types.h"
+
+typedef frame_pt u32_t;
+typedef ereg_t	u32_t;
+typedef reg_t	u16_t;
 
 
-#define get_frame_head __get_frame_head
-
-
-#Endif // End of MIMOSA_CPU_H;
+#endif // End of MIMOSA_BSP_TYPES_H;

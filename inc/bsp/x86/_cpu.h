@@ -14,15 +14,11 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-/* This file is a generic CPU controller for any platform,
- */
-#ifndef MIMOSA_CPU_H
-#define MIMOSA_CPU_H
+#ifndef MIMOSA__CPU_H
+#define MIMOSA__CPU_H
 
-#include "now/_cpu.h"
+#include "now/bsp_types.h"
 
+frame_pt __get_frame_head();
 
-#define get_frame_head __get_frame_head
-
-
-#Endif // End of MIMOSA_CPU_H;
+#endif // End of MIMOSA__CPU_H;

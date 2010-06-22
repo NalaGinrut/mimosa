@@ -14,15 +14,21 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-/* This file is a generic CPU controller for any platform,
- */
-#ifndef MIMOSA_CPU_H
-#define MIMOSA_CPU_H
+#ifndef MIMOSA_DBG_TRACE_H
+#define MIMOSA_DBG_TRACE_H
 
-#include "now/_cpu.h"
+#include "errno.h"
+#include "types.h"
+#include "error.h"
+
+typedef struct FrameInfo
+{
+  //TODO: all info about frame, argc,args, others.....;
+}frame_info;// should we need pass frame_info pointer to accelerate??
+
+err_t pcall_backtrace(frame_info fi ,u32_t back_count);  
 
 
-#define get_frame_head __get_frame_head
 
 
-#Endif // End of MIMOSA_CPU_H;
+#endif // End of MIMOSA_DBG_TRACE_H;
