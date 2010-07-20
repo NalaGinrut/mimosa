@@ -2,5 +2,21 @@
 # Date:		2010.5.16	  #
 # NalaGinrut<NalaGinrut@gmail.com>#
 ###################################
-I want enclose all the platform-dependency code into a "bsp" dir. That contains only HEAD file(for define consts) and ASSEMBLEY code(for low-level functions).
-Maybe I should do that latter. Because it causes deeper dirs tree. Hardly handle that with git-mv if do little one time. 
+I want to enclose all the platform-dependency code into a "bsp" dir. That contains only HEAD file(for define consts) and ASSEMBLEY code(for low-level functions).
+Maybe I should do that latter. Because it causes deeper dirs tree. Hardly handle that with git-mv if just do a little for each time. 
+
+
+###################################
+# Date:		2010.7.20	  #
+# NalaGinrut<NalaGinrut@gmail.com>#
+###################################
+
+[Makefile]:
+I think there would be a "make fix-tree" to ensure all the kernel file tree is valid before run "make kernel".
+
+[platform]:
+This dir is used for containning BSP file. We just modify the files within this dir while we do some port work. And I think it would be a great idea if we just put header file & assembly code into it. We'd better avoid using C code within this dir because it's determined the performance of this OS. Anyway, write some assembly code just in this dir is easier relativly.
+I SAID LAUDLY AGAIN: all assembly code & platform-dependency code must be put in this platform directory! There is NO OTHER dir to place them!!
+
+[bsp_xxx.h]:
+These files should be a generic bsp framework, any part of the OS could reference these file. They followed a fixed format. We call it BSP framework.

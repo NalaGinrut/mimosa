@@ -14,7 +14,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include "inc/mm/mmu.h"
+#include "inc/now/mmu.h"
 
 	
 .set PMODE_CSEG,0x8	# code segment selector 
