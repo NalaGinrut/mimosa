@@ -36,6 +36,9 @@ static __inline__ ereg_t read_ebp()
 }
 
 
+//----------------------------------
+// definition for 
+
 //---------------------------------
 // definition for EFLAGS:
 

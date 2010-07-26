@@ -1,3 +1,6 @@
+#ifndef MIMOSA_MMU_H
+#define MIMOSA_MMU_H
+
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -17,8 +20,8 @@
 /* This file is modified from JOS_MMU_H, there's no way to rewrite such a 
  * file.
  */
-#ifndef MIMOSA_MMU_H
-#define MIMOSA_MMU_H
+
+// MAYBE we don't need this header file!!!
 
 /*
  * This file contains definitions for the x86 memory management unit (MMU),
@@ -152,34 +155,6 @@
  *
  */
 
-// FIXME: I want put these code into gdt.h
-#ifdef __ASSEMBLER__
-
-/*
- * Macros to build GDT entries in assembly.
- */
-#define SEG_NULL						\
-	.word 0, 0;						\
-	.byte 0, 0, 0, 0
-
-// SET_INIT is just used for P_MODE during BOOT time;
-#define SEG_INIT(type,base,lim)					\
-	.word (((lim) >> 12) & 0xffff), ((base) & 0xffff);	\
-	.byte (((base) >> 16) & 0xff), (0x90 | (type)),		\
-		(0xC0 | (((lim) >> 28) & 0xf)), (((base) >> 24) & 0xff)
-
-// SEG macro handles to fix the segment_descriptor a regular one;
-#define SEG(type ,base ,lim ,dpl ,s ,p ,a ,r ,db ,g) (struct Segdesc)	\
-{((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff ,	\
-	(type) ,(s) ,(dpl) ,(p), (unsigned) (lim) >> 28 ,(a) ,		\
-	(r) ,(db) ,(g) ,(unsigned) (base) >> 24 }			\
-
-#define SEG16(type, base, lim, dpl) (struct Segdesc)			\
-{ (lim) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,		\
-    type, 1, dpl, 1, (unsigned) (lim) >> 16, 0, 0, 1, 0,		\
-    (unsigned) (base) >> 24 }
-
-#endif // End of __ASSEMBLER__
 
 // Application segment type bits
 #define STA_X		0x8	    // Executable segment
