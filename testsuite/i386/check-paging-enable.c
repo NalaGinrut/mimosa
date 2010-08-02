@@ -64,7 +64,7 @@ int check_sel ();
 int display_path ();
 int display_op ();
 int display_sel ();
-
+int display_map();
 
 int
 main ()
@@ -228,3 +228,7 @@ display_sel ()
   return 0;
 
 }
+
+int display_map()
+{
+  
