@@ -16,22 +16,24 @@
 #ifndef MIMOSA_TYPES_H
 #define MIMOSA_TYPES_H
 
+#include "now/bsp_types.h"
+
 #ifndef NULL
 #define NULL ((void*) 0)
 #endif
 
 // Represents true-or-false values
-typedef int bool;
+typedef __bool bool;
 
 // Explicitly-sized versions of integer types
-typedef __signed char s8_t;
-typedef unsigned char u8_t;
-typedef short s16_t;
-typedef unsigned short u16_t;
-typedef int s32_t;
-typedef unsigned int u32_t;
-typedef long long s64_t;
-typedef unsigned long long u64_t;
+typedef __s8_t s8_t;
+typedef __u8_t u8_t;
+typedef __s16_t s16_t;
+typedef __u16_t u16_t;
+typedef __s32_t s32_t;
+typedef __u32_t u32_t;
+typedef __s64_t s64_t;
+typedef __u64_t u64_t;
 
 // Pointers and addresses are 32 bits long.
 // We use pointer types to represent virtual addresses,
@@ -39,15 +41,15 @@ typedef unsigned long long u64_t;
 // and physaddr_t to represent physical addresses.
 #ifndef ADDRESS_64
 
-typedef s32_t intptr_t;
-typedef u32_t uintptr_t;
-typedef u32_t physaddr_t;
+typedef __intptr_t intptr_t;
+typedef __uintptr_t uintptr_t;
+typedef __physaddr_t physaddr_t;
 
 #else
 
-typedef s64_t intptr_t;
-typedef u64_t uintptr_t;
-typedef u64_t physaddr_t;
+typedef __intptr_t intptr_t;
+typedef __uintptr_t uintptr_t;
+typedef __physaddr_t physaddr_t;
 
 #endif // End of ADDRESS_64;
 
@@ -64,7 +66,6 @@ typedef s32_t ssize_t;
 
 // off_t is used for file offsets and lengths.
 typedef s32_t off_t;
-
 
 
 // FIXME: Can we trash down the GCC_extension: "sizeof" ??
