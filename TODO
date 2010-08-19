@@ -20,3 +20,13 @@ I SAID LAUDLY AGAIN: all assembly code & platform-dependency code must be put in
 
 [bsp_xxx.h]:
 These files should be a generic bsp framework, any part of the OS could reference these file. They followed a fixed format. We call it BSP framework.
+
+###################################
+# Date:		2010.8.19	  #
+# NalaGinrut<NalaGinrut@gmail.com>#
+###################################
+
+[paging]
+The paging of x86 cpu is more complicated, we may implement a simple fixed paging mode first, for instance ,32-bit paging. And maybe implement others later......
+
+
