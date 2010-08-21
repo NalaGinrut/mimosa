@@ -1,5 +1,5 @@
-#ifndef MIMOSA_BITS_H
-#define MIMOSA_BITS_H
+#ifndef __MIMOSA_BSP_BITS_H
+#define __MIMOSA_BSP_BITS_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -20,8 +20,13 @@
 // This file used for handling bits operation;
 
 
-#include "types.h"
-#include "osconfig.h"
+#include "bsp_types.h"
+
+
+#define __BIT	(0x01)
+// shift the value "x" to "b" bits;
+#define _S(x,b)		((x)<<(b))
+#define _B(b)		(__BIT<<(b))
 
 // FIXME: Maybe we need 8/16/64 bits' CHECK_FLAG?
 // Note: CHK_FLAG is used during if/while judgement, DO NOT use "do{}while(0)";
@@ -36,6 +41,9 @@
 
 
 
+
+#define FLAG_BASE	0xFFFFFFFFuL // make sure unsigned long!!!;
+
 /* use __FLAG_FIX for FLAG value set. E.g: __FLAG_FIX(3 ,5 ,32) stands for "this flag is 3bits length and start from 5th bit of 32bits integer".
    DON'T call this macro directly, you SHOULD call FLAG_FIX!!!
    Why we SHOULDN'T use "static inline"? We need this fixed_value populate during C Preprocessing. But "static inline" will populate it during runtime.
@@ -46,18 +54,10 @@
 
 /* Our unified interface is FLAG_FIX;
  */
-#ifdef MIMOSA_ADDRESS_64
-#define FLAG_BASE	0xFFFFFFFFFFFFFFFFuL // make sure unsigned long!!!;
-#define F_FIX64(len ,start)	__FLAG_FIX(len ,start ,64)
-#define FLAG_FIX	F_FIX64
-#else
-#define FLAG_BASE	0xFFFFFFFFuL // make sure unsigned long!!!;
-#define F_FIX32(len ,start)	__FLAG_FIX(len ,start ,32)
-#define FLAG_FIX	F_FIX32
-#endif // End of !MIMOSA_ADDRESS_64;
+#define __FIX32(len ,start)	__FLAG_FIX(len ,start ,32)
+#define FLAG_FIX	__FIX32
 
 
 
 
-
-#endif // End of MIMOSA_BITS_H;
+#endif // End of __MIMOSA_BITS_H;

@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <gdsl.h>
+
 
 #define PG     	(0x1)
 #define PAE	((0x1)<<1)
@@ -54,6 +56,8 @@ enum operation
 
 sm_t current = { 0, 0, 0, NO };
 
+//gdsl_list_t g_list;
+
 // function declaration;
 int set_it (int what);
 int clr_it (int what);
@@ -70,8 +74,10 @@ int
 main ()
 {
 
-  begin ();
-  return 0;
+	//	g_list=gdsl_list_alloc("global list" ,NULL ,NULL);
+	
+	begin ();
+	return 0;
 }
 
 int
@@ -156,15 +162,18 @@ handle_sel (int sel)
   switch (op)
     {
     case set:
+	    printf("now you chose PM\n");
       ret = set_it (sel);
-      break;
+      goto handle;
     case clr:
       ret = clr_it (sel);
-      break;
+      goto handle;
     default:
       printf ("operation error! please check your program!\n");
       exit (1);
     }
+  
+ handle:
   return ret;
 }
 
@@ -188,19 +197,21 @@ check_sel ()
 	{
 	case 'p':
 	  ret = handle_sel (PG);
-	  break;
+	  goto handle;
 	case 'a':
 	  ret = handle_sel (PAE);
-	  break;
+	  goto handle;
 	case 'l':
 	  ret = handle_sel (LME);
-	  break;
+	  goto handle;
 	case 'q':
 	  exit (0);
 	default:
 	  display_sel ();
 	}
     }
+  
+ handle:
   return ret;
 }
 
@@ -231,4 +242,5 @@ display_sel ()
 
 int display_map()
 {
-  
+	return 0;
+}  
