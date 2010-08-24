@@ -30,11 +30,3 @@ These files should be a generic bsp framework, any part of the OS could referenc
 The paging of x86 cpu is more complicated, we may implement a simple fixed paging mode first, for instance ,32-bit paging. And maybe implement others later......
 
 
-###################################
-# Date:		2010.8.24	  #
-# NalaGinrut<NalaGinrut@gmail.com>#
-###################################
-[platform/arduino]
-Plan to make a arduino-porting after a roughly pc32-porting.
-
-
