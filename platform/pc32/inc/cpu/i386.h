@@ -17,25 +17,64 @@
 #ifndef MIMOSA_I386_H
 #define MIMOSA_I386_H
 
-#include "now/bsp_types.h"
+#include <bsp_types.h>
 
 // function declaratioin:
-static __inline__ ereg_t read_ebp();
+static __inline__ ereg_t read_ebp() true_inline;
 
+// output data operate;
+static __inline__ void port_wb(__u8_t port ,__u8_t data) true_inline;
+static __inline__ void port_wbx(__u16_t port ,__u8_t data) true_inline;
+static __inline__ void port_ww(__u8_t port ,__u16_t data) true_inline;
+static __inline__ void port_wwx(__u16_t port ,__u16_t data) true_inline;
 
 // function body:
 static __inline__ ereg_t read_ebp()
 {
   ereg_t value;
   __asm__ __volatile__ ("movw %%ebp ,%0"
+			:"=r" (value)
 			:
-			:"=r" value
 			:
-			)
+			);
     return value;
 }
 
+static __inline__ void port_wb(__u8_t port ,__u8_t data)
+{
+  __asm__ __volatile__ ("out %0 ,%1\n\t"
+			:
+			:"a" (data) ,"i" (port)
+			:
+			);
+}
 
+static __inline__ void port_wbx(__u16_t port ,__u8_t data)
+{
+  __asm__ __volatile__ ("out %0 ,%w1\n\t"
+			:
+			:"a" (data) ,"d" (port)
+			:
+			);
+}
+
+static __inline__ void port_ww(__u8_t port ,__u16_t data)
+{
+  __asm__ __volatile__ ("out %0 ,%1\n\t"
+			:
+			:"a" (data) ,"i" (port)
+			:
+			);
+}
+
+static __inline__ void port_wwx(__u16_t port ,__u16_t data)
+{
+  __asm__ __volatile__ ("out %0 ,%w1\n\t"
+			:
+			:"a" (data) ,"d" (port)
+			:
+			);
+}
 //----------------------------------
 // definition for 
 

@@ -43,24 +43,26 @@ typedef (unsigned long long) __u64_t;
 // and physaddr_t to represent physical addresses.
 #ifndef ADDRESS_64
 
-typedef s32_t __intptr_t;
-typedef u32_t __uintptr_t;
-typedef u32_t __physaddr_t;
+typedef __s32_t __intptr_t;
+typedef __u32_t __uintptr_t;
+typedef __u32_t __physaddr_t;
 
 #else
 
-typedef s64_t __intptr_t;
-typedef u64_t __uintptr_t;
-typedef u64_t __physaddr_t;
+typedef __s64_t __intptr_t;
+typedef __u64_t __uintptr_t;
+typedef __u64_t __physaddr_t;
 
 #endif // End of ADDRESS_64;
 
 
 // types bsp should use;
-typedef frame_pt u32_t;
-typedef ereg_t	u32_t;
-typedef reg_t	u16_t;
+typedef frame_pt __u32_t;
+typedef ereg_t	__u32_t;
+typedef reg_t	__u16_t;
 
-
+// gcc attributes;
+// may be need some mechnism to check GCC, but do it later...;
+#define true_inline __attribute__((always_inline))
 
 #endif // End of MIMOSA_BSP_TYPES_H;
