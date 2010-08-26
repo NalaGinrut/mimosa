@@ -69,4 +69,7 @@
  */
 
 
+// Memory detect;
+
+
 #endif // End of __RTC_MC146818_H;

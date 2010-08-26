@@ -57,7 +57,12 @@
 #define __FIX32(len ,start)	__FLAG_FIX(len ,start ,32)
 #define FLAG_FIX	__FIX32
 
+// Round up/down;
+// Never use GCC extension! Prefer slow!
+#define ROUND_UP(x ,n)	  	\
+  	((x)%(n)? ((x)+(n)-(x)%(n)) : 0)
 
-
+#define ROUND_DOWN(x ,n)	\
+  	((x)%(n)? ((x)-(x)%(n)) : 0)
 
 #endif // End of __MIMOSA_BITS_H;
