@@ -27,6 +27,13 @@
 // Represents true-or-false values
 typedef enum BOOL { true=0 ,false=1 } bool;
 
+
+// simple protection;
+typedef static private;
+typedef extern public; 
+/* don't use 'public' while declaration, use it while calling the var/func;
+ */ 
+
 // Explicitly-sized versions of integer types
 typedef (signed char)	__s8_t;
 typedef (unsigned char) __u8_t;

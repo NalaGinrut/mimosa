@@ -59,10 +59,15 @@
 
 // Round up/down;
 // Never use GCC extension! Prefer slow!
+
+/* don't worry about mod/div speed ,I know roundup=rounddown(x+n-1,n),
+ * but this form is simpler in C, for '/' op in C has rounddown feature,
+ * and mod/div is the same instruction under X86;
+ */
 #define ROUND_UP(x ,n)	  	\
-  	((x)%(n)? ((x)+(n)-(x)%(n)) : 0)
+  ( ((x)+(n)-1) / (n) )
 
 #define ROUND_DOWN(x ,n)	\
-  	((x)%(n)? ((x)-(x)%(n)) : 0)
+  ( (x)-(x)%(n) )
 
 #endif // End of __MIMOSA_BITS_H;
