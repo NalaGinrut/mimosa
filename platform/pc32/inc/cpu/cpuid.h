@@ -17,7 +17,8 @@
  */
 
 
-#include "bsp_types.h"
+#include <bsp_types.h>
+#include <bsp_bits.h>
 
 // CPUID only for 486+ cpu!!!;
 
