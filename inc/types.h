@@ -35,69 +35,42 @@ typedef __u32_t u32_t;
 typedef __s64_t s64_t;
 typedef __u64_t u64_t;
 
-// Pointers and addresses are 32 bits long.
-// We use pointer types to represent virtual addresses,
-// uintptr_t to represent the numerical values of virtual addresses,
-// and physaddr_t to represent physical addresses.
-#ifndef ADDRESS_64
+// generic pointer, one step vary pointer
+typedef __stdptr_t stdptr_t;
 
 typedef __intptr_t intptr_t;
 typedef __uintptr_t uintptr_t;
 typedef __physaddr_t physaddr_t;
-
-#else
-
-typedef __intptr_t intptr_t;
-typedef __uintptr_t uintptr_t;
-typedef __physaddr_t physaddr_t;
-
-#endif // End of ADDRESS_64;
 
 // FIXME: how to deal with 64bit_ARCH for other things, such as "page"?
 
-// Page numbers are 32 bits long.
-typedef u32_t ppn_t;
+// Page numbers are 32 bits long(default). We haven't consider others yet.
+typedef __ppn_t ppn_t;
 
 // size_t is used for memory object sizes.
-typedef u32_t size_t;
+typedef __size_t size_t;
 // ssize_t is a signed version of ssize_t, used in case there might be an
 // error return.
-typedef s32_t ssize_t;
+typedef __ssize_t ssize_t;
 
 // off_t is used for file offsets and lengths.
-typedef s32_t off_t;
+typedef __off_t off_t;
 
 
-// FIXME: Can we trash down the GCC_extension: "sizeof" ??
-// Efficient min and max operations
-#define MIN(_a, _b)						\
-({								\
-	typeof(_a) __a = (_a);					\
-	typeof(_b) __b = (_b);					\
-	__a <= __b ? __a : __b;					\
-})
-#define MAX(_a, _b)						\
-({								\
-	typeof(_a) __a = (_a);					\
-	typeof(_b) __b = (_b);					\
-	__a >= __b ? __a : __b;					\
-})
+#define MIN __MIN
 
-// Rounding operations (efficient when n is a power of 2)
-// Round down to the nearest multiple of n
-#define ROUNDDOWN(a, n)						\
-({								\
-	u32_t __a = (u32_t) (a);				\
-	(typeof(a)) (__a - __a % (n));				\
-})
-// Round up to the nearest multiple of n
-#define ROUNDUP(a, n)						\
-({								\
-	u32_t __n = (u32_t) (n);				\
-	(typeof(a)) (ROUNDDOWN((u32_t) (a) + __n - 1, __n));	\
-})
+#define MAX __MAX
 
-// Return the offset of 'member' relative to the beginning of a struct type
-#define offsetof(type, member)  ((size_t) (&((type*)0)->member))
+
+/* These two useful MACRO must be familar to you (IF NOT, GO BACK TO BASIC HACKING!), 
+ * and as I said, I won't implement any of my code out of the ANSI C standard.
+ * So here is a ANSI C version.
+ */
+#define container_of(elem_addr ,struct_type ,member)	\
+    ( (struct_type*)((stdptr_t)(elem_addr) - offsetof(struct_type ,member)) )
+
+#define offsetof(type ,member)	\
+  (off_t)(&((type*)0)->member)	
+
 
 #endif // End of MIMOSA_TYPES_H;

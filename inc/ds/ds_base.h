@@ -1,5 +1,5 @@
-#ifndef MIMOSA_BITS_H
-#define MIMOSA_BITS_H
+#ifndef __MIMOSA_DS_BASE_H
+#define __MIMOSA_DS_BASE_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -16,15 +16,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-
-// This file used for handling bits operation;
-
-
-#include <now/bsp_bits.h>
-
-/* Most of things here are included in "bsp_bits.h",
- * others coming soon...
- */
+#include <types.h>
 
 
-#endif // End of MIMOSA_BITS_H;
+#endif // End of __MIMOSA_DS_BASE_H;

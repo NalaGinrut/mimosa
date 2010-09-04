@@ -63,6 +63,24 @@ typedef __u64_t __physaddr_t;
 #endif // End of ADDRESS_64;
 
 
+// FIXME: how to deal with 64bit_ARCH for other things, such as "page"?
+
+// generic pointer, one step vary pointer.
+typedef (char*)	__stdptr_t;
+
+// Page numbers are 32 bits long.
+typedef u32_t __ppn_t;
+
+// size_t is used for memory object sizes.
+typedef u32_t __size_t;
+// ssize_t is a signed version of ssize_t, used in case there might be an
+// error return.
+typedef s32_t __ssize_t;
+
+// off_t is used for file offsets and lengths.
+typedef s32_t off_t;
+
+
 // types bsp should use;
 typedef frame_pt __u32_t;
 typedef ereg_t	__u32_t;
@@ -71,5 +89,15 @@ typedef reg_t	__u16_t;
 // gcc attributes;
 // may be need some mechnism to check GCC, but do it later...;
 #define true_inline __attribute__((always_inline))
+
+
+#define __MIN(_a, _b)						\
+  ( (_a) >= (_b) ? (_b) : (_a) )
+
+#define __MAX(_a, _b)						\
+  ( (_a) >= (_b) ? (_a) : (_b) )
+
+
+
 
 #endif // End of MIMOSA_BSP_TYPES_H;

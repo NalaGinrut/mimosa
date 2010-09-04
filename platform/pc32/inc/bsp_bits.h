@@ -31,13 +31,13 @@
 // FIXME: Maybe we need 8/16/64 bits' CHECK_FLAG?
 // Note: CHK_FLAG is used during if/while judgement, DO NOT use "do{}while(0)";
 #define CHK_FLAG(des ,f)	\
-  ( (reg) & (f) )
+  ( (des) & (f) )
 
 #define SET_FLAG(des ,f)	\
-  ( (reg) |= (f) );
+  ( (des) |= (f) );
 
 #define CLR_FLAG(des ,f)	\
-  ( (reg) &= (f) );
+  ( (des) &= (f) );
 
 
 
