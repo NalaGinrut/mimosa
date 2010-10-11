@@ -67,6 +67,7 @@ typedef __u64_t __physaddr_t;
 
 // generic pointer, one step vary pointer.
 typedef (char*)	__stdptr_t;
+typedef __stdptr_t __mem_t;
 
 // Page numbers are 32 bits long.
 typedef u32_t __ppn_t;
@@ -85,6 +86,7 @@ typedef s32_t off_t;
 typedef frame_pt __u32_t;
 typedef ereg_t	__u32_t;
 typedef reg_t	__u16_t;
+
 
 // gcc attributes;
 // may be need some mechnism to check GCC, but do it later...;

@@ -17,6 +17,7 @@
  */
 
 #include "bsp_bits.h"
+#include "bsp_types.h"
 
 /* NOTE: These control register definitions is only for 32-bits;
  * And all Reserved bits must be 0, or may cause Gerneral Protection Fault;

@@ -39,9 +39,6 @@
 #define CLR_FLAG(des ,f)	\
   ( (des) &= (f) );
 
-
-
-
 #define FLAG_BASE	0xFFFFFFFFuL // make sure unsigned long!!!;
 
 /* use __FLAG_FIX for FLAG value set. E.g: __FLAG_FIX(3 ,5 ,32) stands for "this flag is 3bits length and start from 5th bit of 32bits integer".
@@ -55,7 +52,7 @@
 /* Our unified interface is FLAG_FIX;
  */
 #define __FIX32(len ,start)	__FLAG_FIX(len ,start ,32)
-#define FLAG_FIX	__FIX32
+#define FLAG_FIX(len ,start)	__FIX32(len ,start)
 
 // Round up/down;
 // Never use GCC extension! Prefer slow!
