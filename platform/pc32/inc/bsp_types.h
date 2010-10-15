@@ -70,22 +70,22 @@ typedef (char*)	__stdptr_t;
 typedef __stdptr_t __mem_t;
 
 // Page numbers are 32 bits long.
-typedef u32_t __ppn_t;
+typedef __u32_t __ppn_t;
 
 // size_t is used for memory object sizes.
-typedef u32_t __size_t;
+typedef __u32_t __size_t;
 // ssize_t is a signed version of ssize_t, used in case there might be an
 // error return.
-typedef s32_t __ssize_t;
+typedef __s32_t __ssize_t;
 
 // off_t is used for file offsets and lengths.
-typedef s32_t off_t;
+typedef __s32_t __off_t;
 
 
 // types bsp should use;
-typedef frame_pt __u32_t;
-typedef ereg_t	__u32_t;
-typedef reg_t	__u16_t;
+typedef __u32_t frame_pt;
+typedef __u32_t ereg_t;
+typedef __u16_t reg_t;
 
 
 // gcc attributes;

@@ -19,6 +19,7 @@
 
 #include <bsp_types.h>
 #include <bsp_bits.h>
+#include "crx.h"
 
 #if __BIT32_PAGING__
 
@@ -44,7 +45,6 @@ typedef union Linear_Address
 #define PDE_CACHE_D	_B(4)
 #define PDE_ACCESSED	_B(5)
 #define PDE_PAGE4MB	_B(6)
-#define PDE_PAGE4KB	(!_B(6))
 #define PDE_GLOBAL	_B(7)
 #define PDE_PT_ADDR	FLAG_FIX(20 ,12)
 typedef struct Page_Dir_Entry
@@ -107,7 +107,9 @@ typedef struct Page_Table_Entry
   __u32_t all;
 }pte_t ,pte_tp *;
 
+
 #else //__BIT32_PAGING_PAE__
+
 typedef union Linear_Address
 {
   struct inner
@@ -133,8 +135,29 @@ typedef struct Page_Dir_Entry
 #endif // End of __BIT32_PAGING__;
 
 
-static __inline__ void TLB_flush_mem(mem_t mem) true_inline;
-static __inline__ void TLB_flush_mem(mem_t mem)
+//--- definition of Page Fault Error Code;
+typedef __u32_t pfec_t; // Page Fault Error Code; 
+#define PFEC_P	_B(0) /* 1 caused by page-level-proctection ,
+		       * 0 for page-not-present;
+		       */
+#define PFEC_WR	_B(1) // 1 caused by page-can't-write ,0 for read;
+#define PFEC_US	_B(2) // 1 caused by excute-while-CPL=3 ,0 for CPL<3;
+#define PFEC_RS	_B(3) /* 1 caused by reserved-bits-not-clear;
+		       * this bit is set only-under PFEC_P is set ,
+		       * because page-bit check only under page-presented
+		       * situation ,
+		       * 0: error not caused by reserved bits;
+		       */
+#define PFEC_ID	_B(4) /* 1 caused by instruction-fetch;
+		       * 0: error not caused by instruction-fetch;
+		       * NOTE: USELESS UNDER 32BIT-PAGE MODE(CR4.PAE=0 or 
+		       * IA32_EFER.NXE=0);
+		       */
+
+
+
+static __inline__ void TLB_flush_mem(__mem_t mem) true_inline;
+static __inline__ void TLB_flush_mem(__mem_t mem)
 {
 #ifndef __486_COMPAT
   __asm__ volatile("nop\n\t");
@@ -146,6 +169,9 @@ static __inline__ void TLB_flush_mem(mem_t mem)
 		   );
 #endif //End of __486_COMPAT
 }
+
+
+
 
 
 #endif // End of __MIMOSA_PAGING_H;
