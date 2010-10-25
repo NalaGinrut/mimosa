@@ -78,6 +78,89 @@
 
 
 
+// DON'T USE THIS PROCs DIRECTLY!!!
+#define __crx_set(crx ,flag)				\
+  do{							\
+    asm volatile("movl %%eax ,%%"#crx			\
+		 :					\
+		 :"a" (flag)				\
+		 );					\
+  }while(0);
+
+#define __crx_get(crx)					\
+  do{							\
+    asm volatile("movl %%"#crx" ,%%eax"			\
+		 :"=a" (ret)				\
+		 );					\
+  }while(0);
+//-----------------------------------
+
+//------CRX set curried function~
+#define cr0_set(flags) __crx_set(cr0 ,flags)
+#define cr1_set(flags) __crx_set(cr1 ,flags)
+#define cr2_set(flags) __crx_set(cr2 ,flags)
+#define cr3_set(flags) __crx_set(cr3 ,flags)
+#define cr4_set(flags) __crx_set(cr4 ,flags)
+//---------------------------------
+
+
+//-----CRX get curried decl&defn
+// IT'S JUST FOR DECL&DEFN! NEVER USE THEM IN YOUR CODE!!
+#define decl_crx_get(crx)					\
+  static inline __u32_t crx##_get() true_inline;
+
+#define defn_crx_get(crx)					\
+  static inline __u32_t  crx##_get()				\
+  {								\
+    __u32_t ret = 0;						\
+    __crx_get(crx);						\
+    return ret;
+  }
+
+decl_crx_get(cr0);
+defn_crx_get(cr0);
+
+decl_crx_get(cr1);
+defn_crx_get(cr1);
+
+decl_crx_get(cr2);
+defn_crx_get(cr2);
+
+decl_crx_get(cr3);
+defn_crx_get(cr3);
+
+decl_crx_get(cr4);
+defn_crx_get(cr4);
+//------------------------
+
+
+#define decl_crx_chk(crx)					\
+  static inline __u32_t crx##_chk(__u32_t flags) true_inline;
+
+#define defn_crx_chk(crx)					\
+  static inline __u32_t  crx##_chk(__u32_t flags)		\
+  {								\
+    __u32_t ret = 0;						\
+    __crx_get(crx);						\
+    return ( ret & flags );
+  }
+
+decl_crx_chk(cr0);
+defn_crx_chk(cr0);
+
+decl_crx_chk(cr1);
+defn_crx_chk(cr1);
+
+decl_crx_chk(cr2);
+defn_crx_chk(cr2);
+
+decl_crx_chk(cr3);
+defn_crx_chk(cr3);
+
+decl_crx_chk(cr4);
+defn_crx_chk(cr4);
+//-------------------
+
 #endif // End of __MIMOSA_CRN_H;
 
 
