@@ -154,10 +154,12 @@ typedef __u32_t pfec_t; // Page Fault Error Code;
 		       * IA32_EFER.NXE=0);
 		       */
 
+#define page_enable()  cr0_set(CR0_PE)
 
 
-static __inline__ void TLB_flush_mem(__mem_t mem) true_inline;
-static __inline__ void TLB_flush_mem(__mem_t mem)
+
+static inline void TLB_flush_mem(__mem_t mem) true_inline;
+static inline void TLB_flush_mem(__mem_t mem)
 {
 #ifndef __486_COMPAT
   __asm__ volatile("nop\n\t");
@@ -165,10 +167,10 @@ static __inline__ void TLB_flush_mem(__mem_t mem)
   __asm__ volatile("invlpg %0\n\t"
 		   :
 		   :"m" (*mem)
-		   :
 		   );
 #endif //End of __486_COMPAT
 }
+
 
 
 
