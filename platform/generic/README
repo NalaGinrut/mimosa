@@ -1,0 +1,3 @@
+NOTE: 
+	"generic platform" isn't a specified platform like "PC32" "arm" etc...
+We put all the generic deviced which could be used under any platform like embedded system here, to avoid gratuitous code duplication.
