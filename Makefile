@@ -1,27 +1,29 @@
-
-TOP = .
-
-
-# tool chain def
-CC	:= $(GCCPREFIX)gcc -pipe
-GCC_LIB := $(shell $(CC) -print-libgcc-file-name)
-AS	:= $(GCCPREFIX)as
-AR	:= $(GCCPREFIX)ar
-LD	:= $(GCCPREFIX)ld
-OBJCOPY	:= $(GCCPREFIX)objcopy
-OBJDUMP	:= $(GCCPREFIX)objdump
-NM	:= $(GCCPREFIX)nm
-
-# Native commands
-NCC	:= gcc $(CC_VER) -pipe
-TAR	:= gtar
-PERL	:= perl
-GUILE	:= guile
+# This bachlor-Makefile follows the famous paper :
+# "Recursive Make Considered Harmful"
+# You may check it out here: http://aegis.sourceforge.net/auug97.pdf
+# I must say, "recursive make" is pretty easier. But I trust the paper 
+# author(Emm...actually I'm not sure), so...hope it works like the boast...
+# God bless~ 
+# NalaGinrut@gmail.com
 
 
--include config/conf.mk
+# Never change these two var!!!
+TOP := $(shell pwd)
+CONF := $(TOP)/config
+# Again! The Makefile framework is based on these two var. So let them alone!
 
-.PHONY: pretty 
+include $(CONF)/conf.mk
+
+CFLAGS := $(CFLAGS) $(DEFS) -O$(O_LEV) -fno-builtin -I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror $(STABS)
+
+
+.PHONY: pretty mtest
+
+mtest:
+	@echo "TOP: $(TOP)"
+	@echo "LIB: $(LIB)"
+	@echo "CONF: $(CONF)"
+	@echo "MAKEFILE_LIST: $(MAKEFILE_LIST)"
 
 
 pretty:

@@ -83,9 +83,7 @@ SECTIONS
 	.init : {
 	      	*(.init)
 	}
-	PROVIDE(init_end = .)
+	PROVIDE(init_end = .);
 	
-	/DISCARD/ : {
-		*(.eh_frame .note.GNU-stack)
-	}
+		
 }

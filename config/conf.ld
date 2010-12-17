@@ -38,3 +38,5 @@ k_mem_all = 0xFFFFFFFF;
 _k_size = DEFINED(kernel_mem) ? kernel_mem : 256;
 k_size = _k_size * 0x100000;
 k_begin = DEFINED(k_begin) ? k_begin : (k_mem_all - k_size);
+
+
