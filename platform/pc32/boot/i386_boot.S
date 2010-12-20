@@ -19,9 +19,6 @@
 
 	
 
-# note: why we need to define CR0_PE_ON? maybe we could use it from
-# mmu.h. could it be a "16bit-cause" problem? now we just under 16bit.
-
 #################
 # ENTRY POINT
 #################
@@ -50,7 +47,7 @@ start:	.code16
 # There's no need to backup AL, it's just a sub_proc under same environment or a continuation.
 busy_check:
 		inb	$KB_CON_STAT ,%al
-		testb	$KB_BUSY ,%al
+		testb	$KB_IS_BUSY ,%al
 		jnz	busy_check
 		ret
 A20_1:

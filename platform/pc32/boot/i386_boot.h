@@ -26,6 +26,13 @@
 #define PM_DS 	0x10	// data segment selector
 
 
+// A20
+#define KB_CON_STAT	0x64
+#define KB_IS_BUSY	0x02
+#define KB_WRITE	0xd1
+#define KB_CON_INBUF	0x64
+#define A20_EN		0xdf
+#define KB_CON_DPORT	0x60
 
 
 #endif // End of __MIMOSA_I386_BOOT_H;
