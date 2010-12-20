@@ -26,7 +26,7 @@ INCLUDE conf.ld
 SECTIONS
 {
 	/* principio is default kernel start address */
-	PROVIDE(principio = DEFINED(principio) ? principio : k_begin);
+	PROVIDE(principio = DEFINED(principio) ? principio : __K_LD_BEGIN);
 	. = principio;
 
 	.text : {

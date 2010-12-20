@@ -12,13 +12,14 @@ ENTRY(_start)
 
 
 /* set "kernel_mem" the kernel size you want, 
- * if you didn't set it, a default "256M" kernel will be set.
+ * if you didn't set it, a default "1024M" kernel will be set.
+ * unit: MB
  */
 /* kernel_mem = 0 */
 
 /* 32bit cpu. Maybe I could write a more convenient GUI to set all these.
  */
-k_mem_all = 0xFFFFFFFF;
+__LD_32b_ALL = 0xFFFFFFFF;
 
 /* You may set the "k_begin" directly */ 
 /* k_begin = */
@@ -35,8 +36,7 @@ k_mem_all = 0xFFFFFFFF;
 
 
 /* handle env ,DON'T MODIFY ANY THING BELOW! */
-_k_size = DEFINED(kernel_mem) ? kernel_mem : 256;
-k_size = _k_size * 0x100000;
-k_begin = DEFINED(k_begin) ? k_begin : (k_mem_all - k_size);
-
-
+___K_LD_SIZE = DEFINED(__K_LD_MEM) ? __K_LD_MEM : 1024; /* unit: MB */
+__K_LD_SIZE = ___K_LD_SIZE * 0x100000;
+___K_LD_BEGIN = __LD_32b_ALL - __K_LD_SIZE;
+__K_LD_BEGIN = DEFINED(LD_KERN_BEGIN) ? LD_KERN_BEGIN : ___K_LD_BEGIN;

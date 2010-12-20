@@ -24,7 +24,7 @@
  */
 
 // CR0 definition;
-#define CR0_PE	_B(0)	// Protection Enable;
+#define CR0_PM	_B(0)	// Protection Mode;
 #define CR0_MP	_B(1)	// Monitor Coprocessor;
 #define CR0_EM	_B(2)	// Emulation;
 #define CR0_TS	_B(3)	// Task Switched;

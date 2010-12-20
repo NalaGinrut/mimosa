@@ -14,14 +14,13 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include "inc/now/mmu.h"
+#include "i386_boot.h"
+#include "cpu/crx.h"
 
 	
-.set PMODE_CSEG,0x8	# code segment selector 
-.set PMODE_DSEG,0x10	# data segment selector
-.set CR0_PE_ON,0x01	# protected mode enable flag
+
 # note: why we need to define CR0_PE_ON? maybe we could use it from
-# mmu.h. could it be 16bit problem? now we just under 16bit.
+# mmu.h. could it be a "16bit-cause" problem? now we just under 16bit.
 
 #################
 # ENTRY POINT
@@ -73,8 +72,8 @@ r2p:
 		cli
 
 		lgdt	gdt_descriptor
-		movl	%cr0 ,%eax		# note: cr0 is 32bit?
-		orl	$CR0_PE ,%eax		# enable Protected Mode
+		movl	%cr0 ,%eax		# crx can't change directly
+		orl	$CR0_PM ,%eax		# enable Protected Mode
 		movl	%eax ,%cr0
 
 		ljmp	$PM_CS ,$p_mode
@@ -98,16 +97,21 @@ p_mode:		.code32
 spin:		jmp	spin	# cmain never return. But it's a simplest handler for such error.
 				# maybe we can designed a more friendly handler. e.g: print some msg...
 
-		.p2align 2
+		.p2align 2	# paddr align to 1<<2
 gdt_descriptor:
-		.word	0x17
+		.word	0x17	# limit: 8*N-1
+				# N is the numbers of segments(include NULL)
 		.long	gdt_descriptor
-		.word	0x00
-		# it's a gdt magic! NULL for standard, but we could store gdt header in it!
-		# check "lgdt" in IA32-BOOK, lgdt need an address structure like:
-		# 1.sizeof(defacto_gdt) 2.address of defacto_gdt
+		.word	0x00	# NOTE: just 1word
+		# it's a gdt magic! NULL for standard, but we could store
+		# gdt header in it!
+		# check "lgdt" in IA32-BOOK,"lgdt" needs an address structure
+		# which like:
+		# 1.sizeof(defacto_gdt)
+		# 2.address of defacto_gdt
 
-		# FIXME: I want to use SEG() macro ,it's more clear fix that later...
+		# FIXME: I want to use SEG() macro ,it's more clear.
+		# I will fix it later...
 		SEG_INIT(STA_X | STA_R ,0x0 ,0xffffffff)
 		SEG_INIT(STA_W ,0x0 ,0xffffffff)
 
