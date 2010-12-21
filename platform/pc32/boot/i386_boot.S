@@ -52,7 +52,7 @@ busy_check:
 		ret
 A20_1:
 		call	busy_check
-		movb	$KB_WRITE ,%al		# set output port: command->Write
+		movb	$KB_WRITE ,%al		# set out-port:command->Write
 		outb	%al ,$KB_CON_INBUF	# set it!
 A20_2:
 		call	busy_check
@@ -91,8 +91,10 @@ p_mode:		.code32
 # now we could load code from C
 		call	cmain
 
-spin:		jmp	spin	# cmain never return. But it's a simplest handler for such error.
-				# maybe we can designed a more friendly handler. e.g: print some msg...
+spin:		jmp	spin	# cmain never return. But it's a simplest
+				# handler for such an exception.
+				# maybe we can design a more friendly handler
+				# e.g: print some msg...
 
 		.p2align 2	# paddr align to 1<<2
 gdt_descriptor:

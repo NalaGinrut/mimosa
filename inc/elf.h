@@ -1,3 +1,5 @@
+#ifndef MIMOSA_ELF_H
+#define MIMOSA_ELF_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -14,15 +16,14 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-/* This header file is modified from linux elf.h, there is no need
+/* This header file is modified from linux elf.h, there is no way
  * to rewrite such a header file, so I migrated it directly.
 */
 
-#ifndef MIMOSA_ELF_H
-#define MIMOSA_ELF_H
 
-#include <inc/types.h>
-#include <inc/elf-em.h>
+
+#include <types.h>
+#include <elf-em.h>
 
 struct file;
 

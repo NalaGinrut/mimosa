@@ -1,3 +1,5 @@
+#ifndef MIMOSA_ELF_EM_H
+#define MIMOSA_ELF_EM_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -15,8 +17,6 @@
  */
 
 
-#ifndef MIMOSA_ELF_EM_H
-#define MIMOSA_ELF_EM_H
 
 /* These constants define the various ELF target machines */
 #define EM_NONE		0
