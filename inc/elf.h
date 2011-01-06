@@ -16,7 +16,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-/* This header file is modified from linux elf.h, there is no need
+/* This header file is modified from linux elf.h, there is no way
  * to rewrite such a header file, so I migrated it directly.
 */
 
