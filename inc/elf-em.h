@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_ELF_EM_H
+#define __MIMOSA_ELF_EM_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -15,8 +17,6 @@
  */
 
 
-#ifndef MIMOSA_ELF_EM_H
-#define MIMOSA_ELF_EM_H
 
 /* These constants define the various ELF target machines */
 #define EM_NONE		0
@@ -69,4 +69,4 @@
 #define EM_CYGNUS_MN10300 0xbeef
 
 
-#endif // End of MIMOSA_ELF_EM_H;
+#endif // End of __MIMOSA_ELF_EM_H;

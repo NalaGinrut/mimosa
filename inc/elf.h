@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_ELF_H
+#define __MIMOSA_ELF_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -18,21 +20,11 @@
  * to rewrite such a header file, so I migrated it directly.
 */
 
-#ifndef MIMOSA_ELF_H
-#define MIMOSA_ELF_H
 
-#include <inc/types.h>
-#include <inc/elf-em.h>
+#include <types.h>
+#include <elf-em.h>
 
-struct file;
-
-#ifndef elf_read_implies_exec
-/* Executables for which elf_read_implies_exec() returns TRUE will
-   have the READ_IMPLIES_EXEC personality flag set automatically.
-   Override in asm/elf.h as needed.
-  */
-# define elf_read_implies_exec(ex, have_pt_gnu_stack)	0
-#endif
+#define ELF_MAGIC 0x464c457Fu
 
 /* 32-bit ELF base types. */
 typedef u32_t	Elf32_Addr;
@@ -395,4 +387,4 @@ typedef struct elf64_note {
   Elf64_Word n_type;	/* Content type */
 } Elf64_Nhdr;
 
-#endif // End of MIMOSA_ELF_H;
+#endif // End of __MIMOSA_ELF_H;

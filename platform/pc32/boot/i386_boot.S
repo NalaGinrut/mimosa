@@ -99,7 +99,7 @@ gdt_descriptor:
 		.word	0x17	# limit: 8*N-1
 				# N is the numbers of segments(include NULL)
 		.long	gdt_descriptor
-		.word	0x00	# NOTE: just 1word
+		.word	0x00	# NOTE: just one word
 		# it's a gdt magic! NULL for standard, but we could store
 		# gdt header in it!
 		# check "lgdt" in IA32-BOOK,"lgdt" needs an address structure

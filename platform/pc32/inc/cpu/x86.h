@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_X86_H
+#define __MIMOSA_X86_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -14,10 +16,8 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#ifndef MIMOSA_I386_H
-#define MIMOSA_I386_H
 
-#include <bsp_types.h>
+#include <now/bsp_types.h>
 
 // function declaratioin:
 static __inline__ ereg_t read_ebp() true_inline;
@@ -121,4 +121,4 @@ static __inline__ void port_wwx(__u16_t port ,__u16_t data)
 
 
 
-#endif // End of MIMOSA_I386_H;
+#endif // End of __MIMOSA_X86_H;
