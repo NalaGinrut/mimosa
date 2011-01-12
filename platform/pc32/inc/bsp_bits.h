@@ -61,10 +61,24 @@
  * but this form is simpler in C, for '/' op in C has rounddown feature,
  * and mod/div is the same instruction under X86;
  */
-#define ROUND_UP(x ,n)	  	\
+
+#define ROUND_UP(x ,n)			\
+  ((n)&0x1 ? __RU_2(x ,n) : __RU_G(x ,n))
+
+#define ROUND_DOWN(x ,n)		\
+  ((n)&0x1 ? __RD_2(x ,n) : __RD_G(x ,n))
+
+#define __RU_G(x ,n)	  	\
   ( ((x)+(n)-1) / (n) )
 
-#define ROUND_DOWN(x ,n)	\
-  ( (x)-(x)%(n) )
+#define __RD_G(x ,n)	\
+  ( (x) - (x)%(n) )
+
+#define __RD_2(x ,n)	\
+  ( ((x) & (-n)) )
+
+#define __RU_2(x ,n)	  	\
+  ( ROUND_DOWN(x ,n) + (n) )
+
 
 #endif // End of __MIMOSA_BITS_H;

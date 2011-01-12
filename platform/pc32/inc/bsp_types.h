@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_BSP_TYPES_H
+#define __MIMOSA_BSP_TYPES_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -18,8 +20,6 @@
 /* This file contains all types depends on platform. you must modify it
    every time you port MIMOSA to a new platform or rewrite BSP.
 */
-#ifndef MIMOSA_BSP_TYPES_H
-#define MIMOSA_BSP_TYPES_H
 
 // NOTES: these definition below is compatible with GCC;
 // I DON'T KNOW if they work well under other compilers;
@@ -66,6 +66,22 @@ typedef __u64_t __physaddr_t;
 // FIXME: how to deal with 64bit_ARCH for other things, such as "page"?
 
 // generic pointer, one step vary pointer.
+typedef __u8_t *__bptr;
+typedef __u16_t *__wptr;
+typedef __u32_t *__lptr;
+
+// ptr to constant
+typedef const __u8_t *__cb_p;
+typedef const __u16_t *__cw_p;
+typedef const __u32_t *__cl_p;
+
+// constant ptr
+typedef __u8_t *const __b_cp;
+typedef __u16_t *const __w_cp;
+typedef __u32_t *const __l_cp;
+
+typedef (void*) __gptr_t;
+typedef const void *__cptr_t;
 typedef (char*)	__stdptr_t;
 typedef __stdptr_t __mem_t;
 
@@ -99,7 +115,8 @@ typedef __u16_t reg_t;
 #define __MAX(_a, _b)						\
   ( (_a) >= (_b) ? (_a) : (_b) )
 
+// kernel entry type
+typedef (void) (entry_t)(void);
 
 
-
-#endif // End of MIMOSA_BSP_TYPES_H;
+#endif // End of __MIMOSA_BSP_TYPES_H;

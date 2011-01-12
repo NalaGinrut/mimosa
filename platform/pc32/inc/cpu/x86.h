@@ -22,59 +22,174 @@
 // function declaratioin:
 static __inline__ ereg_t read_ebp() true_inline;
 
-// output data operate;
-static __inline__ void port_wb(__u8_t port ,__u8_t data) true_inline;
-static __inline__ void port_wbx(__u16_t port ,__u8_t data) true_inline;
-static __inline__ void port_ww(__u8_t port ,__u16_t data) true_inline;
-static __inline__ void port_wwx(__u16_t port ,__u16_t data) true_inline;
+// get data operate;
+static __inline__ __u8_t port_rb(__u32_t port) true_inline;
+static __inline__ __u16_t port_rw(__u32_t port) true_inline;
+static __inline__ __u32_t port_rl(__u32_t port) true_inline;
 
-// function body:
+static __inline__ void port_rnb(__u32_t port,
+				__gptr_t addr,
+				__u32_t cnt) true_inline;
+
+static __inline__ void port_rnw(__u32_t port,
+				__gptr_t addr,
+				__u32_t cnt) true_inline;
+
+static __inline__ void port_rnl(__u32_t port,
+				__gptr_t addr,
+				__u32_t cnt) true_inline;
+
+
+// output data operate;
+static __inline__ void port_wb(__u32_t port ,__u8_t data) true_inline;
+static __inline__ void port_ww(__u32_t port ,__u16_t data) true_inline;
+static __inline__ void port_wl(__u32_t port ,__u32_t data) true_inline;
+static __inline__ void port_wnb(__u32_t port,
+				__cptr_t addr,
+				__u32_t cnt) true_inline;
+static __inline__ void port_wnw(__u32_t port,
+				__cptr_t addr,
+				__u32_t cnt) true_inline;
+static __inline__ void port_wnl(__u32_t port,
+				__cptr_t addr,
+				__u32_t cnt) true_inline;
+
+
+
+// you'd better explicitly cast while calling "port_w" directly
+#define __port_write(port ,data)			\
+  do{ 							\
+    __asm__ __volatile__("out%z0 %0 ,%w1"		\
+			 :				\
+			 :"a" (data) ,"d" (port)	\
+			 );				\
+  }while(0);
+
+#define __port_nwrite(port ,addr ,cnt ,cmd)			\
+  do{								\
+    __asm__ __volatile__("cld\n\t"				\
+			 "repne\n\t"				\
+			 #cmd					\
+			 :"=S" (addr) ,"=c" (cnt)		\
+			 :"d" (port) ,"0" (addr) ,"1" (cnt)	\
+			 :"cc"					\
+			 );					\
+  }while(0);
+
+
+#define __port_read(port ,data)		\
+  do{					\
+  __asm__ __volatile__("in%z0 %w1 ,%0"	\
+		       :"=a" (data)	\
+		       :"d" (port)	\
+		       );		\
+  }while(0);
+
+#define __port_nread(port ,addr ,cnt ,cmd)			\
+  do{								\
+    __asm__ __volatile__("cld\n\t"				\
+			 "repne\n\t"				\
+			 #cmd					\
+			 :"=D" (addr) ,"=c" (cnt)		\
+			 :"d" (port) ,"0" (addr) ,"1" (cnt)	\
+			 :"memory" ,"cc"			\
+			 );					\
+  }while(0);
+
+/* Actually we don't need these "cast". I wrote them in case
+ * some Muggle who can't "cast" ask why thay are similar. :-)
+ */
+static __inline__ __u8_t port_rb(__u32_t port)
+{
+  __u8_t data;
+  __port_read(port ,(__u8_t)data);
+  
+  return data;
+}
+
+static __inline__ __u16_t port_rw(__u32_t port)
+{
+  __u16_t data;
+  __port_read(port ,(__u16_t)data);
+  
+  return data;
+}
+
+static __inline__ __u32_t port_rl(__u32_t port)
+{
+  __u32_t data;
+  __port_read(port ,(__u32_t)data);
+  
+  return data;
+}
+
+
+static __inline__ void port_rnb(__u32_t port ,__gptr_t addr ,__u32_t cnt)
+{
+  __port_nread(port ,addr ,cnt ,insb);
+}
+
+static __inline__ void port_rnw(__u32_t port ,__gptr_t addr ,__u32_t cnt)
+{
+  __port_nread(port ,addr ,cnt ,insw);
+}
+
+static __inline__ void port_rnl(__u32_t port ,__gptr_t addr ,__u32_t cnt)
+{
+  __port_nread(port ,addr ,cnt ,insl);
+}
+
+
 static __inline__ ereg_t read_ebp()
 {
   ereg_t value;
-  __asm__ __volatile__ ("movw %%ebp ,%0"
+  __asm__ __volatile__ ("mov%z0 %%ebp ,%0"
 			:"=r" (value)
-			:
-			:
 			);
-    return value;
+  return value;
 }
 
-static __inline__ void port_wb(__u8_t port ,__u8_t data)
+
+
+static __inline__ void port_wb(__u32_t port ,__u8_t data)
 {
-  __asm__ __volatile__ ("out %0 ,%1\n\t"
-			:
-			:"a" (data) ,"i" (port)
-			:
-			);
+  __port_write(port ,(__u8_t)data);
 }
 
-static __inline__ void port_wbx(__u16_t port ,__u8_t data)
+static __inline__ void port_ww(__u32_t port ,__u16_t data)
 {
-  __asm__ __volatile__ ("out %0 ,%w1\n\t"
-			:
-			:"a" (data) ,"d" (port)
-			:
-			);
+  __port_write(port ,(__u16_t)data);
 }
 
-static __inline__ void port_ww(__u8_t port ,__u16_t data)
+static __inline__ void port_wl(__u32_t port ,__u32_t data)
 {
-  __asm__ __volatile__ ("out %0 ,%1\n\t"
-			:
-			:"a" (data) ,"i" (port)
-			:
-			);
+  __port_write(port ,(__u32_t)data);
 }
 
-static __inline__ void port_wwx(__u16_t port ,__u16_t data)
+static __inline__ void port_wnb(__u32_t port,
+				__c_ptr_t addr,
+				__u32_t cnt)
 {
-  __asm__ __volatile__ ("out %0 ,%w1\n\t"
-			:
-			:"a" (data) ,"d" (port)
-			:
-			);
+  __port_nwrite(port ,addr ,cnt ,outsb);
 }
+
+static __inline__ void port_wnw(__u32_t port,
+				__cptr addr,
+				__u32_t cnt)
+{
+  __port_nwrite(port ,addr ,cnt ,outsw);
+}
+
+static __inline__ void port_wnl(__u32_t port,
+				__cptr_t addr,
+				__u32_t cnt)
+{
+  __port_nwrite(port ,addr ,cnt ,outsl);
+}
+
+ 
+
+
 //----------------------------------
 // definition for 
 

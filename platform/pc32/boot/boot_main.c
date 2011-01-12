@@ -19,15 +19,7 @@
 #include <now/cpu/x86.h>
 #include <now/bsp_bits.h>
 #include <now/bsp_types.h>
-
-#define BYTE	8
-#define SECTOR	512
-
-#define elf_hdr ((Elf32_Ehdr *) 0x1000)
-
-
-int read_seg(__u32_t va ,__u32_t count ,__u32_t offset);
-int read_sect(void *dest ,__u32_t offset);
+#include "boot_main.h"
 
 
 void cmain()
@@ -51,16 +43,17 @@ void cmain()
     }
 
   prog_head = (Elf32_Phdr*)((__u32_t)elf_hdr + elf_hdr->e_phoff);
-  end_prog = prog_head + prog_head->p_offset;
+  end_prog = prog_head + prog_head->p_offset;//don't convert
 
   while( prog_head++ < end_prog )
     {
-      read_seg(prog_head->p_vaddr,
+      read_seg(prog_head->p_vaddr & 0xFFFFFF,
 	       prog_head->p_memsz,
 	       prog_head->p_offset);
     }
 
-  ((void) (*)(void))elf_hdr->e_entry();
+  // NOTE: only 24bit addr for now is a trick; 
+  ((entry_t)(elf_hdr->e_entry & 0xFFFFFF))();
 
 #ifdef BOCHS_DEBUG
  bad_elf:
@@ -76,4 +69,42 @@ void cmain()
 
 
       // cmain should never return;
+}
+
+int read_seg(__u32_t va ,__u32_t count ,__u32_t byte_offset)
+{
+  __u32_t lba_offset = byte2lba(byte_offset);
+  __u32_t addr = ROUND_DOWN(addr ,SECTOR);
+  /* read n bytes once, you may change it;
+   *  __u32_t n = 1;
+   */
+  
+  for(;
+      count-- > 0;
+      sectors++ ,va += SECTOR)
+    {
+      read_sect((__u8_t*)addr ,1 ,lba_offset);
+    }
+
+  return 0;
+}
+
+
+int read_sect(void *dest ,__u32_t count ,__u32_t lba_offset)
+{
+  
+  WAIT_DISK_READY;
+
+  port_wb(HD0_HEAD ,HEAD(lba_offset) | LBA_PIO_28b);
+  port_wb(HD0_SECT_CNT ,count);
+  port_wb(HD0_SECT_N ,SECT(lba_offset));
+  port_wb(HD0_CYL_L ,CY_L(lba_offset));
+  port_wb(HD0_CYL_H ,CY_H(lba_offset));
+  port_wb(HD0_CMD ,SECT_RR);
+
+  WAIT_DISK_READY;
+
+  port_rnb(HD0_DATA ,count);
+
+  return 0;
 }

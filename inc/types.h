@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_TYPES_H
+#define __MIMOSA_TYPES_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -13,8 +15,7 @@
   
  * If not,see <http://www.gnu.org/licenses/>
  */
-#ifndef MIMOSA_TYPES_H
-#define MIMOSA_TYPES_H
+
 
 #include "now/bsp_types.h"
 
@@ -35,7 +36,28 @@ typedef __u32_t u32_t;
 typedef __s64_t s64_t;
 typedef __u64_t u64_t;
 
+
 // generic pointer, one step vary pointer
+typedef __bptr bptr;
+typedef __wptr wptr;
+typedef __lptr lptr;
+
+// ptr to constant
+typedef __cb_p cb_p;
+typedef __cw_p cw_p;
+typedef __cl_p cl_p;
+
+// constant ptr
+typedef __b_cp b_cp;
+typedef __w_cp w_cp;
+typedef __l_cp l_cp;
+
+typedef __gptr_t gptr_t;
+typedef __cptr_t cptr_t;
+
+
+
+
 typedef __stdptr_t stdptr_t;
 
 typedef __intptr_t intptr_t;
@@ -57,9 +79,9 @@ typedef __ssize_t ssize_t;
 typedef __off_t off_t;
 
 
-#define MIN __MIN
+#define MIN(_a ,_b) __MIN(_a ,_b)
 
-#define MAX __MAX
+#define MAX(_a ,_b) __MAX(_a ,_b)
 
 
 /* These two useful MACRO must be familar to you (IF NOT, GO BACK TO BASIC HACKING!), 
@@ -73,4 +95,4 @@ typedef __off_t off_t;
   (off_t)(&((type*)0)->member)	
 
 
-#endif // End of MIMOSA_TYPES_H;
+#endif // End of __MIMOSA_TYPES_H;
