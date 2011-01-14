@@ -78,7 +78,7 @@
   ( ((x) & (-n)) )
 
 #define __RU_2(x ,n)	  	\
-  ( ROUND_DOWN(x ,n) + (n) )
+  ( __RD_2(x ,n) + (n) )
 
 
 #endif // End of __MIMOSA_BITS_H;

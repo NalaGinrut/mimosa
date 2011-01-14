@@ -32,7 +32,7 @@
 #define KB_WRITE	0xd1
 #define KB_CON_INBUF	0x64
 #define A20_EN		0xdf
-#define KB_CON_DPORT	0x60
-
+#define KB_CON_DPORT	0x6
+#define CR0_PM	0x01
 
 #endif // End of __MIMOSA_I386_BOOT_H;

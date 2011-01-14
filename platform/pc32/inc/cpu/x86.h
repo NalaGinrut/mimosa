@@ -18,6 +18,7 @@
 
 
 #include <now/bsp_types.h>
+#include <now/bsp_bits.h>
 
 // function declaratioin:
 static __inline__ ereg_t read_ebp() true_inline;
@@ -65,7 +66,7 @@ static __inline__ void port_wnl(__u32_t port,
 			 );				\
   }while(0);
 
-#define __port_nwrite(port ,addr ,cnt ,cmd)			\
+#define __port_nwrite(cmd)					\
   do{								\
     __asm__ __volatile__("cld\n\t"				\
 			 "repne\n\t"				\
@@ -85,7 +86,7 @@ static __inline__ void port_wnl(__u32_t port,
 		       );		\
   }while(0);
 
-#define __port_nread(port ,addr ,cnt ,cmd)			\
+#define __port_nread(cmd)					\
   do{								\
     __asm__ __volatile__("cld\n\t"				\
 			 "repne\n\t"				\
@@ -126,17 +127,17 @@ static __inline__ __u32_t port_rl(__u32_t port)
 
 static __inline__ void port_rnb(__u32_t port ,__gptr_t addr ,__u32_t cnt)
 {
-  __port_nread(port ,addr ,cnt ,insb);
+  __port_nread(insb);
 }
 
 static __inline__ void port_rnw(__u32_t port ,__gptr_t addr ,__u32_t cnt)
 {
-  __port_nread(port ,addr ,cnt ,insw);
+  __port_nread(insw);
 }
 
 static __inline__ void port_rnl(__u32_t port ,__gptr_t addr ,__u32_t cnt)
 {
-  __port_nread(port ,addr ,cnt ,insl);
+  __port_nread(insl);
 }
 
 
@@ -167,24 +168,24 @@ static __inline__ void port_wl(__u32_t port ,__u32_t data)
 }
 
 static __inline__ void port_wnb(__u32_t port,
-				__c_ptr_t addr,
+				__cptr_t addr,
 				__u32_t cnt)
 {
-  __port_nwrite(port ,addr ,cnt ,outsb);
+  __port_nwrite(outsb);
 }
 
 static __inline__ void port_wnw(__u32_t port,
 				__cptr addr,
 				__u32_t cnt)
 {
-  __port_nwrite(port ,addr ,cnt ,outsw);
+  __port_nwrite(outsw);
 }
 
 static __inline__ void port_wnl(__u32_t port,
 				__cptr_t addr,
 				__u32_t cnt)
 {
-  __port_nwrite(port ,addr ,cnt ,outsl);
+  __port_nwrite(outsl);
 }
 
  
@@ -197,34 +198,34 @@ static __inline__ void port_wnl(__u32_t port,
 // definition for EFLAGS:
 
 // Control Flag:
-#define EF_DF	((0x01)<<10)
+#define EF_DF	_B(10)
 
 // Status Flag:
-#define EF_OF	((0x01)<<11)
-#define EF_CF	(0x01)
-#define EF_PF	((0x01)<<2)
-#define EF_AF	((0x01)<<4)
-#define EF_ZF	((0x01)<<6)
-#define EF_SF	((0x01)<<7)
+#define EF_OF	_B(11)
+#define EF_CF	_B(0)
+#define EF_PF	_B(2)
+#define EF_AF	_B(4)
+#define EF_ZF	_B(6)
+#define EF_SF	_B(7)
 
 // System Flag:
-#define EF_TF	((0x01)<<8)
-#define EF_IF	((0x01)<<9)
-#define EF_IOPL	((0x03)<<12)
-#define EF_NT	((0x01)<<14)
-#define EF_RF	((0x01)<<16)
-#define EF_VM	((0x01)<<17)
-#define EF_AC	((0x01)<<18)
-#define EF_VIF	((0x01)<<19)
-#define EF_VIP	((0x01)<<20)
-#define EF_ID	((0x01)<<21)
+#define EF_TF	_B(8)
+#define EF_IF	_B(9)
+#define EF_IOPL	_S(0x3,12)
+#define EF_NT	_B(14)
+#define EF_RF	_B(16)
+#define EF_VM	_B(17)
+#define EF_AC	_B(18)
+#define EF_VIF	_B(19)
+#define EF_VIP	_B(20)
+#define EF_ID	_B(21)
 
 // undefined bit for EFLAGS:
-#define EF_N1	((0x01)<<1)
-#define EF_N2	3
-#define EF_N3	5
-#define	EF_N4	15
-#define EF_N6	17
+#define EF_N1	_B(1)
+#define EF_N2	_B(3)
+#define EF_N3	_B(5)
+#define	EF_N4	_B(15)
+#define EF_N6	_B(17)
 
 // the init value of EFLAGS:
 #define EF_INIT	0x00000002UL

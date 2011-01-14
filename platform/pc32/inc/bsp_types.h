@@ -35,14 +35,14 @@ typedef extern public;
  */ 
 
 // Explicitly-sized versions of integer types
-typedef (signed char)	__s8_t;
-typedef (unsigned char) __u8_t;
-typedef (short) 	__s16_t;
-typedef (unsigned short) __u16_t;
-typedef (int) 		__s32_t;
-typedef (unsigned int) 	__u32_t;
-typedef (long long) 	__s64_t;
-typedef (unsigned long long) __u64_t;
+typedef signed char	__s8_t;
+typedef unsigned char	__u8_t;
+typedef short	 	__s16_t;
+typedef unsigned short	__u16_t;
+typedef int 		__s32_t;
+typedef unsigned int 	__u32_t;
+typedef long long 	__s64_t;
+typedef unsigned long long __u64_t;
 
 // Pointers and addresses are 32 bits long.
 // We use pointer types to represent virtual addresses,
@@ -80,9 +80,9 @@ typedef __u8_t *const __b_cp;
 typedef __u16_t *const __w_cp;
 typedef __u32_t *const __l_cp;
 
-typedef (void*) __gptr_t;
+typedef void* __gptr_t;
 typedef const void *__cptr_t;
-typedef (char*)	__stdptr_t;
+typedef char*	__stdptr_t;
 typedef __stdptr_t __mem_t;
 
 // Page numbers are 32 bits long.
@@ -116,7 +116,7 @@ typedef __u16_t reg_t;
   ( (_a) >= (_b) ? (_a) : (_b) )
 
 // kernel entry type
-typedef (void) (entry_t)(void);
+typedef void (*entry_t)(void);
 
 
 #endif // End of __MIMOSA_BSP_TYPES_H;

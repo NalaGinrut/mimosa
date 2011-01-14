@@ -18,8 +18,21 @@
  */
 
 #include "mmu.h"
-#include "inc/types.h"
 
+#ifdef __ASSEMBLER__
+/*
+ * Macros to build GDT entries in assembly.
+ */
+#define SEG_NULL						\
+	.word 0, 0;						\
+	.byte 0, 0, 0, 0
+
+// SET_INIT is just used for P_MODE during BOOT time;
+#define SEG_INIT(type,base,lim)					\
+	.word (((lim) >> 12) & 0xffff), ((base) & 0xffff);	\
+	.byte (((base) >> 16) & 0xff), (0x90 | (type)),		\
+		(0xC0 | (((lim) >> 28) & 0xf)), (((base) >> 24) & 0xff)
+#else // use Cee code
 #ifdef MIMOSA_ADDRESS_64
 //TODO: code for 64bit address;
 
@@ -56,26 +69,13 @@ struct Inner_Seg_Desc {
 	unsigned sd_g : 1;          // Granularity: limit scaled by 4K when set
 	unsigned sd_base_31_24 : 8; // High bits of segment base address
 }inner_seg_desc ,*inner_seg_desc_p;
+#endif // End of MIMOSA_ADDRESS_64
 
-
-#ifdef __ASSEMBLER__
-/*
- * Macros to build GDT entries in assembly.
- */
-#define SEG_NULL						\
-	.word 0, 0;						\
-	.byte 0, 0, 0, 0
-
-// SET_INIT is just used for P_MODE during BOOT time;
-#define SEG_INIT(type,base,lim)					\
-	.word (((lim) >> 12) & 0xffff), ((base) & 0xffff);	\
-	.byte (((base) >> 16) & 0xff), (0x90 | (type)),		\
-		(0xC0 | (((lim) >> 28) & 0xf)), (((base) >> 24) & 0xff)
-#else // use Cee code
 #define SEG_NULL	(struct Segdesc){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 // Segment that is loadable but faults when used
 #define SEG_FAULT	(struct Segdesc){ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
-#endif // End of __ASSEMBLER__
+
+
 
 // SEG macro handles to fix the segment_descriptor a regular one;
 #define SEG(type ,base ,lim ,dpl ,s ,p ,a ,r ,db ,g) (struct Segdesc)	\
@@ -113,14 +113,7 @@ inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd)
 
 // we don't need GDT_LOAD as Cee implementation,
 // just leave it to asm;
-
-
-
-#endif // End of ifdef MIMOSA_ADDRESS_64;
-
-
-
-
+#endif // End of __ASSEMBLER__
 
 
 #endif // End of MIMOSA_GDT_H;

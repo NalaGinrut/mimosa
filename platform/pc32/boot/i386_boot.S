@@ -15,9 +15,7 @@
  */
 
 #include "i386_boot.h"
-#include <now/cpu/crx.h>
-
-	
+#include <now/cpu/gdt.h>	
 
 #################
 # ENTRY POINT
@@ -81,7 +79,7 @@ r2p:
 # Set up p_mode segment registers
 	
 p_mode:		.code32
-		movw	$PM_CS ,%ax
+		movw	$PM_DS ,%ax
 		movw	%ax ,%ds
 		movw	%ax ,%es
 		movw	%ax ,%ss
@@ -102,15 +100,15 @@ gdt_descriptor:
 				# N is the numbers of segments(include NULL)
 		.long	gdt_descriptor
 		.word	0x00	# NOTE: just one word
-		# it's a gdt magic! NULL for standard, but we could store
-		# gdt header in it!
-		# check "lgdt" in IA32-BOOK,"lgdt" needs an address structure
-		# which like:
-		# 1.sizeof(defacto_gdt)
-		# 2.address of defacto_gdt
+				# it's a gdt magic! NULL for standard, but we could store
+				# gdt header in it!
+				# check "lgdt" in IA32-BOOK,"lgdt" needs an address structure
+				# which like:
+				# 1.sizeof(defacto_gdt)
+				# 2.address of defacto_gdt
 
-		# FIXME: I want to use SEG() macro ,it's more clear.
-		# I will fix it later...
+				# FIXME: I want to use SEG macro ,it's more clear.
+				# I will fix it later...
 		SEG_INIT(STA_X | STA_R ,0x0 ,0xffffffff)
 		SEG_INIT(STA_W ,0x0 ,0xffffffff)
 

@@ -114,7 +114,7 @@
   {								\
     __u32_t ret = 0;						\
     __crx_get(crx);						\
-    return ret;
+    return ret;							\
   }
 
 decl_crx_get(cr0);
@@ -142,7 +142,7 @@ defn_crx_get(cr4);
   {								\
     __u32_t ret = 0;						\
     __crx_get(crx);						\
-    return ( ret & flags );
+    return ( ret & flags );					\
   }
 
 decl_crx_chk(cr0);

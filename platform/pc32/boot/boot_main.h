@@ -22,31 +22,31 @@
 #define BYTE	8
 #define SECTOR	512
 
-#define HD0_DATA	0x01F0	// data register;
-#define HD0_SECT_CNT	0x01F2	// sector count;
-#define HD0_SECT_N	0x01F3	// sector number;
-#define HD0_CYL_L	0x01F4	// cylinder low;
-#define HD0_CYL_H	0x01F5	// cylinder high;
-#define HD0_HEAD	0x01F6	// drive head
-#define HD0_STATS	0x01F7	// status;
-#define HD0_CMD		0x01F7 	// cmd;
+#define HDC_DATA	0x01F0	// data register;
+#define HDC_SECT_CNT	0x01F2	// sector count;
+#define HDC_SECT_N	0x01F3	// sector number;
+#define HDC_CYL_L	0x01F4	// cylinder low;
+#define HDC_CYL_H	0x01F5	// cylinder high;
+#define HDC_HEAD	0x01F6	// drive head
+#define HDC_STATS	0x01F7	// status;
+#define HDC_CMD		0x01F7 	// cmd;
 
-#define HD0_READY	_B(6)	// device ready;
-#define HD0_CMD_E	_B(7)	// Executing a cmd;
-#define HD0_OK		(HD0_READY & ~HD0_CMD_E)
+#define HDC_READY	_B(6)	// device ready;
+#define HDC_CMD_E	_B(7)	// Executing a cmd;
+#define HDC_OK		(HDC_READY & ~HDC_CMD_E)
 #define SECT_RR		0x20 	// read sector with retry;
 
 #define LBA_PIO_28b	0xE0
 #define LBA_PIO_48b	0x40
 
-#define SECT(addr)	((__u8_t)(addr))
-#define CY_L(addr)	((__u8_t)((addr)>>8))
-#define CY_H(addr)	((__u8_t)((addr)>>16))
-#define HEAD(addr)	((__u8_t)((addr)>>24))
+#define SECT(lba)	((__u8_t)(lba))
+#define CY_L(lba)	((__u8_t)((lba)>>8))
+#define CY_H(lba)	((__u8_t)((lba)>>16))
+#define HEAD(lba)	((__u8_t)((lba)>>24))
 
 #define WAIT_DISK_READY					\
-  while( (port_rb(HD0_STATS) & (HD0_READY | HD0_CMD_E))	\
-	 != HD0_OK );
+  while( (port_rb(HDC_STATS) & (HDC_READY | HDC_CMD_E))	\
+	 != HDC_OK );
 
 
 
@@ -56,7 +56,7 @@
 #define down2sect(addr)	((addr) & (__u32_t)(-SECTOR))
 
 int read_seg(__u32_t ,__u32_t ,__u32_t);
-int read_sect(void ,__u32_t ,__u32_t);
+int read_sect(void* ,__u32_t ,__u32_t);
 
 
 

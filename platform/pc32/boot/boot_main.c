@@ -21,6 +21,7 @@
 #include <now/bsp_types.h>
 #include "boot_main.h"
 
+#define BOCHS_DEBUG
 
 void cmain()
 {
@@ -28,9 +29,9 @@ void cmain()
   Elf32_Phdr *prog_head ,*end_prog;
   
   //ptr to const
-  const __u32_t *magic = (__u32_t*)elf_hdr;
+  const __u32_t *magic = (__u32_t*)(elf_hdr->e_ident);
 
-  read_seg(elf_hdr ,SECTOR*BYTE ,0);
+  read_seg((__u32_t)elf_hdr ,SECTOR*8 ,0);
   
   if( *magic != ELF_MAGIC )
     {
@@ -42,14 +43,15 @@ void cmain()
 #endif // End ifdef BOCHS_DEBUG;
     }
 
-  prog_head = (Elf32_Phdr*)((__u32_t)elf_hdr + elf_hdr->e_phoff);
-  end_prog = prog_head + prog_head->p_offset;//don't convert
+  prog_head = (Elf32_Phdr *)((__u8_t*)elf_hdr + elf_hdr->e_phoff);
+  end_prog = prog_head + elf_hdr->e_phnum;//don't convert
 
-  while( prog_head++ < end_prog )
+  while( prog_head < end_prog )
     {
-      read_seg(prog_head->p_vaddr & 0xFFFFFF,
+      read_seg(prog_head->p_vaddr,
 	       prog_head->p_memsz,
 	       prog_head->p_offset);
+      prog_head++;
     }
 
   // NOTE: only 24bit addr for now is a trick; 
@@ -57,8 +59,8 @@ void cmain()
 
 #ifdef BOCHS_DEBUG
  bad_elf:
-      port_wb(0x8A00 ,0x8A00);// enable bochs IO debug;
-      port_wb(0x8A00 ,0x8E00);// 
+      port_ww(0x8A00 ,0x8A00);// enable bochs IO debug;
+      port_ww(0x8A00 ,0x8E00);// 
 #else
 
       // TODO: show some error message;
@@ -74,37 +76,32 @@ void cmain()
 int read_seg(__u32_t va ,__u32_t count ,__u32_t byte_offset)
 {
   __u32_t lba_offset = byte2lba(byte_offset);
-  __u32_t addr = ROUND_DOWN(addr ,SECTOR);
-  /* read n bytes once, you may change it;
-   *  __u32_t n = 1;
-   */
-  
-  for(;
-      count-- > 0;
-      sectors++ ,va += SECTOR)
-    {
-      read_sect((__u8_t*)addr ,1 ,lba_offset);
-    }
-
+  __u32_t addr = down2sect(va & 0xFFFFFF);
+  __u32_t sect_cnt = count/SECTOR+1;
+ 
+  read_sect((__u8_t*)addr ,sect_cnt ,lba_offset);
+ 
   return 0;
 }
 
 
-int read_sect(void *dest ,__u32_t count ,__u32_t lba_offset)
+int read_sect(void *dest ,__u32_t sect_cnt ,__u32_t lba_offset)
 {
   
   WAIT_DISK_READY;
 
-  port_wb(HD0_HEAD ,HEAD(lba_offset) | LBA_PIO_28b);
-  port_wb(HD0_SECT_CNT ,count);
-  port_wb(HD0_SECT_N ,SECT(lba_offset));
-  port_wb(HD0_CYL_L ,CY_L(lba_offset));
-  port_wb(HD0_CYL_H ,CY_H(lba_offset));
-  port_wb(HD0_CMD ,SECT_RR);
+  port_wb(HDC_HEAD ,HEAD(lba_offset) | LBA_PIO_28b);
+  port_wb(HDC_SECT_CNT ,sect_cnt);
+  port_wb(HDC_SECT_N ,SECT(lba_offset));
+  port_wb(HDC_CYL_L ,CY_L(lba_offset));
+  port_wb(HDC_CYL_H ,CY_H(lba_offset));
+  port_wb(HDC_CMD ,SECT_RR);
 
   WAIT_DISK_READY;
 
-  port_rnb(HD0_DATA ,count);
+  port_rnl(HDC_DATA ,dest ,sect_cnt<<7);
 
   return 0;
 }
+
+
