@@ -65,7 +65,7 @@
 // 34~3F is reserved;
 
 
-/* The rest is depend on specific PC32 platform. We won't list them here for other porting works someday.
+/* The rest is depend on specific PC32 platform. We won't list them here.
  */
 
 

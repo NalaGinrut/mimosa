@@ -15,7 +15,41 @@
  */
 
 
-#include "inc/multi_boot.h"
+#include <multi_boot.h>
+#include <now/cpu/segmen.h>
+
+	
+.set NULL_SEL ,MAKE_SEL(NULL)
+.set KC_SEL ,MAKE_SEL(KCODE_SEG)
+.set KD_SEL ,MAKE_SEL(KDATA_SEG)
+.set KS_SEL ,MAKE_SEL(KSTCK_SEG)
+.set UC_SEL ,MAKE_SEL(UCODE_SEG)
+.set UD_SEL ,MAKE_SEL(UDATA_SEG)
+.set UK_SEL ,MAKE_SEL(USTCK_SEG)
+	
+.text
+
+#ifdef __MULTI_BOOT__
+
+.align 4
+multiboot_header:
+	/* magic */
+	.long MULTIBOOT_HEADER_MAGIC
+	/* flags */
+	.long MULTIBOOT_HEADER_FLAGS
+	/* checksum */
+	.long (-(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS))
+
+multiboot_header_end:
+
+#endif // End of __MULTI_BOOT__
+
+
+.globl	_start
+_start:
+	movw	0x1234 ,0x472
+
+	
 
 
 

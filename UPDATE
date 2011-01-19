@@ -2,3 +2,8 @@ DATE:	2010-6-22
 ADD: 	debug/trace module
 	bsp/x86
 	PLAN TO design a BSP framework
+
+DATE:	2011-1-15
+UPDATE:	boot/kernel load OK
+
+

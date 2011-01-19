@@ -1,5 +1,5 @@
-#ifndef __MIMOSA_X86_H
-#define __MIMOSA_X86_H
+#ifndef __MIMOSA_PORT_H
+#define __MIMOSA_PORT_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -191,50 +191,5 @@ static __inline__ void port_wnl(__u32_t port,
  
 
 
-//----------------------------------
-// definition for 
 
-//---------------------------------
-// definition for EFLAGS:
-
-// Control Flag:
-#define EF_DF	_B(10)
-
-// Status Flag:
-#define EF_OF	_B(11)
-#define EF_CF	_B(0)
-#define EF_PF	_B(2)
-#define EF_AF	_B(4)
-#define EF_ZF	_B(6)
-#define EF_SF	_B(7)
-
-// System Flag:
-#define EF_TF	_B(8)
-#define EF_IF	_B(9)
-#define EF_IOPL	_S(0x3,12)
-#define EF_NT	_B(14)
-#define EF_RF	_B(16)
-#define EF_VM	_B(17)
-#define EF_AC	_B(18)
-#define EF_VIF	_B(19)
-#define EF_VIP	_B(20)
-#define EF_ID	_B(21)
-
-// undefined bit for EFLAGS:
-#define EF_N1	_B(1)
-#define EF_N2	_B(3)
-#define EF_N3	_B(5)
-#define	EF_N4	_B(15)
-#define EF_N6	_B(17)
-
-// the init value of EFLAGS:
-#define EF_INIT	0x00000002UL
-
-// End of EFLAGS defination;
-//---------------------------
-
-
-
-
-
-#endif // End of __MIMOSA_X86_H;
+#endif // End of __MIMOSA_PORT_H;

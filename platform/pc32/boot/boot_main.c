@@ -16,7 +16,7 @@
 
 
 #include <elf.h>
-#include <now/cpu/x86.h>
+#include <now/cpu/port.h>
 #include <now/bsp_bits.h>
 #include <now/bsp_types.h>
 #include "boot_main.h"

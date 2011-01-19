@@ -19,6 +19,17 @@
 
 #include "gdt.h"
 
+// generate segmentation selection;
+#define MAKE_SEL(idx)	(((idx)<<3) & 0xFFF8)
+
+// selector index;
+#define NULL_SEG	0
+#define	KCODE_SEG	1
+#define KDATA_SEG	2
+#define KSTCK_SEG	3
+#define UCODE_SEG	4
+#define UDATA_SEG	5
+#define USTCK_SEG	6
 
 // init a system segment descriptor;
 // NOTE: use these init function at the END of the real seg_initilization!

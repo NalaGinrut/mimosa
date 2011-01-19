@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_MULTI_BOOT_H
+#define __MIMOSA_MULTI_BOOT_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -14,8 +16,6 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#ifndef MIMOSA_MULTI_BOOT_H
-#define MIMOSA_MULTI_BOOT_H
 
 
 #include "types.h"
@@ -113,7 +113,7 @@
 # define EXT_C(sym)                     sym
 #endif
      
-#ifndef __ASSEMBLER__
+#ifdef __ASSEMBLER__
 /* Do not include here in boot.S. */
   
 /* Types. */
@@ -218,4 +218,4 @@ struct grub_mod_list
 
 #endif // End of !__ASSEMBLER__;
 
-#endif // End of MIMOSA_MUTI_BOOT_H;
+#endif // End of __MIMOSA_MUTI_BOOT_H;
