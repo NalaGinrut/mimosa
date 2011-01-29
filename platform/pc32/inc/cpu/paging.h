@@ -17,14 +17,14 @@
  */
 
 
-#include <bsp_types.h>
-#include <bsp_bits.h>
+#include <inc/now/bsp_types.h>
+#include <inc/now/bsp_bits.h>
 #include "crx.h"
 
-#if __BIT32_PAGING__
+#ifdef __BIT32_PAGING__
 
 
-#if __BIT32_PAGING_NO_PSE__
+#ifdef __BIT32_PAGING_NO_PSE__
 typedef union Linear_Address
 {
   struct inner
@@ -128,6 +128,7 @@ typedef struct Page_Dir_Entry
 {
   struct inner
   {
+	//TODO
   }    
 }pde_t ,pde_tp *; // Page Directory Entry;
 #endif // End of __BIT32_PAGING_NO_PAE;__
@@ -154,14 +155,14 @@ typedef __u32_t pfec_t; // Page Fault Error Code;
 		       * IA32_EFER.NXE=0);
 		       */
 
-#define page_enable()  cr0_set(CR0_PE)
+#define page_enable()  cr0_set(CR0_PG)
 
 
 
 static inline void TLB_flush_mem(__mem_t mem) true_inline;
 static inline void TLB_flush_mem(__mem_t mem)
 {
-#ifndef __486_COMPAT
+#ifdef __486_COMPAT
   __asm__ volatile("nop\n\t");
 #else	
   __asm__ volatile("invlpg %0\n\t"

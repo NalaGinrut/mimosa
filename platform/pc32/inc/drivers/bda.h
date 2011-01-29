@@ -21,40 +21,7 @@
  * This file doesn't contain EBDA cause it's not standardize!
  */
 
-#define	BDA_COM1		0x400 // IO port for COM1 serial (word)
-#define BDA_COM2		0x402
-#define BDA_COM3		0x404
-#define BDA_COM4		0x406
-
-#define	BDA_LPT1		0x408 // IO port for LPT1 parallel (word)
-#define BDA_LPT2		0x40A
-#define BDA_LPT3		0x40C
-#define BDA_LPT4		0x40E 
- 
-#define BDA_AVAIL_HW		0x410 // packed bit flags for detected hardware
-#define BDA_POST_STAT		0x412
-#define BDA_MEM_SIZE		0x413 // Base memory size in kbytes (0~640)
-
-#define BDA_KBD_STAT1		0x417 // Keyboard status flags 1
-#define BDA_KBD_STAT2		0x418 // Keyboard status flags 2
-#define BDA_KBD_ALT		0x419 // Keyboard Alt-nnn keypad workspace
-#define BDA_KBD_BUF_NEXT	0x41A // Keyboard ptr to next character in keyboard buffer
-#define BDA_KBD_BUF_FREE	0x41C // Keyboard ptr to first free slot in keyboard buffer
-#define BDA_CIRC_BUF		0x41E // Keyboard circular buffer
-
-/* 0x43E~0x442 used by diskette device ,we don't need it now!
- */
-
-#define BDA_VIDEO_MODE		0x449 // Video current mode
-#define BDA_VIDEO_COL		0x44A // Video columns on screen
-#define BDA_VIDEO_PGSIZE	0x44C // Video page (regen buffer) size in bytes
-
-#define BDA_VIDEO		0x463 // Base IO port for video (2byte ,taken as a word)		
-#define BDA_TICKS		0x46C // IRQ0 timer ticks since boot
-#define BDA_HD			0x475 // Hard disk drives detected
-#define BDA_KB_LED		0x497 // Last keyboard LED/Shift key state			
-
-
+/*
 Offset	Size	Description
  00h	WORD	Base I/O address of 1st serial I/O port, zero if none
  02h	WORD	Base I/O address of 2nd serial I/O port, zero if none
@@ -539,6 +506,91 @@ Offset	Size	Description
 			Table is ??? triplets ??? of BYTEs???
  14h	BYTEs	array of mode values to which this profile is to pertain
 	BYTE	FFh end of array
+*/
+
+#define	BDA_COM1		0x400 // IO port for COM1 serial (word)
+#define BDA_COM2		0x402
+#define BDA_COM3		0x404
+#define BDA_COM4		0x406
+#define BDA_SDEV_14TO		0x47C // Serial devices 1-4 time-out counters
+
+#define	BDA_LPT1		0x408 // IO port for LPT1 parallel (word)
+#define BDA_LPT2		0x40A
+#define BDA_LPT3		0x40C
+#define BDA_LPT4		0x40E 
+#define BDA_PDEV_13TO		0x478 // Parallel devices 1-3 time-out counters
+#define BDA_PDEV_4TO 		0x47B // Parallel device 4 time-out counter
+ 
+#define BDA_AVAIL_HW		0x410 // packed bit flags for detected hardware
+#define BDA_POST_STAT		0x412
+#define BDA_MEM_SIZE		0x413 // Base memory size in kbytes (0~640)
+
+#define BDA_KBD_STAT1		0x417 // Keyboard status flags 1
+#define BDA_KBD_STAT2		0x418 // Keyboard status flags 2
+#define BDA_KBD_ALT		0x419 // Keyboard Alt-nnn keypad workspace
+#define BDA_CTRL_BREAK		0x471 // Ctrl-Break flag: bit 7=1
+#define BDA_PRTSCR_STAT		0x500 // Print Screen Status byte
+#define BDA_KBD_BUF_NEXT	0x41A // Keyboard ptr to next character in keyboard buffer
+#define BDA_KBD_BUF_FREE	0x41C // Keyboard ptr to first free slot in keyboard buffer
+#define BDA_CIRC_BUF		0x41E // Keyboard circular buffer
+#define BDA_KBD_STAT3		0x496 // Keyboard status byte 3
+#define BDA_KBD_STAT4		0x497 // Keyboard status byte 2
+#define BDA_KBD_BUFS		0x480 // Keyboard buffer start as offset from segment 40h (normally 1Eh)
+#define BDA_KBD_BUFE		0x482 // Keyboard buffer end+1 as offset from segment 40h (normally 3Eh)
+
+/* 0x43E~0x442 used by diskette device ,we don't need it now!
+ */
+#define BDA_VIDEO_MODE		0x449 // Video current mode
+#define BDA_VIDEO_COL		0x44A // Video columns on screen
+#define BDA_VIDEO_PGSIZE	0x44C // Video page (regen buffer) size in bytes
+#define BDA_VIDEO_PGADDR	0x44E // Video current page start address in regen buffer
+#define BDA_VIDEO_CURPOS	0x450 // Video cursor position (col ,row) for eight pages, 0 based
+#define BDA_VIDEO_CURTYPE	0x460 // Video cursor type ,6845 compatible ,hi=startline ,lo=endline
+#define BDA_VIDEO_PGNUM		0x462 // Video current page number
+#define BDA_VIDEO_CRT		0x463 // Video CRT controller base address: color=03D4h ,mono=03B4h
+#define BDA_VIDEO_MODESET	0x465 // Video current setting of mode select register 03D8h/03B8h
+#define BDA_VIDEO_CGASET	0x466 // Video current setting of CGA palette register 03D9h
+#define BDA_VIDEO_ROWS		0x484 // Video EGA/MCGA/VGA rows on screen minus one
+#define BDA_CHAR_HEIGHT		0x485 // Video EGA/MCGA/VGA character height in scan-lines
+#define BDA_VIDEO_CTRL		0x487 // Video EGA/VGA control: [MCGA: =00h]
+#define BDA_VIDEO_SWITCH	0x488 // Video EGA/VGA switches: [MCGA: reserved]
+#define BDA_MV_MODESET		0x489 // Video MCGA/VGA mode-set option control
+#define BDA_MV_IDX		0x48A // Video [MCGA/VGA]: index into Display Combination Code table
+#define BDA_VIDEO_PTAB_SAVED	0x4A8 // Video: EGA/MCGA/VGA ptr to Video Save Pointer Table
+
+#define BDA_RMODE_ENTRY		0x467 // POST real mode re-entry point after certain resets
+#define BDA_LAST_INTR		0x46B // POST last unexpected interrupt
+
+#define BDA_TICKS		0x46C // IRQ0 timer ticks since boot
+#define BDA_TIMER_OVERFLOW	0x470 // Timer overflow ,non-zero if has counted past midnight
+
+#define BDA_TIMER2_WAIT		0x498 // Timer2: [AT ,PS exc Mod 30] ptr to user wait-complete flag
+#define BDA_TIMER2_CNT		0x49C // Timer2: [AT ,PS exc Mod 30] user wait count in microseconds
+#define BDA_TIMER2_AWAIT	0x4A0 // Timer2: [AT ,PS exc Mod 30] Wait active flag
+#define BDA_DAYS		0x4CE // Count of days since last boot?
+
+#define BDA_HD_LOSTAT		0x474 // Fixed disk last operation status: {except ESDI drives}
+#define BDA_HD_NUM		0x475 // Hard disk drives detected
+#define BDA_HD_CTRL		0x476 // Fixed disk: control byte
+#define BDA_HD_IO		0x477 // Fixed disk: I/O port offset
+#define BDA_HD_STAT		0x48C // Fixed disk controller status [not XT]
+#define BDA_HD_ERRSTAT		0x48D // Fixed disk controller Error status [not XT]
+#define BDA_HD_INTRCTRL		0x48E // Fixed disk Interrupt Control [not XT]
+// 0x48F~0x495 ued for diskette, we don't need them
+
+#define BDA_HD_INTV_SAVED	0x4A4 // [PS/2 Mod 30] Saved Fixed Disk Interrupt Vector
+
+#define BDA_3363		0x4B0 // ptr to 3363 Optical disk driver or BIOS entry point (I dont't know how to use...)
+				
+#define BDA_POST_RESET		0x472 // POST reset flag
+#define POST_WORM_BOOT		0x1234
+#define POST_PS2		0x4312
+#define POST_SYS_SUS		0x5678
+#define POST_TEST		0x9ABC
+#define POST_LOOP		0xABCD
+#define POST_BURN		0x64
+
+
 
 
 

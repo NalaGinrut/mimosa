@@ -22,7 +22,7 @@
 // generate segmentation selection;
 #define MAKE_SEL(idx)	(((idx)<<3) & 0xFFF8)
 
-// selector index;
+// global selector index;
 #define NULL_SEG	0
 #define	KCODE_SEG	1
 #define KDATA_SEG	2
@@ -30,6 +30,16 @@
 #define UCODE_SEG	4
 #define UDATA_SEG	5
 #define USTCK_SEG	6
+#define TSS_SEG		7
+
+#define NULL_SEL MAKE_SEL(NULL)
+#define KC_SEL MAKE_SEL(KCODE_SEG)
+#define KD_SEL MAKE_SEL(KDATA_SEG)
+#define KS_SEL MAKE_SEL(KSTCK_SEG)
+#define UC_SEL MAKE_SEL(UCODE_SEG)
+#define UD_SEL MAKE_SEL(UDATA_SEG)
+#define UK_SEL MAKE_SEL(USTCK_SEG)
+
 
 // init a system segment descriptor;
 // NOTE: use these init function at the END of the real seg_initilization!

@@ -16,21 +16,19 @@
 
 
 #include <multi_boot.h>
-#include <now/cpu/segmen.h>
-
+#include <now/cpu/segment.h>
+#include <now/drivers/bda.h>
 	
-.set NULL_SEL ,MAKE_SEL(NULL)
-.set KC_SEL ,MAKE_SEL(KCODE_SEG)
-.set KD_SEL ,MAKE_SEL(KDATA_SEG)
-.set KS_SEL ,MAKE_SEL(KSTCK_SEG)
-.set UC_SEL ,MAKE_SEL(UCODE_SEG)
-.set UD_SEL ,MAKE_SEL(UDATA_SEG)
-.set UK_SEL ,MAKE_SEL(USTCK_SEG)
+
+###############
+# Text Segment
+###############
 	
 .text
 
 #ifdef __MULTI_BOOT__
 
+// Must be aligned to 64bit according to multi_boot protocol	
 .align 4
 multiboot_header:
 	/* magic */
@@ -47,7 +45,10 @@ multiboot_header_end:
 
 .globl	_start
 _start:
-	movw	0x1234 ,0x472
+	movw	$POST_WORM_BOOT ,BDA_POST_RESET
+
+	
+	
 
 	
 
