@@ -18,7 +18,8 @@
 #include <multi_boot.h>
 #include <now/cpu/segment.h>
 #include <now/drivers/bda.h>
-	
+
+#define RELOC(addr)	((addr) - KERN_BEGIN)
 
 ###############
 # Text Segment
@@ -47,11 +48,52 @@ multiboot_header_end:
 _start:
 	movw	$POST_WORM_BOOT ,BDA_POST_RESET
 
+	call	set_gdt
+
+
+
+
+set_get:
 	
 	
 
 	
 
 
+/* actually, 'gas' doesn't need ".extern" since it'll treat all
+ * undefined symbols as extern. We use it here for compatibility
+ * and more explicit code.
+ */
+.extern KERNEL_BEGIN
+.set	FULL_ADDR ,0xFFFFFFFF
+	
+.data
 
+/* establish the temporary stack
+ */
+	.p2align PGSHIFT
+	
+.globl	tmp_stack
+tmp_stack:
+	.space	KERNEL_STACK_SIZE
+.globl	tmp_stack_top
+	
+/* You may notice that this code below is as alike as segment handle
+ * code in the bootloader. In fact they are the same, the only difference
+ * between is that the base address should be a little change. That is,
+ * at this time we need a "base" which satisfy "KERN_BASE+base=0",then we
+ * get "base=-KERN_BASE", it's easy ah?
+ * But why we need to do that? Because we want to run Cee function, not
+ * assembler anyway. So we need to establish a simple Cee runtime
+ * environment: a data seg ,code seg to hold the program, and a stack for  * calling procedure.
+ * When we entering the Cee world, they will be re-established formally.
+ */
+	.p2align 2	/* force 4byte aligment */
+init_gdt:
+	SEG_NULL
+	SEG(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)
+	SEG(USEG_W ,RELOC(0) ,FULL_ADDR)
+init_gdt_desc:
+	.word 0x17
+	.long RELOC(init_gdt_desc)
 	

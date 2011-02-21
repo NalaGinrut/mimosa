@@ -7,6 +7,7 @@ LD	:= $(GCCPREFIX)ld
 OBJCOPY	:= $(GCCPREFIX)objcopy
 OBJDUMP	:= $(GCCPREFIX)objdump
 NM	:= $(GCCPREFIX)nm
+CPP	:= $(GCCPREFIX)cpp
 
 # Native commands
 NCC	:= gcc $(CC_VER) -pipe

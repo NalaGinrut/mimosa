@@ -23,7 +23,7 @@
 #include "bsp_types.h"
 
 
-#define __BIT	(0x01u)
+#define __BIT	(1UL)
 // shift the value "x" to "b" bits;
 #define _S(x,b)		((x)<<(b))
 #define _B(b)		(__BIT<<(b))

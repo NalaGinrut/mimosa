@@ -1,0 +1,20 @@
+<!ELEMENT config (arch,memory,mmu,boot)>
+
+<!ELEMENT arch (family,bitwidth)>
+<!ELEMENT family (#PCDATA)>
+<!ELEMENT bitwidth (#PCDATA)>
+
+<!ELEMENT memory (kern_base,kern_stack)>
+<!ELEMENT kern_base (#PCDATA)>
+<!ELEMENT kern_stack (#PCDATA)>
+
+<!ELEMENT mmu (page)>
+<!ELEMENT page (enabled,pt_level,pg_size)>
+<!ELEMENT enabled (#PCDATA)>
+<!ELEMENT pt_level (#PCDATA)>
+<!ELEMENT pg_size (#PCDATA)>
+
+<!ELEMENT boot (grub)>
+<!ELEMENT grub (#PCDATA)>
+
+

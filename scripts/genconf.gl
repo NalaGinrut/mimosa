@@ -1,0 +1,97 @@
+#! /usr/local/bin/guile \
+-e main -s
+!#
+
+;; Copyleft(c)2010 HackerFellowship. All lefts reserved.
+  
+;; NalaGinrut <NalaGinrut@gmail.com>
+  
+;; May Lord Bless!Happy Hacking!
+  
+;; This program is free software;you can redistribute it and /or modify
+;; it under the terms of the GNU General Public License as published by 
+;; the Free Software Foundataion;either version 2 of the License,or (at 
+;; your option) any later version.
+  
+;; You should have read the GNU General Public License before start "RTFSC".
+  
+;; If not,see <http://www.gnu.org/licenses/>
+
+(use-modules (sxml ssax)
+	     (sxml xpath)
+	     (oop goops)
+	     (ice-9 getopt-long)
+	     (ice-9 match)
+	     )
+
+(define get-attr-value
+  (lambda (conf-list-item)
+    (match conf-list-item
+	   ((name (@ (attribute value)) data))
+	   )
+    )
+  )
+
+(define make-conf-list
+  (lambda (sxml)
+    (let ((cache '()))
+      (map
+       (lambda (x)
+	 (if (pair? x)
+	     (begin
+	       (set-car! x
+			 (string-upcase (symbol->string (car x))))
+	       (set! cache (cons x cache)))))
+       (cdar sxml))
+      cache
+      )
+    )
+  )
+       
+(define number-to-hex-string
+  (lambda (number)
+    (format #f "0x~x" (number->string number 16))
+    )
+  )
+
+(define-class <mimosa-config> ()
+  (work-list #:init-value '())
+  (mem-layout #:init-value '())
+  (page-setup #:init-value '())
+  (init #:accessor config:init
+	#:allocation #:virtual
+	#:slot-set! (lambda (o v) #f)
+	#:slot-ref (lambda (o)
+		     (let* ((sxml 
+			     (ssax:xml->sxml (open-input-file "config/config.xml") '() ))
+			    (config ((sxpath '(config)) sxml))
+			    (memory ((sxpath '(memory)) config))
+			    (kmem ((sxpath '(kmem)) memory))
+			    (meta-mem ((sxpath '(meta_mem)) memory))
+			    (umem ((sxpath '(umem)) memory))
+			    (page ((sxpath '(page)) config))
+			    (cache '())
+			    )
+
+		       ;; generate mem layout
+		       (set! cache (cons
+				    (make-conf-list umem) cache))
+		       (set! cache (cons
+				    (make-conf-list meta-mem) cache))
+		       (set! cache (cons 
+				    (make-conf-list kmem) cache))
+		       (slot-set! o 'mem-layout cache)
+
+		       ;; TODO: generate page setup
+		       ))
+
+
+(define main
+  (lambda (args)
+    (let* ((sxml 	   (config ((sxpath '(config) sxml)))
+	   (memory ((sxpath '(memory) config)))
+	   (
+
+	   ;;whatever blablabla......
+	   )
+	   )))))

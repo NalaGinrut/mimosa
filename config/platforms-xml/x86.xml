@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config PUBLIC "mimosa-config" "../config.dtd">
+<config>
+  
+  <arch>
+    <family>i386</family>
+    <bitwidth>32</bitwidth>
+  </arch>
+
+  <memory>
+    <kern_base>0xC010000C</kern_base>
+    <kern_stack>1</kern_stack>
+  </memory>
+
+  <mmu>  
+    <page>
+      <enabled>true</enabled>
+      <pt_level>3</pt_level>
+      <pg_size>0x1000</pg_size>  
+    </page>
+  </mmu>
+
+  <boot>
+    <grub>true</grub>
+  </boot>
+  
+</config>

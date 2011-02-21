@@ -1,5 +1,5 @@
-#ifndef __MIMOSA_CRN_H
-#define __MIMOSA_CRN_H
+#ifndef __MIMOSA_CRX_H
+#define __MIMOSA_CRX_H
  /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -16,8 +16,8 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include "bsp_bits.h"
-#include "bsp_types.h"
+#include <now/bsp_bits.h>
+#include <now/bsp_types.h>
 
 /* NOTE: These control register definitions is only for 32-bits;
  * And all Reserved bits must be 0, or may cause Gerneral Protection Fault;
@@ -161,7 +161,7 @@ decl_crx_chk(cr4);
 defn_crx_chk(cr4);
 //-------------------
 
-#endif // End of __MIMOSA_CRN_H;
+#endif // End of __MIMOSA_CRX_H;
 
 
 

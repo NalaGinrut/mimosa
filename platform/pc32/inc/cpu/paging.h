@@ -17,8 +17,8 @@
  */
 
 
-#include <inc/now/bsp_types.h>
-#include <inc/now/bsp_bits.h>
+#include <now/bsp_types.h>
+#include <now/bsp_bits.h>
 #include "crx.h"
 
 #ifdef __BIT32_PAGING__
@@ -27,14 +27,14 @@
 #ifdef __BIT32_PAGING_NO_PSE__
 typedef union Linear_Address
 {
-  struct inner
+  struct
   {
   offset	:12;
   table		:10;
   dir		:10;
-  }is;
+  };
 
-  __u32_t all;
+  __u32_t value;
 }laddr_t ,laddr_tp *;
 
 //--- PDE definition;
@@ -47,9 +47,9 @@ typedef union Linear_Address
 #define PDE_PAGE4MB	_B(6)
 #define PDE_GLOBAL	_B(7)
 #define PDE_PT_ADDR	FLAG_FIX(20 ,12)
-typedef struct Page_Dir_Entry
+typedef union Page_Dir_Entry
 {
-  struct inner
+  struct 
   {
   p	:1; // 1 for present;
   r	:1; // 1 for read/write ,0 for read-only; 
@@ -62,9 +62,9 @@ typedef struct Page_Dir_Entry
   g	:1; // 1 for translation is global if CR4.PGE=1 ,otherwise Ignored;
   igno	:3; // Ignored;
   pt_ad	:20;// Page Table 4KB aligned address;
-  }is;
+  };
   
-  __u32_t all;
+  __u32_t value;
 }pde_t ,pde_tp *; // Page Directory Entry;
 
 //--- PTE definition;
@@ -78,9 +78,9 @@ typedef struct Page_Dir_Entry
 #define PTE_PAT		_B(7)
 #define PTE_GLOBAL     	_B(8)
 #define PTE_ADDR	FLAG_FIX(20 ,12)
-typedef struct Page_Table_Entry
+typedef union Page_Table_Entry
 {
-  struct inner
+  struct 
   {
   p	:1; // 1 for present;
   r	:1; // 1 for read/write ,0 for read-only; 
@@ -102,9 +102,9 @@ typedef struct Page_Table_Entry
 	     */
   igno	:3; // ignored;
   pa	:20 // Page Frame 4KB aligned address;
-  }is;
+  };
 
-  __u32_t all;
+  __u32_t value;
 }pte_t ,pte_tp *;
 
 
@@ -112,24 +112,26 @@ typedef struct Page_Table_Entry
 
 typedef union Linear_Address
 {
-  struct inner
+  struct 
   {
   offset	:22;
   dir		:10;
-  }is;
+  };
 
-  __u32_t all;
+  __u32_t value;
 }laddr_t ,laddr_tp *;
 
 // FIXME: where is the end of #endif PAGING_PAE??
 
 
-typedef struct Page_Dir_Entry
+typedef union Page_Dir_Entry
 {
-  struct inner
+  struct 
   {
 	//TODO
-  }    
+  };
+
+  __u32_t value;
 }pde_t ,pde_tp *; // Page Directory Entry;
 #endif // End of __BIT32_PAGING_NO_PAE;__
 
@@ -158,19 +160,18 @@ typedef __u32_t pfec_t; // Page Fault Error Code;
 #define page_enable()  cr0_set(CR0_PG)
 
 
-
+#ifdef __486_COMPAT
+#define TLB_flush_mem(mem) 	
+#else
 static inline void TLB_flush_mem(__mem_t mem) true_inline;
 static inline void TLB_flush_mem(__mem_t mem)
 {
-#ifdef __486_COMPAT
-  __asm__ volatile("nop\n\t");
-#else	
   __asm__ volatile("invlpg %0\n\t"
 		   :
 		   :"m" (*mem)
 		   );
-#endif //End of __486_COMPAT
 }
+#endif //End of __486_COMPAT
 
 
 

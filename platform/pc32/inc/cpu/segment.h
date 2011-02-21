@@ -66,6 +66,26 @@
     (sd).reserved = 0;		\
   }while(0);
 
+// user segment type
+#define USEG_X		0x8	    // Executable segment
+#define USEG_E		0x4	    // Expand down (non-executable segments)
+#define USEG_C		0x4	    // Conforming code segment (executable only)
+#define USEG_W		0x2	    // Writeable (non-executable segments)
+#define USEG_R		0x2	    // Readable (executable segments)
+#define USEG_A		0x1	    // Accessed
 
+// System segment type
+#define SSEG_T16A	0x1	    // Available 16-bit TSS
+#define SSEG_LDT		0x2	    // Local Descriptor Table
+#define SSEG_T16B	0x3	    // Busy 16-bit TSS
+#define SSEG_CG16	0x4	    // 16-bit Call Gate
+#define SSEG_TG		0x5	    // Task Gate / Coum Transmitions
+#define SSEG_IG16	0x6	    // 16-bit Interrupt Gate
+#define SSEG_TG16	0x7	    // 16-bit Trap Gate
+#define SSEG_T32A	0x9	    // Available 32-bit TSS
+#define SSEG_T32B	0xB	    // Busy 32-bit TSS
+#define SSEG_CG32	0xC	    // 32-bit Call Gate
+#define SSEG_IG32	0xE	    // 32-bit Interrupt Gate
+#define SSEG_TG32	0xF	    // 32-bit Trap Gate
 
 #endif // End of __MIMOSA_SEGMENT_H;

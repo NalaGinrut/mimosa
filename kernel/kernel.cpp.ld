@@ -15,23 +15,34 @@
  */
 
 
-/* A simple ld script for kernel linking. 
+/* This ld script used for kernel linking. 
  * Modify it may effect the whole kernel framework, so DON'T MODIFY IT!!!
  */
+
+#include <generic/generic.ld.h>
 
 
 /* "conf.ld" is $(TOP)/config/conf.ld */
 INCLUDE conf.ld
 
+
 SECTIONS
 {
+
 	/* principio is default kernel start address */
-	PROVIDE(principio = DEFINED(principio) ? principio : __K_LD_BEGIN);
+	PROVIDE(principio = DEFINED(principio) ? principio : KERNEL_BEGIN);
 	. = principio;
 
 	.text : {
-		*(.text .stub .text.* .gnu.linkonce.t.*)
+	      TEXT_SECTION	
 	}
+
+/* This platform.cpp.ld is used to specific bsp memory layout.
+ * We insert it next to .text in case some platform need mapping/reserved
+ * low memory address. BSP developers must define this file or just 
+ * leave it empty.
+ */
+#include <now/platform.cpp.ld>
 
 	/* C99 permit program to reference "etext" without any error, 
 	 * even if "etext" had never been defined. 
@@ -39,34 +50,27 @@ SECTIONS
  	 */
 	PROVIDE(etext = .);
 
-	.rodata : {
-		*(.rodata .rodata.* .gnu.linkonce.r.*)
-	}
-
 	/* Include debugging information in kernel memory */
 	.stab : {
-		PROVIDE(__STAB_BEGIN__ = .);
-		*(.stab);
-		PROVIDE(__STAB_END__ = .);
-		BYTE(0)		/* Force the linker to allocate space
-				   for this section */
+	      STAB_SECTION
+	      BYTE(0) /* Force the linker to allocate space
+		       * for this section */
+
 	}
 
 	.stabstr : {
-		PROVIDE(__STABSTR_BEGIN__ = .);
-		*(.stabstr);
-		PROVIDE(__STABSTR_END__ = .);
-		BYTE(0)		/* Force the linker to allocate space
-				   for this section */
+		 STABSTR_SECTION
+		 BYTE(0) /* Force the linker to allocate space
+		       	  * for this section */
 	}
 
 	/* Adjust the address for the data segment to the next page */
-	. = ALIGN(0x1000);
+	. = ALIGN(PGSIZE);
 
 	/* The data segment */
 	.data : {
-		*(.data)
-	}
+	      DATA_SECTION
+	} :data
 
 	PROVIDE(edata = .);
 
@@ -78,12 +82,11 @@ SECTIONS
 	PROVIDE(recondo = .);
 	
 	/* init contain run-once code, this section will be merged to
-	 * available memory. limit-addr is "recondo+init_lim" after startup.
+	 * available memory. limit-addr is "init_end" after startup.
 	 */
 	.init : {
 	      	*(.init)
 	}
-	PROVIDE(init_end = .);
-	
-		
+	PROVIDE(KERN_SYM(init_end) = .);
+
 }
