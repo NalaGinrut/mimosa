@@ -36,6 +36,11 @@
 	*(.text)				\	
 	*(.stub .text.* .gnu.linkonce.t.*)
 
+#define BSS_SECTION			\
+	PROVIDE(__bss_start = .);	\
+	*(.bss)		      		\
+	PROVIDE(__bss_end = .);
+
 #define STAB_SECTION			\
 	PROVIDE(__STAB_BEGIN__ = .);	\
 	*(.stab);	       	 	\

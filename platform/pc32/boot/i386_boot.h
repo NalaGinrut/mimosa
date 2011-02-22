@@ -18,8 +18,11 @@
 
 
 
-// These gdt index is one-touch vars, after bootup they are useless;
-// And if you gonnar change them, don't forget they are aligned to 8-Bytes;
+/* These gdt index is one-touch vars, they can be used only in the 
+ * real-mode. So they are useless after the bootup;
+ * And if you gonnar change them, don't forget they are aligned to 
+ * 8-Bytes;
+ */
 #define PM_CS	0x8	/* code segment selector
 			 * NOTE: can't be 0! for 0 is NULL descriptor!
 			 */

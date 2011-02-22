@@ -75,7 +75,7 @@ SECTIONS
 	PROVIDE(edata = .);
 
 	.bss : {
-		*(.bss)
+	     BSS_SECTION
 	}
 
 	/* available memory address entry */

@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_X86_IO_H
+#define __MIMOSA_X86_IO_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -15,21 +17,7 @@
  */
 
 
-#ifndef MIMOSA_IO_PORTS_H
-#define MIMOSA_IO_PORTS_H
 
-#include "inc/types.h"
-
-
-
-/* 0000-001F ---- DMA 1 (first Direct Memory Acess controller 8237)
-// FIXME: full fill it !
-//#define
-*/
-
-/* 0060-006F ---- Keyboard controller 804x (8041, 8042)  (or PPI (8255) on 
- * PC,XT) XT uses 60-63, AT uses 60-64
- */
 
 #define KB_CON_DPORT	0x0060 // KB controller data port(r/w)
 #define KB_CON_STAT	0x0064 // KB controller status(r);
@@ -41,4 +29,4 @@
 
 
 
-#endif // End of MIMOSA_IO_PORTS_H;
+#endif // End of MIMOSA_X86_IO_H;

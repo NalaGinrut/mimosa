@@ -16,7 +16,7 @@
 
 #include "i386_boot.h"
 #include <now/cpu/gdt.h>	
-
+	
 #################
 # ENTRY POINT
 #################

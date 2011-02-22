@@ -19,6 +19,7 @@
 #include <now/cpu/segment.h>
 #include <now/drivers/bda.h>
 
+
 #define RELOC(addr)	((addr) - KERN_BEGIN)
 
 ###############
@@ -53,13 +54,37 @@ _start:
 
 
 
-set_get:
-	
-	
+set_gdt:
+	lgdt	RELOC(init_gdt_desc)
+	movl	$KD_SEL ,%eax	# set data seg_desc
 
+	/* don't forget that segment-regs have only 16bit */
+	movw	%ax ,%ds	# data segment
+	movw	%ax ,%es	# extra segment
+	movw	%ax ,%ss	# stack segment
 	
+	ljmp	$KD_SEL ,$init_cee_env
 
+set_cee_env:
+	movl	$0 ,%ebp	# clear ebp to terminate the backtrace
+	movl	$tmp_stack_top ,%esp
+	
+	# jump into the Cee code~yeah~I hate ASM!
+	call	platform_init
 
+	# TODO: I need a debugger to check the reason why it returned.
+return_is_error:
+#ifndef __KERN_DEBUG__	
+	jmp	return_is_error
+#else
+	/* TODO: we need to save environment when shit happens. And I
+	 * think there're two alternative approaches:
+	 * 1. save them immediately while return.
+	 * 2. backtrace them in the kern_debug.
+	 */
+	call	kern_debug
+#endif
+	
 /* actually, 'gas' doesn't need ".extern" since it'll treat all
  * undefined symbols as extern. We use it here for compatibility
  * and more explicit code.
@@ -91,8 +116,8 @@ tmp_stack:
 	.p2align 2	/* force 4byte aligment */
 init_gdt:
 	SEG_NULL
-	SEG(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)
-	SEG(USEG_W ,RELOC(0) ,FULL_ADDR)
+	SEG(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)	# code segment
+	SEG(USEG_W ,RELOC(0) ,FULL_ADDR)	# data segment
 init_gdt_desc:
 	.word 0x17
 	.long RELOC(init_gdt_desc)
