@@ -1,5 +1,5 @@
-#ifndef	__MIMOSA_TM_H
-#define __MIMOSA_TM_H
+#ifndef	__MIMOSA_BSP_INIT_H
+#define __MIMOSA_BSP_INIT_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -17,7 +17,14 @@
  */
 
 
+extern char __bss_start[] ,__bss_end[];
+
+#define __BSS_SIZE	(__bss_end - __bss_start)
 
 
-
-#endif // End of __MIMOSA_TM_H;
+static void platform_init();
+static void bsp_init_clear_tmp();
+static void bsp_init_console();
+static void bsp_init_memory();
+static void bsp_init_online_debug();
+#endif // End of __MIMOSA_BSP_INIT_H;

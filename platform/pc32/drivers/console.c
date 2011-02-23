@@ -1,5 +1,3 @@
-#ifndef	__MIMOSA_TM_H
-#define __MIMOSA_TM_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -16,8 +14,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+#include <now/bsp_types.h>
+#include <now/drivers/console.h>
 
 
-
-
-#endif // End of __MIMOSA_TM_H;

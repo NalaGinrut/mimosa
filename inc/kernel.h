@@ -1,5 +1,5 @@
-#ifndef	__MIMOSA_INIT_H
-#define __MIMOSA_INIT_H
+#ifndef	__MIMOSA_KERNEL_H
+#define __MIMOSA_KERNEL_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -17,14 +17,10 @@
  */
 
 
-extern char __bss_start[] ,__bss_end[];
-
-#define __BSS_SIZE	(__bss_end - __bss_start)
+static void kernel_init();
 
 
-void platform_init();
-void bsp_init_clear_tmp();
-void bsp_init_console();
-void bsp_init_memory();
-void bsp_init_online_debug();
-#endif // End of __MIMOSA_INIT_H;
+
+
+
+#endif // End of __MIMOSA_KERNEL_H;

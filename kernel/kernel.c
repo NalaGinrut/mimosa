@@ -1,5 +1,3 @@
-#ifndef	__MIMOSA_TM_H
-#define __MIMOSA_TM_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -17,7 +15,23 @@
  */
 
 
+#include <types.h>
+#include <kernel.h>
+#include <mm/mm.h>
+#include <tm/tm.h>
+#include <env.h>
 
+#ifdef __KERN_DEBUG__
+#include <debug.h>
+#endif
 
+static void kernel_init()
+{
 
-#endif // End of __MIMOSA_TM_H;
+  //TODO: init all kernel modules
+  
+
+  // Call env_init at the end
+
+  env_init();
+}
