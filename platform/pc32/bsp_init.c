@@ -24,7 +24,7 @@
 #include <debug.h>
 #endif
 
-static void platform_init()
+void platform_init()
 {
 
   bsp_init_clear_tmp();

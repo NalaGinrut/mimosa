@@ -22,7 +22,7 @@ extern char __bss_start[] ,__bss_end[];
 #define __BSS_SIZE	(__bss_end - __bss_start)
 
 
-static void platform_init();
+void platform_init();
 static void bsp_init_clear_tmp();
 static void bsp_init_console();
 static void bsp_init_memory();
