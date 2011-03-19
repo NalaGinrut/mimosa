@@ -77,7 +77,7 @@
 #define CR8_TPL_R	FLAG_FIX(4 ,0)
 
 
-
+#ifndef __ASSEMBLER__
 // DON'T USE THIS PROCs DIRECTLY!!!
 #define __crx_set(crx ,flag)				\
   do{							\
@@ -160,6 +160,7 @@ defn_crx_chk(cr3);
 decl_crx_chk(cr4);
 defn_crx_chk(cr4);
 //-------------------
+#endif // !__ASSEMBLER__
 
 #endif // End of __MIMOSA_CRX_H;
 

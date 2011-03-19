@@ -16,6 +16,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+#ifndef __ASSEMBLER__
 
 #include "now/bsp_types.h"
 
@@ -94,5 +95,6 @@ typedef __off_t off_t;
 #define offsetof(type ,member)	\
   (off_t)(&((type*)0)->member)	
 
+#endif // !__ASSEMBLER__
 
 #endif // End of __MIMOSA_TYPES_H;

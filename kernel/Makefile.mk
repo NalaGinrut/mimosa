@@ -1,18 +1,34 @@
 # This is Makefile for kernel
 
+
 OBJDIRS += kernel
 
-K_LDPATH := -L$(TOP)/lib -L$(TOP)/config -L~/tmp/
-K_LDFLAG := $(K_LDPATH) -T$(TOP)/kernel.ld -nostdlib -b binary
+KERN_OBJ := $(OBJ)/kernel
 
-KERN_CFLAGS := $(CFLAGS) -D_MIMOSA_KERNEL $(STABS)
-USER_CFLAGS := $(CFLAGS) -D_MIMOSA_USER $(STABS)
+kernel-cfile := $(wildcard $(KERNEL)/*.c)
+kernel-ofile := $(kernel-cfile:.c=.o)
+kernel-ofile := $(subst $(KERNEL)/,$(KERN_OBJ)/,$(kernel-ofile))
 
-.PHONY: ktest
 
-ktest: ldscript
-	@echo "$(K_LDFLAG)"
-	ld -t ~/tmp/entry.o $(K_LDFLAG)
+KERN_LDFLAG := -r -nostdlib 
 
+KERN_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ 
+USER_CFLAGS := $(CFLAGS) -D__MIMOSA_USER__ 
+
+-include $(KERNEL)/mm/Makefile.mk
+-include $(KERNEL)/tm/Makefile.mk
+
+$(KERN_OBJ)/%.o: $(KERNEL)/%.c
+	@echo + cc $<
+	@mkdir -p $(@D)
+	$(V)$(CC) -nostdinc $(KERN_CFLAGS) -c -o $@ $<
+
+
+
+# NOTE: all %-obj generated must be in the $(OBJ),
+# 	not KERN_OBJ, LIB_OBJ, etc...
+$(OBJ)/kern-obj: $(kernel-ofile)	
+	@echo + merge $@
+	$(V)$(LD) $(KERN_LDFLAGS) -o $@ $^
 
 

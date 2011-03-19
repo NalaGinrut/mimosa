@@ -14,10 +14,14 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+#include <now/cpu/port.h>
 #include <now/bsp_types.h>
 #include <now/drivers/console.h>
-#include <now/drivers/bda.h>
+#include <now/drivers/kbd.h>
 
+#ifdef __KERN_DEBUG__
+#include <debug.h>
+#endif
 
 static __u32_t port_6845;
 static __u16_t *crt_buf;
@@ -32,20 +36,27 @@ void console_init()
 
 }
 
+void console_putc(__u16_t ch)
+{
+
+#ifdef __KERN_ONLINE_DEBUG__
+  serial_putc(ch);
+#endif
+
+  cga_putc(ch);
+
+}
+
 
 static void cga_init()
 {
-  
-  //volatile __u16_t *test;
   __u16_t tmp;
-  __u32_t pos;
-
   
   tmp = *CGA_DISP_BUF;
 
   // check out the display mode ,and select one of them. 
   *CGA_DISP_BUF = (__u16_t)0xA55A;
-  port_6845 = (*test == 0xA55A)? CGA_BASE : MONO_BASE;
+  port_6845 = (*CGA_DISP_BUF == 0xA55A)? CGA_BASE : MONO_BASE;
   *CGA_DISP_BUF = tmp;
 
   // select MONO or CGA buffer
@@ -60,3 +71,41 @@ static void cga_init()
   crt_pos |= port_rb(port_6845 + 1);
 
 }
+
+
+static void cga_putc(__u16_t ch)
+{
+  ch = (ch & 0xFF00)? ch : (ch | 0x0700);
+
+  switch( ch & 0xFF )
+    {
+    case '\b':
+      if( crt_pos > 0 )
+	{
+	  crt_pos--;
+	  crt_buf[crt_pos] = ((ch & 0xFF00) | ' ');
+	}
+      break;
+    case '\n':
+      crt_pos += CRT_COLS;
+      break;
+    case '\r':
+      crt_pos -= (crt_pos % CRT_COLS);
+    case '\t':
+      console_putc(' ');console_putc(' ');
+      console_putc(' ');console_putc(' ');
+      break;
+    default:
+      crt_buf[crt_pos++] = ch;
+      break;
+    }
+
+
+  port_wb(port_6845 ,CURSOR_H);
+  port_wb(port_6845 + 1 ,crt_pos >> 8);
+
+  port_wb(port_6845 ,CURSOR_L);
+  port_wb(port_6845 + 1 ,crt_pos);
+
+}
+

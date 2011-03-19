@@ -1,7 +1,7 @@
-INC := $(TOP)/inc
-LIB := $(TOP)/lib
-KERNEL := $(TOP)/kernel
-USERLAND := $(TOP)/userland
-OBJ_TARGET := $(TOP)/obj
+INC := inc
+LIB := lib
+KERNEL := kernel
+BSP := platform/bsp
+USERLAND := userland
 OBJDIRS :=
-OBJ := $(TOP)/obj
+OBJ := obj

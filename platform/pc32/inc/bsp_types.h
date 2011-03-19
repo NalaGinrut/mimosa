@@ -24,13 +24,11 @@
 // NOTES: these definition below is compatible with GCC;
 // I DON'T KNOW if they work well under other compilers;
 
+#ifndef __ASSEMBLER__
 // Represents true-or-false values
-typedef enum BOOL { true=0 ,false=1 } bool;
+typedef enum BOOL { true=0 ,false=1 } __bool;
 
 
-// simple protection;
-typedef static private;
-typedef extern public; 
 /* don't use 'public' while declaration, use it while calling the var/func;
  */ 
 
@@ -118,5 +116,6 @@ typedef __u16_t reg_t;
 // kernel entry type
 typedef void (*entry_t)(void);
 
+#endif // !__ASSEMBLER__
 
 #endif // End of __MIMOSA_BSP_TYPES_H;

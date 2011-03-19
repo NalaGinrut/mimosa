@@ -16,6 +16,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+#ifndef __ASSEMBLER__
 
 #include <now/bsp_types.h>
 #include <now/bsp_bits.h>
@@ -176,6 +177,6 @@ static inline void TLB_flush_mem(__mem_t mem)
 
 
 
-
+#endif // !__ASSEMBLER__
 
 #endif // End of __MIMOSA_PAGING_H;

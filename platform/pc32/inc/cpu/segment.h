@@ -41,6 +41,7 @@
 #define UK_SEL MAKE_SEL(USTCK_SEG)
 
 
+#ifndef __ASSEMBLER__
 // init a system segment descriptor;
 // NOTE: use these init function at the END of the real seg_initilization!
 #define SYS_SEG_INIT(sd)	\
@@ -65,6 +66,8 @@
     (sd).type &= 0x7;		\
     (sd).reserved = 0;		\
   }while(0);
+
+#endif // !__ASSEMBLER__
 
 // user segment type
 #define USEG_X		0x8	    // Executable segment

@@ -37,7 +37,9 @@ extern principio[];
 #define CURSOR_L	0x0F // cursor location low register
 
 void console_init();
-static void cga_init();
+void console_putc(__u16_t ch);
 
+static void cga_init();
+static void cga_putc(__u16_t ch);
 
 #endif // End of __MIMOSA_PC32_CONSOLE_H;

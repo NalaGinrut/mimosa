@@ -14,12 +14,18 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-
+#include <osconfig.h>
 #include <multi_boot.h>
 #include <now/cpu/segment.h>
 #include <now/drivers/bda.h>
 
-
+/* FIXME:
+ * it's a stupid handle, I'll fix it after conf-tools' ready.
+ */
+#define KERN_BEGIN	0xC0100000
+#define FULL_ADDR	0xFFFFFFFF
+#define PG_SHIFT	12
+#define KERN_STACK_SIZE	4096
 #define RELOC(addr)	((addr) - KERN_BEGIN)
 
 ###############
@@ -85,22 +91,17 @@ return_is_error:
 	call	kern_debug
 #endif
 	
-/* actually, 'gas' doesn't need ".extern" since it'll treat all
- * undefined symbols as extern. We use it here for compatibility
- * and more explicit code.
- */
-.extern KERNEL_BEGIN
-.set	FULL_ADDR ,0xFFFFFFFF
 	
 .data
 
 /* establish the temporary stack
  */
-	.p2align PGSHIFT
-	
+.p2align PG_SHIFT /* It should be decided by BSP config, but..
+		   * Anyway, it's just a temporary stack...
+		   */
 .globl	tmp_stack
 tmp_stack:
-	.space	KERNEL_STACK_SIZE
+	.space	KERN_STACK_SIZE
 .globl	tmp_stack_top
 	
 /* You may notice that this code below is as alike as segment handle
@@ -116,8 +117,8 @@ tmp_stack:
 	.p2align 2	/* force 4byte aligment */
 init_gdt:
 	SEG_NULL
-	SEG(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)	# code segment
-	SEG(USEG_W ,RELOC(0) ,FULL_ADDR)	# data segment
+	SEG_INIT(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)	# code segment
+	SEG_INIT(USEG_W ,RELOC(0) ,FULL_ADDR)	# data segment
 init_gdt_desc:
 	.word 0x17
 	.long RELOC(init_gdt_desc)

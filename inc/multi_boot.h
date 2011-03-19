@@ -18,7 +18,6 @@
 
 
 
-#include "types.h"
 
 /* How many bytes from the start of the file we search for the header. */
 #define MULTIBOOT_SEARCH		8192
@@ -118,7 +117,10 @@
   
 /* Types. */
    
-#else // NO Assemble code;  
+#else // NO Assemble code;
+
+#include "types.h"
+  
 /* The Multiboot header. */
 
 struct grub_multiboot_header

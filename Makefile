@@ -7,35 +7,47 @@
 # NalaGinrut@gmail.com
 
 
-# Never change these three lines!!!
+# Never change these lines!!!
 TOP := $(shell pwd)
 CONF := $(TOP)/config
-# Again! The Makefile framework is based on these three lines. So let them alone!
+# Again! The Mimosa build framework is based on these lines. So let them alone!
 
 include $(CONF)/conf.mk
+-include $(BSP)/Makefile.mk
 -include $(KERNEL)/Makefile.mk
--include $(PLATFORM)/Makefile.mk
+-include $(LIB)/Makefile.mk
+# NO TOUCH!
 
-CFLAGS := $(CFLAGS) $(DEFS) -O$(O_LEV) -fno-builtin -I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror $(STABS)
+KERN_LDS := $(addsuffix -lds,kernel)
 
-kernel-ld := $(addsuffix -lds,kernel)
+mimosa-framework := 	$(OBJ)/entry.o	\
+			$(OBJ)/bsp-obj	\
+			$(OBJ)/kern-obj	\
+			$(OBJ)/lib-obj
 
-all: 
-	$(V)test -e "kernel.ld" || { echo "no!"; false; }
+all: kernel.ld mimosa 
+	@echo "Mimosa kernel generated!\n"
 
-.PHONY: pretty mtest %-lds clean ldscript
+mimosa: $(mimosa-framework)
+	@echo + generate kernel image...
+	$(V)$(LD) $(LDFLAGS) -o $@ $^
 
-ldscript:
-	$(V)make $(kernel-ld)
+kernel.ld:
+	$(V)$(MAKE) $(KERN_LDS)
+
+.PHONY: pretty mtest %-lds clean  
+
+all-objs: 
 
 %-lds:
 	$(V)$(CPP) $*/$*.cpp.ld -I$(INC) -o$*.ld
-	$(V)sed -i "/^#/d" $*.ld
+	$(V)sed -i "/^#.*/d" $*.ld
 
 mtest:
 	@echo "TOP: $(TOP)"
 	@echo "LIB: $(LIB)"
 	@echo "CONF: $(CONF)"
+	@echo "INC: $(INC)"
 	@echo "MAKEFILE_LIST: $(MAKEFILE_LIST)"
 
 
@@ -47,7 +59,8 @@ pretty:
 clean:
 	@echo "Cleaning all objs & generated files..."
 	$(V)rm -frd *.ld
-	$(V)test -e "$(OBJ)" && rm -frd $(OBJ) || echo "No objs generated!"
-	$(V)make pretty 
+	$(V)test -e $(OBJ) && rm -frd $(OBJ) || echo "No objs generated!"
+	$(V)test -e mimosa && rm -f mimosa || echo "No kernel generated!"
+	$(V)$(MAKE) pretty 
 
 
