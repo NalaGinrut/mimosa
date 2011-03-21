@@ -18,6 +18,7 @@
 #include <now/cpu/port.h>
 #include <now/drivers/kbd.h>
 #include <now/bsp_types.h>
+#include <now/drivers/console.h>
 
 // NOTE: Scancode for set 1
 
@@ -115,12 +116,12 @@ kbd_proc_data(void)
 {
 	int c;
 	__u8_t data;
-	static uint32_t shift;
+	static __u32_t shift;
 
-	if ((inb(KBSTATP) & KBS_DIB) == 0)
+	if ((port_rb(KBSTATP) & KBS_DIB) == 0)
 		return -1;
 
-	data = inb(KBDATAP);
+	data = port_rb(KBDATAP);
 
 	if (data == 0xE0) {
 		// E0 escape character
@@ -151,8 +152,8 @@ kbd_proc_data(void)
 	// Process special keys
 	// Ctrl-Alt-Del: reboot
 	if (!(~shift & (CTL | ALT)) && c == KEY_DEL) {
-		cprintf("Rebooting!\n");
-		outb(0x92, 0x3); // courtesy of Chris Frost
+	  //cprintf("Rebooting!\n");
+		port_wb(0x92, 0x3); // courtesy of Chris Frost
 	}
 
 	return c;
@@ -209,7 +210,7 @@ cons_getc(void)
 	// poll for any pending input characters,
 	// so that this function works even when interrupts are disabled
 	// (e.g., when called from the kernel monitor).
-	serial_intr();
+	//serial_intr();
 	kbd_intr();
 
 	// grab the next character from the input buffer.

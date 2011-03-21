@@ -7,7 +7,7 @@ bsp-cfile := $(wildcard $(BSP)/*.c)
 bsp-ofile := $(bsp-cfile:.c=.o)
 bsp-ofile := $(subst $(BSP)/,$(BSP_OBJ)/,$(bsp-ofile))
 
-BSP_LDFLAGS := -r -nostdlib $(LDFLAGS)
+BSP_LDFLAGS := -r -nostdlib 
 BSP_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ $(STABS)
 
 -include $(BSP)/drivers/Makefile.mk
@@ -18,14 +18,14 @@ BSP_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ $(STABS)
 $(OBJ)/entry.o: $(BSP)/entry.S
 	@echo + as $<
 	@mkdir -p $(@D)
-	$(V)$(CC) -nostdinc $(BSP_CFLAGS) -c -o $@ $<
+	$(V)$(CC) $(BSP_CFLAGS) -c -o $@ $<
 
 $(BSP_OBJ)/%.o: $(BSP)/%.c
 	@echo + cc $<
 	@mkdir -p $(@D)
-	$(V)$(CC) -nostdinc $(BSP_CFLAGS) -c -o $@ $<
+	$(V)$(CC) $(BSP_CFLAGS) -c -o $@ $<
 
 $(OBJ)/bsp-obj: $(bsp-ofile)
-	$echo + merge $@
-	$(V)$(CC) $(BSP_CFLAGS) -o $@ $^
+	@echo + merge $@
+	$(V)$(LD) $(BSP_LDFLAGS) -o $@ $^
 

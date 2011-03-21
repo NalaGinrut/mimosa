@@ -60,7 +60,7 @@ static void cga_init()
   *CGA_DISP_BUF = tmp;
 
   // select MONO or CGA buffer
-  crt_buf = (port_6845 == MONO_BASE)? MONO_DISP_BUF : CGA_DISP_BUF;
+  crt_buf = (__u16_t*)((port_6845 == MONO_BASE)? MONO_DISP_BUF : CGA_DISP_BUF);
 
 
   // get cursor location
@@ -73,7 +73,7 @@ static void cga_init()
 }
 
 
-static void cga_putc(__u16_t ch)
+void cga_putc(__u16_t ch)
 {
   ch = (ch & 0xFF00)? ch : (ch | 0x0700);
 

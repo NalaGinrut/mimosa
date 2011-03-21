@@ -55,7 +55,7 @@ static void bsp_init_clear_tmp()
    * are well initialized.
    */
 
-  memset(__bss_start ,0 ,__BSS_SIZE);
+  //memset(__bss_start ,0 ,__BSS_SIZE);
 
 }
 

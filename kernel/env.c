@@ -16,7 +16,7 @@
 
 #include <env.h>
 
-static void env_init()
+void env_init()
 {
   int i=1+1;
 }

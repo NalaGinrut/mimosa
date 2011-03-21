@@ -19,7 +19,7 @@
 
 #include <now/bsp_types.h>
 
-extern principio[];
+extern char principio[];
 
 #define MONO_BASE	0x3B4
 #define MONO_BUF	0xB0000
@@ -40,6 +40,6 @@ void console_init();
 void console_putc(__u16_t ch);
 
 static void cga_init();
-static void cga_putc(__u16_t ch);
+void cga_putc(__u16_t ch);
 
 #endif // End of __MIMOSA_PC32_CONSOLE_H;

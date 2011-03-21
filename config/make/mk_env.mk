@@ -5,3 +5,4 @@ BSP := platform/bsp
 USERLAND := userland
 OBJDIRS :=
 OBJ := obj
+CONFIG := config

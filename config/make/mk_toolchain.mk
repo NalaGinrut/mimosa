@@ -15,7 +15,7 @@ NCC	:= gcc $(CC_VER) -pipe
 TAR	:= gtar
 GUILE	:= guile
 
-LDPATH := -L$(TOP)/lib -L$(TOP)/config -L$(OBJ)/
-LDFLAGS := $(LDPATH) -T$(TOP)/kernel.ld -nostdlib -b binary
+LDPATH := -L$(OBJ) -L$(CONFIG) -L$(TOP)
+LDFLAGS := $(LDPATH) -T$(TOP)/kernel.ld -nostdlib --verbose
 
-CFLAGS := $(CFLAGS) $(O_LEV) -fno-builtin -I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror $(STABS)
+CFLAGS := $(CFLAGS) $(O_LEV) -nostdinc -fno-builtin -I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror $(STABS)

@@ -175,7 +175,7 @@ static __inline__ void port_wnb(__u32_t port,
 }
 
 static __inline__ void port_wnw(__u32_t port,
-				__cptr addr,
+				__cptr_t addr,
 				__u32_t cnt)
 {
   __port_nwrite(outsw);

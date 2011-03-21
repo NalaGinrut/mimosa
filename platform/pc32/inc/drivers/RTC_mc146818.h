@@ -16,8 +16,8 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include <bsp_types.h>
-#include <bsp_bits.h>
+#include <now/bsp_types.h>
+#include <now/bsp_bits.h>
 
 #define RTC_PORT	0x70
 

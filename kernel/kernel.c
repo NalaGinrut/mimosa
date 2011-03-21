@@ -25,7 +25,7 @@
 #include <debug.h>
 #endif
 
-static void kernel_init()
+void kernel_init()
 {
 
   //TODO: init all kernel modules

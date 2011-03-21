@@ -29,10 +29,10 @@ INCLUDE conf.ld
 SECTIONS
 {
 
+	. = KERNEL_BEGIN;
 	/* principio is default kernel start address */
-	PROVIDE(principio = DEFINED(principio) ? principio : KERNEL_BEGIN);
-	. = principio;
-
+	PROVIDE(principio = KERNEL_BEGIN);
+	
 	.text : {
 	      TEXT_SECTION	
 	}
@@ -70,7 +70,7 @@ SECTIONS
 	/* The data segment */
 	.data : {
 	      DATA_SECTION
-	} :data
+	}
 
 	PROVIDE(edata = .);
 

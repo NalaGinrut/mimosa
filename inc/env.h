@@ -17,7 +17,7 @@
  */
 
 
-static void env_init();
+void env_init();
 
 
 #endif // End of __MIMOSA_ENV_H;

@@ -12,6 +12,9 @@ TOP := $(shell pwd)
 CONF := $(TOP)/config
 # Again! The Mimosa build framework is based on these lines. So let them alone!
 
+all: kernel.ld mimosa 
+	@echo "Mimosa kernel generated!\n"
+
 include $(CONF)/conf.mk
 -include $(BSP)/Makefile.mk
 -include $(KERNEL)/Makefile.mk
@@ -22,22 +25,17 @@ KERN_LDS := $(addsuffix -lds,kernel)
 
 mimosa-framework := 	$(OBJ)/entry.o	\
 			$(OBJ)/bsp-obj	\
-			$(OBJ)/kern-obj	\
-			$(OBJ)/lib-obj
-
-all: kernel.ld mimosa 
-	@echo "Mimosa kernel generated!\n"
+			$(OBJ)/kern-obj	
+			#$(OBJ)/lib-obj
 
 mimosa: $(mimosa-framework)
-	@echo + generate kernel image...
+	@echo + generate kernel image... from $^
 	$(V)$(LD) $(LDFLAGS) -o $@ $^
 
 kernel.ld:
 	$(V)$(MAKE) $(KERN_LDS)
 
 .PHONY: pretty mtest %-lds clean  
-
-all-objs: 
 
 %-lds:
 	$(V)$(CPP) $*/$*.cpp.ld -I$(INC) -o$*.ld

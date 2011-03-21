@@ -8,7 +8,7 @@ drv-cfile := $(wildcard $(DRIVERS)/*.c)
 drv-ofile := $(drv-cfile:.c=.o)
 drv-ofile := $(subst $(DRIVERS)/,$(BSP_OBJ)/,$(drv-ofile))
 
-bsp-ofile += drv-ofile
+bsp-ofile += $(drv-ofile)
 
 $(BSP_OBJ)/%.o : $(DRIVERS)/%.c
 	@echo + cc $<

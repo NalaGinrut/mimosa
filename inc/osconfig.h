@@ -17,7 +17,7 @@
  */
 
 // Enable kernel debugger
-#define __KERN_DEBUG__
+//#define __KERN_DEBUG__
 
 // Enable ARCH 64bit address:
 //#define MIMOSA_ADDRESS_64

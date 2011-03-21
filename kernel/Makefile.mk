@@ -10,7 +10,7 @@ kernel-ofile := $(kernel-cfile:.c=.o)
 kernel-ofile := $(subst $(KERNEL)/,$(KERN_OBJ)/,$(kernel-ofile))
 
 
-KERN_LDFLAG := -r -nostdlib 
+KERN_LDFLAGS := -r -nostdlib 
 
 KERN_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ 
 USER_CFLAGS := $(CFLAGS) -D__MIMOSA_USER__ 
@@ -21,7 +21,7 @@ USER_CFLAGS := $(CFLAGS) -D__MIMOSA_USER__
 $(KERN_OBJ)/%.o: $(KERNEL)/%.c
 	@echo + cc $<
 	@mkdir -p $(@D)
-	$(V)$(CC) -nostdinc $(KERN_CFLAGS) -c -o $@ $<
+	$(V)$(CC) $(KERN_CFLAGS) -c -o $@ $<
 
 
 

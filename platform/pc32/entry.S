@@ -69,7 +69,7 @@ set_gdt:
 	movw	%ax ,%es	# extra segment
 	movw	%ax ,%ss	# stack segment
 	
-	ljmp	$KD_SEL ,$init_cee_env
+	ljmp	$KD_SEL ,$set_cee_env
 
 set_cee_env:
 	movl	$0 ,%ebp	# clear ebp to terminate the backtrace
@@ -99,10 +99,9 @@ return_is_error:
 .p2align PG_SHIFT /* It should be decided by BSP config, but..
 		   * Anyway, it's just a temporary stack...
 		   */
-.globl	tmp_stack
 tmp_stack:
 	.space	KERN_STACK_SIZE
-.globl	tmp_stack_top
+tmp_stack_top:	
 	
 /* You may notice that this code below is as alike as segment handle
  * code in the bootloader. In fact they are the same, the only difference

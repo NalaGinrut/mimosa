@@ -14,7 +14,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include "drivers/RTC_mc146818.h"
-#include "bsp_types.h"
+#include <now/drivers/RTC_mc146818.h>
+#include <now/bsp_types.h>
 
 
