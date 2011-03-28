@@ -27,6 +27,9 @@
 // Represents true-or-false values
 typedef __bool bool;
 
+// CPU word long
+typedef __longword longword;
+
 // Explicitly-sized versions of integer types
 typedef __s8_t s8_t;
 typedef __u8_t u8_t;

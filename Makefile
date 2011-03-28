@@ -19,13 +19,13 @@ include $(CONF)/conf.mk
 -include $(BSP)/Makefile.mk
 -include $(KERNEL)/Makefile.mk
 -include $(LIB)/Makefile.mk
-# NO TOUCH!
+# DO NOT TOUCH!
 
 KERN_LDS := $(addsuffix -lds,kernel)
 
 mimosa-framework := 	$(OBJ)/entry.o	\
 			$(OBJ)/bsp-obj	\
-			$(OBJ)/kern-obj	
+			$(OBJ)/kern-obj		
 			#$(OBJ)/lib-obj
 
 mimosa: $(mimosa-framework)
@@ -35,19 +35,11 @@ mimosa: $(mimosa-framework)
 kernel.ld:
 	$(V)$(MAKE) $(KERN_LDS)
 
-.PHONY: pretty mtest %-lds clean  
+.PHONY: pretty %-lds clean  
 
 %-lds:
 	$(V)$(CPP) $*/$*.cpp.ld -I$(INC) -o$*.ld
 	$(V)sed -i "/^#.*/d" $*.ld
-
-mtest:
-	@echo "TOP: $(TOP)"
-	@echo "LIB: $(LIB)"
-	@echo "CONF: $(CONF)"
-	@echo "INC: $(INC)"
-	@echo "MAKEFILE_LIST: $(MAKEFILE_LIST)"
-
 
 pretty:
 	@echo "Deleting backup file..."

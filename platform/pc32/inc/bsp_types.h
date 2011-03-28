@@ -28,10 +28,6 @@
 // Represents true-or-false values
 typedef enum BOOL { true=0 ,false=1 } __bool;
 
-
-/* don't use 'public' while declaration, use it while calling the var/func;
- */ 
-
 // Explicitly-sized versions of integer types
 typedef signed char	__s8_t;
 typedef unsigned char	__u8_t;
@@ -41,6 +37,9 @@ typedef int 		__s32_t;
 typedef unsigned int 	__u32_t;
 typedef long long 	__s64_t;
 typedef unsigned long long __u64_t;
+
+// CPU word long ,pc32 is 32bit
+typedef __u32_t __longword;
 
 // Pointers and addresses are 32 bits long.
 // We use pointer types to represent virtual addresses,

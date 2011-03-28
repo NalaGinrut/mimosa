@@ -23,11 +23,9 @@ $(KERN_OBJ)/%.o: $(KERNEL)/%.c
 	@mkdir -p $(@D)
 	$(V)$(CC) $(KERN_CFLAGS) -c -o $@ $<
 
-
-
 # NOTE: all %-obj generated must be in the $(OBJ),
 # 	not KERN_OBJ, LIB_OBJ, etc...
-$(OBJ)/kern-obj: $(kernel-ofile)	
+$(OBJ)/kern-obj: $(kernel-ofile)
 	@echo + merge $@
 	$(V)$(LD) $(KERN_LDFLAGS) -o $@ $^
 
