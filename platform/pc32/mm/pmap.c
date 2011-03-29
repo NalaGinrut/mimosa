@@ -17,5 +17,5 @@
 
 #include <now/mm/pmap.h>
 #include <now/bsp_types.h>
-#include <lib/string.h>
+#include <libkern.h>
 

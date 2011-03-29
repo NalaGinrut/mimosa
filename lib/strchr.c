@@ -22,7 +22,7 @@ void *strchr(void const *str ,int c_in)
   size_t len = strnlen(str ,MAX_STRING_LEN);
   
   if( !len )
-    return str;
+    return (void*)str;
   
-  return memnchr(str ,c_in ,len);
+  return memchr(str ,c_in ,len);
 }

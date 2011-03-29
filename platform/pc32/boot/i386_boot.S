@@ -15,7 +15,7 @@
  */
 
 #include "i386_boot.h"
-#include <now/cpu/gdt.h>	
+#include <now/cpu/segment.h>	
 	
 #################
 # ENTRY POINT
@@ -109,7 +109,7 @@ gdt_descriptor:
 
 				# FIXME: I want to use SEG macro ,it's more clear.
 				# I will fix it later...
-		SEG_INIT(STA_X | STA_R ,0x0 ,0xffffffff)
-		SEG_INIT(STA_W ,0x0 ,0xffffffff)
+		SEG_INIT(USEG_X|USEG_R ,0x0 ,0xffffffff)
+		SEG_INIT(USEG_W ,0x0 ,0xffffffff)
 
 	

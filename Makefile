@@ -25,9 +25,9 @@ KERN_LDS := $(addsuffix -lds,kernel)
 
 mimosa-framework := 	$(OBJ)/entry.o	\
 			$(OBJ)/bsp-obj	\
-			$(OBJ)/kern-obj		
-			#$(OBJ)/lib-obj
-
+			$(OBJ)/kern-obj	\
+			$(OBJ)/lib-obj	
+#
 mimosa: $(mimosa-framework)
 	@echo + generate kernel image... from $^
 	$(V)$(LD) $(LDFLAGS) -o $@ $^
@@ -35,7 +35,17 @@ mimosa: $(mimosa-framework)
 kernel.ld:
 	$(V)$(MAKE) $(KERN_LDS)
 
-.PHONY: pretty %-lds clean  
+$(OBJ)/bochs.img: kernel.ld mimosa $(OBJ)/boot
+	@echo + mk $@
+	$(V)dd if=/dev/zero of=$(OBJ)/$(@F).bak count=10000 
+	$(V)dd if=$(OBJ)/boot.out of=$(OBJ)/$(@F).bak conv=notrunc 
+	$(V)dd if=mimosa of=$(OBJ)/$(@F).bak seek=1 conv=notrunc 
+	$(V)mv $(OBJ)/$(@F).bak $(OBJ)/$(@F)
+
+.PHONY: pretty %-lds clean bochs grub
+
+bochs: $(OBJ)/bochs.img
+	$(V)bochs
 
 %-lds:
 	$(V)$(CPP) $*/$*.cpp.ld -I$(INC) -o$*.ld
@@ -48,7 +58,7 @@ pretty:
 
 clean:
 	@echo "Cleaning all objs & generated files..."
-	$(V)rm -frd *.ld
+	$(V)rm -frd *.ld *.log .sw{o,p}
 	$(V)test -e $(OBJ) && rm -frd $(OBJ) || echo "No objs generated!"
 	$(V)test -e mimosa && rm -f mimosa || echo "No kernel generated!"
 	$(V)$(MAKE) pretty 

@@ -22,11 +22,11 @@
 /* FIXME:
  * it's a stupid handle, I'll fix it after conf-tools' ready.
  */
-#define KERN_BEGIN	0xC0100000
+#define KERN_BASE	0xC0000000
 #define FULL_ADDR	0xFFFFFFFF
 #define PG_SHIFT	12
 #define KERN_STACK_SIZE	4096
-#define RELOC(addr)	((addr) - KERN_BEGIN)
+#define RELOC(addr)	((addr) - KERN_BASE)
 
 ###############
 # Text Segment
@@ -57,19 +57,16 @@ _start:
 
 	call	set_gdt
 
-
-
-
 set_gdt:
 	lgdt	RELOC(init_gdt_desc)
-	movl	$KD_SEL ,%eax	# set data seg_desc
+	movw	$KD_SEL ,%ax	# set data seg_desc
 
 	/* don't forget that segment-regs have only 16bit */
 	movw	%ax ,%ds	# data segment
 	movw	%ax ,%es	# extra segment
 	movw	%ax ,%ss	# stack segment
 	
-	ljmp	$KD_SEL ,$set_cee_env
+	ljmp	$KC_SEL ,$set_cee_env
 
 set_cee_env:
 	movl	$0 ,%ebp	# clear ebp to terminate the backtrace
@@ -99,8 +96,10 @@ return_is_error:
 .p2align PG_SHIFT /* It should be decided by BSP config, but..
 		   * Anyway, it's just a temporary stack...
 		   */
+	.globl tmp_stack
 tmp_stack:
 	.space	KERN_STACK_SIZE
+	.globl tmp_stack_top
 tmp_stack_top:	
 	
 /* You may notice that this code below is as alike as segment handle
@@ -114,11 +113,12 @@ tmp_stack_top:
  * When we entering the Cee world, they will be re-established formally.
  */
 	.p2align 2	/* force 4byte aligment */
-init_gdt:
-	SEG_NULL
-	SEG_INIT(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)	# code segment
-	SEG_INIT(USEG_W ,RELOC(0) ,FULL_ADDR)	# data segment
+
+/* Well~still the gdt trick~I just like it
+ */
 init_gdt_desc:
 	.word 0x17
 	.long RELOC(init_gdt_desc)
-	
+	.word 0x00
+	SEG_INIT(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)	# code segment
+	SEG_INIT(USEG_W ,RELOC(0) ,FULL_ADDR)	# data segment

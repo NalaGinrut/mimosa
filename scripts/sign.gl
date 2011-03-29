@@ -1,0 +1,77 @@
+;; Copyleft(c)2010 HackerFellowship. All lefts reserved.
+  
+;; NalaGinrut <NalaGinrut@gmail.com>
+;; LiuXiangFu <xiangfu.z@gmail.com>
+
+;; May Lord Bless!Happy Hacking!
+  
+;; This program is free software;you can redistribute it and /or modify
+;; it under the terms of the GNU General Public License as published by 
+;; the Free Software Foundataion;either version 2 of the License,or (at 
+;; your option) any later version.
+  
+;; You should have read the GNU General Public License before start "RTFSC".
+  
+;; If not,see <http://www.gnu.org/licenses/>
+
+
+(use-modules (ice-9 rw))
+
+(define const-length 510)
+(define const-paddle #\00)
+(define signature "\x55\xAA")
+
+(define file-change-ext
+  (lambda (filename ext)
+    (let ((pos (string-contains filename "."))
+	  )
+      (if pos 
+	  (string-replace filename
+			  ext
+			  (1+ pos) 
+			  );;end string-replace
+	  (string-append filename "." ext)
+	  );;end if
+      );; end let
+    );;end lambda
+  );;end file-change-ext
+
+(define throw-error
+  (lambda (str . args)
+    (apply format #t str args)
+    (exit)
+    )
+  )
+
+(define main
+  (lambda (args)
+    (if (< (length args) 2)
+	(throw-error "usage: ~a filename ~%" (car args))
+	(let*
+	    ((filename (cadr args))
+	     (input (open-file filename "r"))
+	     (output (open-file (file-change-ext filename "out") "w"))
+	     (buf (make-string const-length const-paddle))
+	     (buf-len
+	      ((lambda (buf)
+		(let ((len (read-string!/partial buf input)))
+		(if (eof-object? (read-char input)) 
+		    len
+		    (throw-error "file size is larger than 510B! ~%")
+		    );;end if
+		);;end let
+		);;end lambda
+	       buf)
+	      );;end buf-len
+	     );;end let* (
+	  (write-string/partial
+	   (string-append buf signature)
+	   output)
+	  
+	  (format #t "It seems you got an output! check it out! ~%")
+	  (close input)
+	  (close output)
+	  );;end let*
+	);;end if
+    );;end lambda
+  );;end main

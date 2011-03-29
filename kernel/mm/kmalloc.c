@@ -14,18 +14,14 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+
 #include <mm/mm.h>
-#include <libkern.h>
 #include <types.h>
 
-char *strndup(char const *str ,size_t n)
+
+void *kmalloc(size_t size)
 {
-  size_t len = strnlen (str, n);
-  char *new = kmalloc(len + 1);
 
-  if (new == NULL)
-    return NULL;
-
-  new[len] = '\0';
-  return memcpy (new, str, len);
+  // TODO: implement it!
+  return NULL;
 }

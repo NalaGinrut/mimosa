@@ -10,6 +10,7 @@ bsp-ofile := $(subst $(BSP)/,$(BSP_OBJ)/,$(bsp-ofile))
 BSP_LDFLAGS := -r -nostdlib 
 BSP_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ $(STABS)
 
+-include $(BSP)/boot/Makefile.mk
 -include $(BSP)/drivers/Makefile.mk
 
 # entry.o is a special object file. And entry.S should be 

@@ -5,3 +5,5 @@ BSP := platform/bsp
 USERLAND := userland
 OBJDIRS :=
 OBJ := obj
+BOOT := $(BSP)/boot
+TOOLS := scripts

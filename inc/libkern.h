@@ -20,7 +20,7 @@
 
 #define MAX_STRING_LEN 256
 
-char *strndup(const char *str);
+char *strndup(const char *str ,size_t n);
 size_t strnlen(const char *str, size_t n);
 char *strncat(char *dest, const char *src, size_t n);
 char *strncpy(char *dest, const char *src, size_t n);
