@@ -22,6 +22,7 @@
  */
 //#define __KERN_ONLINE_DEBUG__
 
-
+#include <debug/display.h>
+#include <debug/trace.h>
 
 #endif // End of __MIMOSA_DEBUG_H;

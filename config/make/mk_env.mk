@@ -7,3 +7,4 @@ OBJDIRS :=
 OBJ := obj
 BOOT := $(BSP)/boot
 TOOLS := scripts
+DEBUG := debug

@@ -50,6 +50,9 @@ SECTIONS
  	 */
 	PROVIDE(etext = .);
 
+	/* HERE IS RODATA */
+	RO_DATA
+
 	/* Include debugging information in kernel memory */
 	.stab : {
 	      STAB_SECTION

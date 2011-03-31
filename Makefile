@@ -19,6 +19,10 @@ include $(CONF)/conf.mk
 -include $(BSP)/Makefile.mk
 -include $(KERNEL)/Makefile.mk
 -include $(LIB)/Makefile.mk
+
+ifdef KDEBUG
+-include $(DEBUG)/Makefile.mk
+endif
 # DO NOT TOUCH!
 
 KERN_LDS := $(addsuffix -lds,kernel)
@@ -27,7 +31,12 @@ mimosa-framework := 	$(OBJ)/entry.o	\
 			$(OBJ)/bsp-obj	\
 			$(OBJ)/kern-obj	\
 			$(OBJ)/lib-obj	
-#
+
+ifdef KDEBUG
+mimosa-framework += $(OBJ)/debug-obj
+endif
+
+### TARGET ###
 mimosa: $(mimosa-framework)
 	@echo + generate kernel image... from $^
 	$(V)$(LD) $(LDFLAGS) -o $@ $^

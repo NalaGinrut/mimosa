@@ -16,7 +16,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-
+#include <osconfig.h>
 #include <now/bsp_types.h>
 
 extern char principio[];
@@ -26,8 +26,8 @@ extern char principio[];
 #define CGA_BASE	0x3D4
 #define CGA_BUF		0xB8000
 
-#define CGA_DISP_BUF	((volatile __u16_t*)(principio + CGA_BUF))
-#define MONO_DISP_BUF	((volatile __u16_t*)(principio + MONO_BUF))
+#define CGA_DISP_BUF	((volatile __u16_t*)(KERN_BASE + CGA_BUF))
+#define MONO_DISP_BUF	((volatile __u16_t*)(KERN_BASE + MONO_BUF))
 
 #define CRT_ROWS	25
 #define CRT_COLS	80

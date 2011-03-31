@@ -1,3 +1,5 @@
+#ifndef __BSP_CPU_H
+#define __BSP_CPU_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -14,9 +16,7 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#ifndef __BSP_CPU_H
-#define __BSP_CPU_H
-
+#include <now/cpu/_cpu.h>
 
 
 

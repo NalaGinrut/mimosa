@@ -12,7 +12,9 @@ V :=
 endif
 
 # Debug handler
-ifdef DEBUG
+KDEBUG := 1
+
+ifdef KDEBUG
 STABS := -gstabs
 else
 STABS := 

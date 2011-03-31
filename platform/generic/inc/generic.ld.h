@@ -29,8 +29,8 @@
 /* Align . to 8, it's maximum function alignment */
 #define ALIGN_FUNC()	. = ALIGN(8)
 
-#define DATA_SECTION	\
-	*(.data)	\
+#define DATA_SECTION		\
+	*(.data)		
 
 #define TEXT_SECTION				\
 	ALIGN_FUNC();				\
@@ -51,7 +51,6 @@
 	PROVIDE(__STABSTR_BEGIN__ = .);	\
 	*(.stabstr);		    	\
 	PROVIDE(__STABSTR_END__ = .);	
-
 
 #define MK_RODATA(align)		\
 	. = ALIGN((align));		\

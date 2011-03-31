@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_ERROR_H
+#define __MIMOSA_ERROR_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -14,26 +16,20 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+#include <types.h>
+#include <retnum.h>
 
-#ifndef MIMOSA_ERR_H
-#define MIMOSA_ERR_H
+#ifndef __KERN_DEBUG__
+#include <console.h>
+#define panic(str)	\
+  kprintf(str)
+#else
+#include <debug/display.h>
+#define panic(str)	\
+  msg_print(str)
+#endif
 
-#include "types.h"
-
-typedef enum err_status
-  { OK=0 ,
-  }err_t;
-
-
-/*
-typedef error_type
-{
-  //TODO: contains e_status......
-}err_t;
-*/
-
-
-#endif // End of MIMOSA_ERR_H;
+#endif // End of __MIMOSA_ERROR_H;
 
 
 

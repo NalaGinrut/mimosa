@@ -18,6 +18,7 @@
 #include <now/bsp_types.h>
 #include <now/drivers/console.h>
 #include <now/drivers/kbd.h>
+#include <libkern.h>
 
 #ifdef __KERN_DEBUG__
 #include <debug.h>
@@ -100,6 +101,16 @@ void cga_putc(__u16_t ch)
       break;
     }
 
+  if (crt_pos >= CRT_SIZE)
+    {
+      int i;
+    
+      memcpy(crt_buf, crt_buf + CRT_COLS, 
+	     (CRT_SIZE - CRT_COLS) * sizeof(__u16_t));
+      for (i = CRT_SIZE - CRT_COLS; i < CRT_SIZE; i++)
+			crt_buf[i] = 0x0700 | ' ';
+      crt_pos -= CRT_COLS;
+    }
 
   port_wb(port_6845 ,CURSOR_H);
   port_wb(port_6845 + 1 ,crt_pos >> 8);

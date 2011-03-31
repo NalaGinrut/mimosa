@@ -14,10 +14,12 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-
+#include <osconfig.h>
 #include <kernel.h>
-#include <now/bsp_types.h>
+#include <types.h>
+#include <libkern.h>
 #include <now/mm/pmap.h>
+#include <now/drivers/console.h>
 #include "bsp_init.h"
 
 #ifdef __KERN_DEBUG__
@@ -26,15 +28,21 @@
 
 void platform_init()
 {
-
   bsp_init_clear_tmp();
   bsp_init_console();
+
+#ifdef __KERN_DEBUG__
+  msg_print("In the beginning,God created the heavens and the earth.\t--Genesis 1:1\n");
+#endif
+
+
+  while(1);
 
 #ifdef __KERN_ONLINE_DEBUG__
   bsp_init_online_debug();
 #endif
 
-  bsp_init_memory();
+  //bsp_init_memory();
 
   //TODO: other init needed.
 
@@ -43,7 +51,7 @@ void platform_init()
    * platform specified code in the kernel module. It's generic.
    */
 
-  kernel_init();
+  //kernel_init();
 }
 
 static void bsp_init_clear_tmp()
@@ -55,14 +63,15 @@ static void bsp_init_clear_tmp()
    * are well initialized.
    */
 
-  //memset(__bss_start ,0 ,__BSS_SIZE);
+  memset(__bss_start ,0 ,__BSS_SIZE);
 
 }
 
 static void bsp_init_console()
 {
   // TODO: init console ,then we could print message.
-  
+  console_init();
+
 }
 
 static void bsp_init_online_debug()

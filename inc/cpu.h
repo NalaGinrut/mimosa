@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_CPU_H
+#define __MIMOSA_CPU_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -16,13 +18,11 @@
 
 /* This file is a generic CPU controller for any platform,
  */
-#ifndef MIMOSA_CPU_H
-#define MIMOSA_CPU_H
 
-#include "now/_cpu.h"
+#include <now/bsp_cpu.h>
 
 
 #define get_frame_head __get_frame_head
 
 
-#Endif // End of MIMOSA_CPU_H;
+#endif // End of __MIMOSA_CPU_H;
