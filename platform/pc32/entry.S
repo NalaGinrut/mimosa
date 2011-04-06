@@ -116,3 +116,4 @@ init_gdt_desc:
 	.word 0x00
 	SEG_INIT(USEG_X|USEG_R ,RELOC(0) ,FULL_ADDR)	# code segment
 	SEG_INIT(USEG_W ,RELOC(0) ,FULL_ADDR)	# data segment
+

@@ -1,3 +1,5 @@
+#ifndef	__MIMOSA_MUTEX_H
+#define __MIMOSA_MUTEX_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -15,17 +17,16 @@
  */
 
 #include <types.h>
-#include <retnum.h>
-#include <stream.h>
-#include <generic/generic_stream.h>
+#include <lock.h>
 
 
+// all mutex is spin type;
+typedef u32_t mutex_t;
 
-/*
- * TODO: This stream.c in kernel dir is responsible to give
- *	 higher level processing against the primitive stream 
- *	 procedure. Such as "protect","exclusive/mutex",
- *	 "check" and "memory pool style list maintain".
- */
+void mutex_wait(mutex_t *mutex);
+void mutex_signal(mutex_t *mutex);
 
+void mutex_set_wait(mutex_t *mutex ,u8_t offset);
+void mutex_set_signal(mutex_t *mutex ,u8_t offset);
 
+#endif // End of __MIMOSA_MUTEX_H;

@@ -1,3 +1,5 @@
+#ifndef	__MIMOSA_LOCK_H
+#define __MIMOSA_LOCK_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -14,18 +16,17 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include <types.h>
-#include <retnum.h>
-#include <stream.h>
-#include <generic/generic_stream.h>
 
+#include <atomic.h>
 
+typedef enum Lock_Type
+  {
+    LOCK_SPIN ,
+  }lock_type;
 
-/*
- * TODO: This stream.c in kernel dir is responsible to give
- *	 higher level processing against the primitive stream 
- *	 procedure. Such as "protect","exclusive/mutex",
- *	 "check" and "memory pool style list maintain".
- */
+#define lock_spin_require(l ,o)	atomic_set_bit(l ,o)
+#define lock_release(l ,o)	atomic_clear_bit(l ,o)
 
+void lock_require(void *lock ,u32_t offset ,lock_type type);
 
+#endif // End of __MIMOSA_LOCK_H;

@@ -18,7 +18,7 @@
 
 #ifndef __ASSEMBLER__
 
-#include "now/bsp_types.h"
+#include <now/bsp_types.h>
 
 #ifndef NULL
 #define NULL ((void*) 0)

@@ -18,6 +18,7 @@
 
 #include <types.h>
 #include <bits.h>
+#include <mutex.h>
 
 typedef void* (*gs_alloc_t)(void*);
 typedef void (*gs_free_t)(void*);
@@ -73,7 +74,8 @@ typedef struct Generic_Stream_Obj
   u32_t status;
 
   void *custom;
-  // FIXME: I need semaphore in case multi ops.
+  mutex_t mutex; 
+
   gs_alloc_t alloc;
   gs_free_t free;
 }gs_obj_t;

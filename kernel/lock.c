@@ -14,18 +14,22 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+
 #include <types.h>
-#include <retnum.h>
-#include <stream.h>
-#include <generic/generic_stream.h>
+#include <error.h>
+#include <lock.h>
+
+void lock_require(void *lock ,u32_t offset ,lock_type type)
+{
+  switch(type)
+    {
+    case LOCK_SPIN:
+      lock_spin_require(lock ,offset);break;
+    default:
+      panic("invalid lock type!\n");
+    }
+}
 
 
-
-/*
- * TODO: This stream.c in kernel dir is responsible to give
- *	 higher level processing against the primitive stream 
- *	 procedure. Such as "protect","exclusive/mutex",
- *	 "check" and "memory pool style list maintain".
- */
-
-
+  
+  

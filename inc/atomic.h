@@ -1,3 +1,5 @@
+#ifndef	__MIMOSA_ATOMIC_H
+#define __MIMOSA_ATOMIC_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
@@ -14,18 +16,10 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include <types.h>
-#include <retnum.h>
-#include <stream.h>
-#include <generic/generic_stream.h>
 
+#include <now/bsp_atomic.h>
 
+#define atomic_set_bit(l ,o)	__atomic_set_bit(l ,o)
+#define atomic_clear_bit(l ,o)	__atomic_clear_bit(l ,o)
 
-/*
- * TODO: This stream.c in kernel dir is responsible to give
- *	 higher level processing against the primitive stream 
- *	 procedure. Such as "protect","exclusive/mutex",
- *	 "check" and "memory pool style list maintain".
- */
-
-
+#endif // End of __MIMOSA_ATOMIC_H;
