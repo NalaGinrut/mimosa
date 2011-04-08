@@ -16,20 +16,13 @@ all: kernel.ld mimosa
 	@echo "Mimosa kernel generated!\n"
 
 include $(CONF)/conf.mk
--include $(BSP)/Makefile.mk
--include $(KERNEL)/Makefile.mk
--include $(LIB)/Makefile.mk
-
-ifdef KDEBUG
--include $(DEBUG)/Makefile.mk
-endif
 # DO NOT TOUCH!
 
 KERN_LDS := $(addsuffix -lds,kernel)
 
-mimosa-framework := 	$(OBJ)/entry.o	\
-			$(OBJ)/bsp-obj	\
-			$(OBJ)/kern-obj	\
+mimosa-framework := 	$(OBJ)/entry.o \
+			$(OBJ)/bsp-obj \
+			$(OBJ)/kern-obj \
 			$(OBJ)/lib-obj	
 
 ifdef KDEBUG

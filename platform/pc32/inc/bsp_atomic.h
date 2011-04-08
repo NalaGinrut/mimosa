@@ -1,6 +1,7 @@
-#ifndef	__PC32_BSP_ATOMIC_H
-#define __PC32_BSP_ATOMIC_H
-/* Copyleft(c)2010 HackerFellowship. All lefts reserved.
+#ifndef	__BSP_PC32_ATOMIC_H
+#define __BSP_PC32_ATOMIC_H
+/* Copyleft(c) 2010 2011
+ * HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
  
@@ -27,7 +28,7 @@ static inline void __atomic_set_bit(void *lock ,u32_t offset)
   __asm__ __volatile__("1: lock bts%z0 %0 ,%1\n\t"
 		       "jnc 1b"
 		       :"=r" (lock)
-		       :"Ir" (offset)
+		       :"0" (lock) ,"Ir" (offset)
 		       :"cc"
 		       );
 }
@@ -36,9 +37,9 @@ static inline void __atomic_clear_bit(void *lock ,u32_t offset)
 {
   __asm__ __volatile__("lock btr%z0 %0 ,%1"
 		       :"=r" (lock)
-		       :"m" (lock) ,"Ir" (offset)
+		       :"0" (lock) ,"Ir" (offset)
 		       :"cc"
 		       );
 }
 
-#endif // End of __PC32_BSP_ATOMIC_H;
+#endif // End of __BSP_PC32_ATOMIC_H;

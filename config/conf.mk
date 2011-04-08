@@ -2,8 +2,6 @@
 
 MK_CONF := $(CONF)/make
 
-include $(MK_CONF)/all_conf.mk
-
 # Verbose handler
 ifndef VERBOSE
 V := @ # "V = " for verbose, "V = @" for non-verbose
@@ -20,10 +18,12 @@ else
 STABS := 
 endif
 
- 
+
 # Optimize handler
 ifndef O_LEV
 O_LEV := 0
 endif
 
+# this line must be the last line ,DO NOT CHANGE IT!
+include $(MK_CONF)/all_conf.mk
 
