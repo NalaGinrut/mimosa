@@ -16,7 +16,17 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
+#include <osconfig.h>
 #include <types.h>
 
+#ifdef __BERYL_ON__
+
+#include "beryl/beryl_api.h"
+
+#else
+
+// TODO: data structure without beryl;
+
+#endif // End of __BERYL_ON__;
 
 #endif // End of __MIMOSA_DS_BASE_H;

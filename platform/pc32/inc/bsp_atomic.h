@@ -20,6 +20,8 @@
 
 #include <types.h>
 
+typedef u32_t atomic_t; 
+
 static inline void __atomic_set_bit(void *lock ,u32_t offset);
 static inline void __atomic_clear_bit(void *lock ,u32_t offset);
 

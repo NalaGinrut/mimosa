@@ -25,9 +25,18 @@
   kprintf(str)
 #else
 #include <debug/display.h>
-#define panic(str)	\
+// FIXME: I need format!
+#define panic(str ,...)	\
   msg_print(str)
 #endif
+
+#define ASSERT_OUTFMT "func:%s in file:%s Assert:\"%s\" failed!\n"
+
+#define __assert_print(p)	\
+  panic(ASSERT_OUTFMT ,__FUNCTION__ ,__FILE__ ,#p)
+
+#define assert(p)	\
+  do{ if(!(p)) __assert_print(p); }while(0);
 
 #endif // End of __MIMOSA_ERROR_H;
 

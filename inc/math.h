@@ -1,5 +1,5 @@
-#ifndef	__BSP_PC32_PMAP_H
-#define __BSP_PC32_PMAP_H
+#ifndef	__MIMOSA_LIB_MATH_H
+#define __MIMOSA_LIB_MATH_H
 /* Copyleft(c) 2010 2011
  * HackerFellowship. All lefts reserved.
  
@@ -18,7 +18,12 @@
  */
 
 
+#include <types.h>
+
+inline u32_t gcd(u32_t a ,u32_t b);
+inline u32_t sgcd(s32_t a ,s32_t b);
+
+inline u32_t abs(s32_t a);
 
 
-
-#endif // End of __BSP_PC32_PMAP_H;
+#endif // End of __MIMOSA_LIB_MATH_H;

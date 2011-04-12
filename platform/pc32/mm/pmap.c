@@ -1,4 +1,5 @@
-/* Copyleft(c)2010 HackerFellowship. All lefts reserved.
+/* Copyleft(c) 2010 2011 
+ * HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
  
@@ -16,6 +17,7 @@
 
 
 #include <now/mm/pmap.h>
-#include <now/bsp_types.h>
+#include <types.h>
+#include <ds/qlist.h>
 #include <libkern.h>
 

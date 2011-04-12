@@ -1,5 +1,3 @@
-#ifndef	__BSP_PC32_PMAP_H
-#define __BSP_PC32_PMAP_H
 /* Copyleft(c) 2010 2011
  * HackerFellowship. All lefts reserved.
  
@@ -18,7 +16,36 @@
  */
 
 
+#include <math.h>
+#include <types.h>
+
+inline u32_t gcd(u32_t a ,u32_t b)
+{
+  u32_t c=0;
+  u32_t _a = MAX(a,b);
+  u32_t _b = MIN(a,b);
+
+  do{
+    c=_a%_b;
+    _a=_b;
+    _b=c;
+  }while(c);
+  
+  return _a;
+  
+}
 
 
+// We don't need a negtive gcd. It's my assumption.
+inline u32_t sgcd(s32_t a ,s32_t b)
+{
+  u32_t _a = abs(a);
+  u32_t _b = abs(b);
+  
+  return  gcd(_a ,_b);
+}
 
-#endif // End of __BSP_PC32_PMAP_H;
+inline u32_t abs(s32_t a)
+{
+  return a>=0? a : -a;
+}
