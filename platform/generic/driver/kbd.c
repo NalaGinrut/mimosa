@@ -15,9 +15,9 @@
  */
 
 
-#include <now/cpu/port.h>
-#include <now/drivers/kbd.h>
-#include <now/bsp_types.h>
+#include <bsp/cpu/port.h>
+#include <bsp/drivers/kbd.h>
+#include <bsp/bsp_types.h>
 
 // NOTE: Scancode for set 1
 

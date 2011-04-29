@@ -16,8 +16,8 @@
  * If not,see <http://www.gnu.org/licenses/>
  */
 
-#include <now/bsp_types.h>
-#include <now/bsp_bits.h>
+#include <bsp/bsp_types.h>
+#include <bsp/bsp_bits.h>
 
 #define BYTE	8
 #define SECTOR	512

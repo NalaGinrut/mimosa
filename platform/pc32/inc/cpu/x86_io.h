@@ -1,5 +1,5 @@
-#ifndef __MIMOSA_X86_IO_H
-#define __MIMOSA_X86_IO_H
+#ifndef __MIMOSA_PC32_X86_IO_H
+#define __MIMOSA_PC32_X86_IO_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
   
  * NalaGinrut <NalaGinrut@gmail.com>

@@ -16,9 +16,9 @@
 
 
 #include <elf.h>
-#include <now/cpu/port.h>
-#include <now/bsp_bits.h>
-#include <now/bsp_types.h>
+#include <bsp/cpu/port.h>
+#include <bsp/bsp_bits.h>
+#include <bsp/bsp_types.h>
 #include "boot_main.h"
 
 #define BOCHS_DEBUG

@@ -1,25 +1,27 @@
-#ifndef __MIMOSA_PAGING_H
-#define __MIMOSA_PAGING_H
-/* Copyleft(c)2010 HackerFellowship. All lefts reserved.
-  
- * NalaGinrut <NalaGinrut@gmail.com>
-  
- * May Lord Bless!Happy Hacking!
-  
- * This program is free software;you can redistribute it and /or modify
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundataion;either version 2 of the License,or (at 
- * your option) any later version.
-  
- * You should have read the GNU General Public License before start "RTFSC".
-  
- * If not,see <http://www.gnu.org/licenses/>
+#ifndef __MIMOSA_PC32_PAGING_H
+#define __MIMOSA_PC32_PAGING_H
+/*	
+ *  Copyright (C) 2010-2011  
+ *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
+ 
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ 
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __ASSEMBLER__
 
-#include <now/bsp_types.h>
-#include <now/bsp_bits.h>
+#include <bsp/bsp_types.h>
+#include <bsp/bsp_bits.h>
 #include "crx.h"
 
 #ifdef __BIT32_PAGING__
@@ -179,4 +181,4 @@ static inline void TLB_flush_mem(__mem_t mem)
 
 #endif // !__ASSEMBLER__
 
-#endif // End of __MIMOSA_PAGING_H;
+#endif // End of __MIMOSA_PC32_PAGING_H;

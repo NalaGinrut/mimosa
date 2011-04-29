@@ -1,5 +1,5 @@
-#ifndef	__PC32_STDARG_H
-#define __PC32_STDARG_H
+#ifndef	__MIMOSA_PC32_STDARG_H
+#define __MIMOSA_PC32_STDARG_H
 /* Copyleft(c)2010 HackerFellowship. All lefts reserved.
    
  * NalaGinrut <NalaGinrut@gmail.com>
