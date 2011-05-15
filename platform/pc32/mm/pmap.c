@@ -16,9 +16,12 @@
  */
 
 
-#include <bsp/mm/pmap.h>
 #include <types.h>
 #include <ds/qlist.h>
 #include <libkern.h>
+#include <osconfig.h>
+#include <error.h>
+#include <bsp/cpu/paging.h>
+#include <bsp/mm/pmap.h>
 
 

@@ -83,7 +83,7 @@
 // DON'T USE THIS PROCs DIRECTLY!!!
 #define __crx_set(crx ,flag)				\
   do{							\
-    asm volatile("movl %%eax ,%%"#crx			\
+    __asm__ volatile("movl %%eax ,%%"#crx			\
 		 :					\
 		 :"a" (flag)				\
 		 );					\
@@ -91,7 +91,7 @@
 
 #define __crx_get(crx)					\
   do{							\
-    asm volatile("movl %%"#crx" ,%%eax"			\
+    __asm__ volatile("movl %%"#crx" ,%%eax"			\
 		 :"=a" (ret)				\
 		 );					\
   }while(0);

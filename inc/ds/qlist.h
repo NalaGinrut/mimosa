@@ -1,4 +1,4 @@
-#ifndef	__MIMOSA_QUICK_LIST_H
+#ifndef __MIMOSA_QUICK_LIST_H
 #define __MIMOSA_QUICK_LIST_H
 /*	
  *  Copyright (C) 2010-2011  
