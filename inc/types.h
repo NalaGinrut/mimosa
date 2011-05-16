@@ -22,6 +22,9 @@
 
 #include <bsp/bsp_types.h>
 
+#define no_return __no_return
+#define true_inline __true_inline
+
 #ifndef NULL
 #define NULL ((void*) 0)
 #endif
@@ -72,8 +75,16 @@ typedef __physaddr_t physaddr_t;
 
 // FIXME: how to deal with 64bit_ARCH for other things, such as "page"?
 
+/* paging type shouldn't be visible to kernel, use them in BSP only; 
 // Page numbers are 32 bits long(default). We haven't consider others yet.
 typedef __ppn_t ppn_t;
+typedef __pte_t pte_t;
+typedef __pte_tp pte_tp;
+typedef __pde_t pde_t;
+typedef __pde_tp pde_tp;
+typedef __laddr_t laddr_t;
+typedef __laddr_tp laddr_tp;
+*/
 
 // size_t is used for memory object sizes.
 typedef __size_t size_t;

@@ -19,7 +19,7 @@
  */
 
 #include <types.h>
-#include <retnum.h>
+#include <retval.h>
 
 #ifndef __KERN_DEBUG__
 #include <console.h>
@@ -39,6 +39,19 @@
 
 #define assert(p)	\
   do{ if(!(p)) __assert_print(p); }while(0);
+
+
+/* FIXME: use these functions while finished format printf;
+#define warn(...) _warn(__FILE__, __LINE__, __VA_ARGS__)
+#define panic(...) _panic(__FILE__, __LINE__, __VA_ARGS__)
+
+
+// func declaration;
+static void _warn(const char*, int, const char*, ...);
+static void _panic(const char*, int, const char*, ...) no_return;
+*/
+
+static void print_errmsg(retval rv);
 
 #endif // End of __MIMOSA_ERROR_H;
 

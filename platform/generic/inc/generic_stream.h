@@ -89,7 +89,7 @@ gs_obj_t *generic_stream_create(char *name ,char *buffer,
 				void *custom,
 				gs_alloc_t alloc,
 				gs_free_t free);
-retnum generic_stream_shoot(void const *data ,gs_obj_t *gso ,size_t size);
-retnum generic_stream_imbibe(gs_obj_t *gso ,void *data ,size_t size);
-retnum generic_stream_dry(gs_obj_t *gso);
+retval generic_stream_shoot(void const *data ,gs_obj_t *gso ,size_t size);
+retval generic_stream_imbibe(gs_obj_t *gso ,void *data ,size_t size);
+retval generic_stream_dry(gs_obj_t *gso);
 #endif // End of __MIMOSA_GENERIC_STREAM_H;

@@ -18,19 +18,62 @@
 
 #include <types.h>
 #include <error.h>
-#include <retnum.h>
+#include <retval.h>
 #include <console.h>
 
-char *retnum_string[20] =
+char *retval_string[20] =
   {
     "invalid size",
   };
 
-#define retnum_msg(r)	\
-  retnum_string[((r)&0xfff)]
+#define retval_msg(r)	\
+  retval_string[((r)&0xfff)]
 
 
-void print_errmsg(retnum rn)
+static void print_errmsg(retval rv)
 {
-  kprintf("Errno %d - %s" ,rn ,retnum_msg(rn));
+  kprintf("Errno %d - %s" ,rv ,retval_msg(rv));
 }
+
+
+
+void
+_panic(const char *file, int line, const char *fmt,...)
+{
+	va_list ap;
+
+	if (panicstr)
+		goto dead;
+	panicstr = fmt;
+
+	va_start(ap, fmt);
+	cprintf("kernel panic at %s:%d: ", file, line);
+	vcprintf(fmt, ap);
+	cprintf("\n");
+	va_end(ap);
+
+dead:
+	/* break into the kernel monitor */
+	while (1)
+		monitor(NULL);
+}
+
+/* like panic, but don't */
+void
+_warn(const char *file, int line, const char *fmt,...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	cprintf("kernel warning at %s:%d: ", file, line);
+	vcprintf(fmt, ap);
+	cprintf("\n");
+	va_end(ap);
+}
+
+
+#define assert(x)		\
+	do { if (!(x)) panic("assertion failed: %s", #x); } while (0)
+
+// static_assert(x) will generate a compile-time error if 'x' is false.
+#define static_assert(x)	switch (x) cas

@@ -33,17 +33,17 @@ typedef union Linear_Address
   struct
   {
   offset	:12;
-  table		:10;
-  dir		:10;
+  table	:10;
+  dir	:10;
   };
 
   __u32_t value;
-}laddr_t ,laddr_tp *;
+}__laddr_t ,*__laddr_tp;
 
 //--- PDE definition;
 #define PDE_PRESENT	_B(0)
-#define PDE_READ	_B(1)
-#define PDE_USER	_B(2)
+#define PDE_READ		_B(1)
+#define PDE_USER		_B(2)
 #define PDE_WRITE_TH	_B(3)
 #define PDE_CACHE_D	_B(4)
 #define PDE_ACCESSED	_B(5)
@@ -68,19 +68,19 @@ typedef union Page_Dir_Entry
   };
   
   __u32_t value;
-}pde_t ,pde_tp *; // Page Directory Entry;
+}__pde_t ,*__pde_tp; // Page Directory Entry;
 
 //--- PTE definition;
 #define PTE_PRESENT	_B(0)
-#define PTE_READ	_B(1)
-#define PTE_USER	_B(2)
+#define PTE_READ		_B(1)
+#define PTE_USER		_B(2)
 #define PTE_WRITE_TH	_B(3)
 #define PTE_CACHE_D	_B(4)
 #define PTE_ACCESSED	_B(5)
 #define PTE_DIRTY	_B(6)
 #define PTE_PAT		_B(7)
 #define PTE_GLOBAL     	_B(8)
-#define PTE_ADDR	FLAG_FIX(20 ,12)
+#define PTE_ADDR		FLAG_FIX(20 ,12)
 typedef union Page_Table_Entry
 {
   struct 
@@ -108,7 +108,7 @@ typedef union Page_Table_Entry
   };
 
   __u32_t value;
-}pte_t ,pte_tp *;
+}__pte_t ,*__pte_tp;
 
 
 #else //__BIT32_PAGING_PAE__
@@ -118,11 +118,11 @@ typedef union Linear_Address
   struct 
   {
   offset	:22;
-  dir		:10;
+  dir	:10;
   };
 
   __u32_t value;
-}laddr_t ,laddr_tp *;
+}__laddr_t ,*__laddr_tp;
 
 // FIXME: where is the end of #endif PAGING_PAE??
 
@@ -135,7 +135,7 @@ typedef union Page_Dir_Entry
   };
 
   __u32_t value;
-}pde_t ,pde_tp *; // Page Directory Entry;
+}__pde_t ,*__pde_tp; // Page Directory Entry;
 #endif // End of __BIT32_PAGING_NO_PAE;__
 
 #endif // End of __BIT32_PAGING__;
@@ -166,7 +166,7 @@ typedef __u32_t pfec_t; // Page Fault Error Code;
 #ifdef __486_COMPAT
 #define TLB_flush_mem(mem) 	
 #else
-static inline void TLB_flush_mem(__mem_t mem) true_inline;
+static inline void TLB_flush_mem(__mem_t mem) __true_inline;
 static inline void TLB_flush_mem(__mem_t mem)
 {
   __asm__ volatile("invlpg %0\n\t"

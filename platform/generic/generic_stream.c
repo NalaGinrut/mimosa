@@ -17,7 +17,7 @@
  */
 
 #include <types.h>
-#include <retnum.h>
+#include <retval.h>
 #include <libkern.h>
 #include <generic/generic_stream.h>
 
@@ -61,7 +61,7 @@ gs_boj_t *generic_stream_create(char *name ,char *buffer,
 }
 
 
-retnum generic_stream_shoot(void const *data ,gs_obj_t *gso ,size_t size)
+retval generic_stream_shoot(void const *data ,gs_obj_t *gso ,size_t size)
 {
   void *buf = gso->buffer;
   size_t count = size;
@@ -75,7 +75,7 @@ retnum generic_stream_shoot(void const *data ,gs_obj_t *gso ,size_t size)
   return OK;
 }
 
-retnum generic_stream_imbibe(gs_obj_t *gso ,void *data ,size_t size)
+retval generic_stream_imbibe(gs_obj_t *gso ,void *data ,size_t size)
 {
   void const *buf = gso->buffer;
   size_t count = size;
@@ -87,7 +87,7 @@ retnum generic_stream_imbibe(gs_obj_t *gso ,void *data ,size_t size)
   memcpy(data ,buf ,count);
 }
 
-retnum generic_stream_dry(gs_obj_t *gso)
+retval generic_stream_dry(gs_obj_t *gso)
 {
   kfree(gso->name);
   gso->name = NULL;

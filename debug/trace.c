@@ -18,12 +18,12 @@
 
 #include <debug/trace.h>
 #include <types.h>
-#include <retnum.h>
+#include <retval.h>
 #include <cpu.h>
 
 // FIXME: we implement this backtrace for IA32-convention,
 // but we need a generic trace frameworks. 
-retnum pcall_backtrace(frame_info fi ,u32_t dep_count)
+retval pcall_backtrace(frame_info fi ,u32_t dep_count)
 {
   /*
   u32_t *frame=(u32_t*)get_frame_head();

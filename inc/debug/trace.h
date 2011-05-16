@@ -19,7 +19,7 @@
  */
 
 
-#include <retnum.h>
+#include <retval.h>
 #include <types.h>
 #include <error.h>
 
@@ -28,7 +28,7 @@ typedef struct FrameInfo
   //TODO: all info about frame, argc,args, others.....;
 }frame_info;// should we need pass frame_info pointer to accelerate??
 
-retnum pcall_backtrace(frame_info fi ,u32_t back_count);  
+retval pcall_backtrace(frame_info fi ,u32_t back_count);  
 
 
 

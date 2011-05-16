@@ -24,39 +24,39 @@
 #include <bsp/bsp_bits.h>
 
 // function declaratioin:
-static __inline__ ereg_t read_ebp() true_inline;
+static __inline__ ereg_t read_ebp() __true_inline;
 
 // get data operate;
-static __inline__ __u8_t port_rb(__u32_t port) true_inline;
-static __inline__ __u16_t port_rw(__u32_t port) true_inline;
-static __inline__ __u32_t port_rl(__u32_t port) true_inline;
+static __inline__ __u8_t port_rb(__u32_t port) __true_inline;
+static __inline__ __u16_t port_rw(__u32_t port) __true_inline;
+static __inline__ __u32_t port_rl(__u32_t port) __true_inline;
 
 static __inline__ void port_rnb(__u32_t port,
 				__gptr_t addr,
-				__u32_t cnt) true_inline;
+				__u32_t cnt) __true_inline;
 
 static __inline__ void port_rnw(__u32_t port,
 				__gptr_t addr,
-				__u32_t cnt) true_inline;
+				__u32_t cnt) __true_inline;
 
 static __inline__ void port_rnl(__u32_t port,
 				__gptr_t addr,
-				__u32_t cnt) true_inline;
+				__u32_t cnt) __true_inline;
 
 
 // output data operate;
-static __inline__ void port_wb(__u32_t port ,__u8_t data) true_inline;
-static __inline__ void port_ww(__u32_t port ,__u16_t data) true_inline;
-static __inline__ void port_wl(__u32_t port ,__u32_t data) true_inline;
+static __inline__ void port_wb(__u32_t port ,__u8_t data) __true_inline;
+static __inline__ void port_ww(__u32_t port ,__u16_t data) __true_inline;
+static __inline__ void port_wl(__u32_t port ,__u32_t data) __true_inline;
 static __inline__ void port_wnb(__u32_t port,
 				__cptr_t addr,
-				__u32_t cnt) true_inline;
+				__u32_t cnt) __true_inline;
 static __inline__ void port_wnw(__u32_t port,
 				__cptr_t addr,
-				__u32_t cnt) true_inline;
+				__u32_t cnt) __true_inline;
 static __inline__ void port_wnl(__u32_t port,
 				__cptr_t addr,
-				__u32_t cnt) true_inline;
+				__u32_t cnt) __true_inline;
 
 
 

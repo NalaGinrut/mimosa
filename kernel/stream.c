@@ -17,7 +17,7 @@
  */
 
 #include <types.h>
-#include <retnum.h>
+#include <retval.h>
 #include <stream.h>
 #include <generic/generic_stream.h>
 

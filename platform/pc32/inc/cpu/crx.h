@@ -109,7 +109,7 @@
 //-----CRX get curried decl&defn
 // IT'S JUST FOR DECL&DEFN! NEVER USE THEM IN YOUR CODE!!
 #define decl_crx_get(crx)					\
-  static inline __u32_t crx##_get() true_inline;
+  static inline __u32_t crx##_get() __true_inline;
 
 #define defn_crx_get(crx)					\
   static inline __u32_t  crx##_get()				\
@@ -137,7 +137,7 @@ defn_crx_get(cr4);
 
 
 #define decl_crx_chk(crx)					\
-  static inline __u32_t crx##_chk(__u32_t flags) true_inline;
+  static inline __u32_t crx##_chk(__u32_t flags) __true_inline;
 
 #define defn_crx_chk(crx)					\
   static inline __u32_t  crx##_chk(__u32_t flags)		\

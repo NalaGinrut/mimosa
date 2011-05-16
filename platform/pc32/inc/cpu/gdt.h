@@ -51,7 +51,7 @@ typedef struct SEG_DESC
 	unsigned reserved : 1; // bit for reserved;
 	unsigned db : 1; // D/B flag, 0 for 16bit, 1 for 32bit, more detail in IA-BOOK V3A 3-15;
 	unsigned g : 1; // granularity, 0 for 1B per offset-limit, 1 for 4K per offset-limit;
-}seg_des_t ,seg_des_tp;
+}seg_des_t ,*seg_des_tp;
 
 // Segment Descriptors
 // Maybe somebody gonna use it ,but I suppose to "seg_des_t";

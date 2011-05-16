@@ -1,5 +1,5 @@
-#ifndef	__MIMOSA_RETNUM_H
-#define __MIMOSA_RETNUM_H
+#ifndef	__MIMOSA_RETVAL_H
+#define __MIMOSA_RETVAL_H
 /*	
  *  Copyright (C) 2010-2011  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
@@ -25,9 +25,9 @@ typedef enum Return_Number
   {
     EINVSZ=0xE001 ,
     OK=0,
-  }retnum;
+  }retval;
 
 
 
 
-#endif // End of __MIMOSA_RETNUM_H;
+#endif // End of __MIMOSA_RETVAL_H;

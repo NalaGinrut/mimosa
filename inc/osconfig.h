@@ -33,7 +33,9 @@
  */
 #define KERN_BASE	0xC0000000
 #define FULL_ADDR	0xFFFFFFFF
-#define PG_SHIFT	12
+#define PG_SHIFT		12
+#define PG_SIZE		4096
+#define ADDR_BITS	32
 #define KERN_STACK_SIZE	4096
 
 #endif // End of __OS_CONFIG_H;

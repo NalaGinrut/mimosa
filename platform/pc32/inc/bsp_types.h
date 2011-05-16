@@ -86,6 +86,8 @@ typedef __stdptr_t __mem_t;
 
 // Page numbers are 32 bits long.
 typedef __u32_t __ppn_t;
+//typedef __u32_t __pde_t;
+//typedef __u32_t __pte_t;
 
 // size_t is used for memory object sizes.
 typedef __u32_t __size_t;
@@ -105,7 +107,13 @@ typedef __u16_t reg_t;
 
 // gcc attributes;
 // may be need some mechnism to check GCC, but do it later...;
-#define true_inline __attribute__((always_inline))
+#ifdef __GNUC__
+#define __no_return __attribute__((noreturn))
+#define __true_inline __attribute__((always_inline));
+#else
+#define __no_return
+#define __true_inline
+#endif // End of __GNUC__;
 
 
 #define __MIN(_a, _b)						\

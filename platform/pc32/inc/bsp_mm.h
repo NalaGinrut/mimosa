@@ -1,4 +1,4 @@
-#define __MIMOSA_BSP_MM_H
+#ifndef __MIMOSA_BSP_MM_H
 #define __MIMOSA_BSP_MM_H
 /*	
  *  Copyright (C) 2010-2011  
@@ -17,6 +17,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <osconfig.h>
+
+/* handle paging mode */
+#ifdef PG_SIZE
+#define PTX_SHIFT PG_SHIFT
+#define PDX_SHIFT (ADDR_BITS - PG_SIZE)
+#endif // End of PG_SIZE;
+
+
 
 #endif // End of __MIMOSA_BSP_MM_H;
 
