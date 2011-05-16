@@ -75,9 +75,10 @@ typedef __physaddr_t physaddr_t;
 
 // FIXME: how to deal with 64bit_ARCH for other things, such as "page"?
 
+typedef __ppn_t ppn_t;
+
 /* paging type shouldn't be visible to kernel, use them in BSP only; 
 // Page numbers are 32 bits long(default). We haven't consider others yet.
-typedef __ppn_t ppn_t;
 typedef __pte_t pte_t;
 typedef __pte_tp pte_tp;
 typedef __pde_t pde_t;

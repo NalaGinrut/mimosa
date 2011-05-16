@@ -1,4 +1,4 @@
-#ifndef 	__MIMOSA_BSP_PC32_PMAP_H
+#ifndef	__MIMOSA_BSP_PC32_PMAP_H
 #define	__MIMOSA_BSP_PC32_PMAP_H
 /*	
  *  Copyright (C) 2010-2011  
@@ -42,7 +42,7 @@ extern size_t npage;
 #define VPN(la)		PPN(la)		// used to index into vpt[]
 
 // page directory index
-#define PDX(la)		((((uintptr_t) (la)) >> PDXSHIFT) & 0x3FF)
+#define PDX(la)		((((uintptr_t) (la)) >> PDX_SHIFT) & 0x3FF)
 #define VPD(la)		PDX(la)		// used to index into vpd[]
 
 // page table index
@@ -105,7 +105,7 @@ static inline void* KADDR(physaddr_t pa)
 	u32_t __m_ppn = PPN(__m_pa);	
 
 	if (__m_ppn >= npage)		
-		panic("KADDR called with invalid pa %08lx", __m_pa);
+	  panic("KADDR called with invalid pa %08lx", __m_pa);
 
 	return (void*) (__m_pa + KERN_BASE);				
 }
@@ -123,7 +123,7 @@ static inline physaddr_t page2pa(struct Page *pp)
 static inline struct Page* pa2page(physaddr_t pa)
 {
 	if (PPN(pa) >= npage)
-		panic("pa2page called with invalid pa");
+	  panic("pa2page called with invalid pa");
 	return &pages[PPN(pa)];
 }
 

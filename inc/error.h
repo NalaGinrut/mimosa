@@ -40,6 +40,10 @@
 #define assert(p)	\
   do{ if(!(p)) __assert_print(p); }while(0);
 
+/*
+#define assert(x)		\
+	do { if (!(x)) panic("assertion failed: %s", #x); } while (0)
+*/
 
 /* FIXME: use these functions while finished format printf;
 #define warn(...) _warn(__FILE__, __LINE__, __VA_ARGS__)

@@ -20,6 +20,7 @@
 #include <error.h>
 #include <retval.h>
 #include <console.h>
+#include <stdarg.h>
 
 char *retval_string[20] =
   {
@@ -37,9 +38,9 @@ static void print_errmsg(retval rv)
 
 
 
-void
-_panic(const char *file, int line, const char *fmt,...)
+void _panic(const char *file, int line, const char *fmt,...)
 {
+  /*
 	va_list ap;
 
 	if (panicstr)
@@ -51,17 +52,19 @@ _panic(const char *file, int line, const char *fmt,...)
 	vcprintf(fmt, ap);
 	cprintf("\n");
 	va_end(ap);
-
+  */
 dead:
 	/* break into the kernel monitor */
 	while (1)
-		monitor(NULL);
+	  ;
+	  //monitor(NULL);
+
 }
 
 /* like panic, but don't */
-void
-_warn(const char *file, int line, const char *fmt,...)
-{
+void _warn(const char *file, int line, const char *fmt,...)
+{	
+  /*
 	va_list ap;
 
 	va_start(ap, fmt);
@@ -69,11 +72,10 @@ _warn(const char *file, int line, const char *fmt,...)
 	vcprintf(fmt, ap);
 	cprintf("\n");
 	va_end(ap);
+  */
 }
 
 
-#define assert(x)		\
-	do { if (!(x)) panic("assertion failed: %s", #x); } while (0)
 
 // static_assert(x) will generate a compile-time error if 'x' is false.
 #define static_assert(x)	switch (x) cas
