@@ -19,6 +19,7 @@
  */
 
 #include "mmu.h"
+#include <osconfig.h>
 
 #ifdef __ASSEMBLER__
 /*
@@ -34,7 +35,7 @@
 	.byte (((base) >> 16) & 0xff), (0x90 | (type)),		\
 		(0xC0 | (((lim) >> 28) & 0xf)), (((base) >> 24) & 0xff)
 #else // use Cee code
-#ifdef MIMOSA_ADDRESS_64
+#if (__ADDR_BITS__ == 64)
 //TODO: code for 64bit address;
 
 #else // code for 32bit address;
@@ -70,11 +71,11 @@ struct Inner_Seg_Desc {
 	unsigned sd_g : 1;          // Granularity: limit scaled by 4K when set
 	unsigned sd_base_31_24 : 8; // High bits of segment base address
 }inner_seg_desc ,*inner_seg_desc_p;
-#endif // End of MIMOSA_ADDRESS_64
+#endif // End of (__ADDRESS_BITS__ == 64)
 
-#define SEG_NULL	(struct Segdesc){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define SEG_NULL	(struct SEG_DESC){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 // Segment that is loadable but faults when used
-#define SEG_FAULT	(struct Segdesc){ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
+#define SEG_FAULT	(struct SEG_DESC){ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
 
 
 
@@ -114,6 +115,12 @@ inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd)
 
 // we don't need GDT_LOAD as Cee implementation,
 // just leave it to asm;
+
+struct gdt_prelude {
+	u16_t lim;		// GDT size
+	u32_t base;		// Base address
+} __attribute__ ((packed));
+
 #endif // End of __ASSEMBLER__
 
 

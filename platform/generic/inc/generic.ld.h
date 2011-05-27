@@ -1,5 +1,5 @@
-#ifndef GENERIC_LD_H
-#define GENERIC_LD_H
+#ifndef __MIMOSA_GENERIC_LD_H
+#define __MIMOSA_GENERIC_LD_H
 /*	
  *  Copyright (C) 2010-2011  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
@@ -18,15 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef KERN_SYM
-#define KERN_SYM(sym)	__mimosa_##sym
-#endif
-
-#ifndef MK_BSP_SYM
-#define MK_BSP_SYM(bsp,sym)	__mimosa_##bsp##_sym
-#endif
+#include <osconfig.h>
+#include <global.h>
 
 /* Align . to 8, it's maximum function alignment */
 #define ALIGN_FUNC()	. = ALIGN(8)
@@ -62,7 +55,7 @@
 		*(.gnu.linkonce.r.*)	\
 	}  
 	
-#define RO_DATA	MK_RODATA(PGSIZE)
+#define RO_DATA	MK_RODATA(PG_SIZE)
 
 
 #endif 

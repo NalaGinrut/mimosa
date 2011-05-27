@@ -19,12 +19,38 @@
  */
 
 #include <osconfig.h>
+#include "cpu/paging.h"
+#include "cpu/crx.h"
+#include "cpu/gdt.h"
+#include "cpu/segments.h"
+#include "nvram.h"
 
 /* handle paging mode */
 #ifdef PG_SIZE
 #define PTX_SHIFT PG_SHIFT
 #define PDX_SHIFT (ADDR_BITS - PG_SIZE)
 #endif // End of PG_SIZE;
+
+typedef __laddr_t laddr_t;
+typedef __pde_t pde_t;
+typedef __pte_t pte_t;
+
+// page number field of address
+#define PPN(la)		(((uintptr_t) (la)) >> PTX_SHIFT)
+#define VPN(la)		PPN(la)		// used to index into vpt[]
+
+// page directory index
+#define PDX(la)		((((uintptr_t) (la)) >> PDX_SHIFT) & 0x3FF)
+#define VPD(la)		PDX(la)		// used to index into vpd[]
+
+// page table index
+#define PTX(la)		((((uintptr_t) (la)) >> PTX_SHIFT) & 0x3FF)
+
+// offset in page
+#define PGOFF(la)	(((uintptr_t) (la)) & 0xFFF)
+
+// construct linear address from indexes and offset
+#define PGADDR(d, t, o)	((void*) ((d) << PDX_SHIFT | (t) << PTX_SHIFT | (o)))
 
 
 

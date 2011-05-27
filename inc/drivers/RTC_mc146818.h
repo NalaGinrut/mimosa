@@ -18,8 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <bsp/bsp_types.h>
-#include <bsp/bsp_bits.h>
+#include <types.h>
 
 #define RTC_PORT	0x70
 
@@ -62,7 +61,7 @@
 #define LCHKS_B		(0x2F) // CMOS LSB checksum over 10~2D;
 #define LEMA1_B		(0x30) // LSB of extended memory found above 1MB at POST;
 #define HEMA1_B		(0x31) // MSB of extended memory found above 1MB at POST;
-#define DATEC_B		(0X32) // Date century in BCD;
+#define DATEC_B		(0x32) // Date century in BCD;
 #define INFOF_B		(0x33) // Infomation flags;
 // 34~3F is reserved;
 
@@ -71,7 +70,7 @@
  */
 
 
-// Memory detect;
-
+inline u32_t mc146818_read(u32_t index);
+inline void mc146818_write(u32_t index ,u32_t data);
 
 #endif // End of __RTC_MC146818_H;

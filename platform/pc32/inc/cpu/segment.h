@@ -71,7 +71,7 @@
 
 #endif // !__ASSEMBLER__
 
-// user segment type
+// universal segment type
 #define USEG_X		0x8	    // Executable segment
 #define USEG_E		0x4	    // Expand down (non-executable segments)
 #define USEG_C		0x4	    // Conforming code segment (executable only)
@@ -79,9 +79,9 @@
 #define USEG_R		0x2	    // Readable (executable segments)
 #define USEG_A		0x1	    // Accessed
 
-// System segment type
+// Special segment type
 #define SSEG_T16A	0x1	    // Available 16-bit TSS
-#define SSEG_LDT		0x2	    // Local Descriptor Table
+#define SSEG_LDT	0x2	    // Local Descriptor Table
 #define SSEG_T16B	0x3	    // Busy 16-bit TSS
 #define SSEG_CG16	0x4	    // 16-bit Call Gate
 #define SSEG_TG		0x5	    // Task Gate / Coum Transmitions
@@ -92,5 +92,26 @@
 #define SSEG_CG32	0xC	    // 32-bit Call Gate
 #define SSEG_IG32	0xE	    // 32-bit Interrupt Gate
 #define SSEG_TG32	0xF	    // 32-bit Trap Gate
+
+
+#define SEG_RING3	0x3
+#define SEG_RING0	0x0	    // DO NOT SUPPORT RING2 AND RING1!!!
+
+#define SEG_SYSTEM	0x0
+#define SEG_UNIV	0x1	    // code or data
+
+#define SEG_AVAIL	0x0	    // available
+
+#define SEG_RES		0x0	    // reserved
+
+#define SEG_PRESENT	0x1	    // present
+#define SEG_NOTPRES	0x0	    // not present
+
+#define SEG_16BIT	0x0		
+#define SEG_32BIT	0x1
+
+#define SEG_G4K		0x1	    // granularity is 4K
+#define SEG_GULIM	0x0	    // granularity is unlimited (constrained by seg_limit)
+	
 
 #endif // End of __MIMOSA_PC32_SEGMENT_H;

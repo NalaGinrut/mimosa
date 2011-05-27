@@ -22,7 +22,7 @@
 #include <types.h>
 #include <libkern.h>
 #include <drivers/console.h>
-#include <bsp/mm/pmap.h>
+#include <bsp/pmap.h>
 #include "bsp_init.h"
 
 #ifdef __KERN_DEBUG__

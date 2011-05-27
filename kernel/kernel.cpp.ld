@@ -22,11 +22,17 @@
  */
 
 #include <generic/generic.ld.h>
-
+#include <osconfig.h>
 
 /* "conf.ld" is $(TOP)/config/conf.ld */
 INCLUDE conf.ld
 
+/* This platform.cpp.ld is used to specific bsp memory layout.
+ * We insert it next to .text in case some platform need mapping/reserved
+ * low memory address. BSP developers must define this file or just 
+ * leave it empty.
+ */
+#include <bsp/platform.cpp.ld>
 
 SECTIONS
 {
@@ -38,13 +44,6 @@ SECTIONS
 	.text : {
 	      TEXT_SECTION	
 	}
-
-/* This platform.cpp.ld is used to specific bsp memory layout.
- * We insert it next to .text in case some platform need mapping/reserved
- * low memory address. BSP developers must define this file or just 
- * leave it empty.
- */
-#include <bsp/platform.cpp.ld>
 
 	/* C99 permit program to reference "etext" without any error, 
 	 * even if "etext" had never been defined. 
@@ -70,7 +69,7 @@ SECTIONS
 	}
 
 	/* Adjust the address for the data segment to the next page */
-	. = ALIGN(PGSIZE);
+	. = ALIGN(PG_SIZE);
 
 	/* The data segment */
 	.data : {

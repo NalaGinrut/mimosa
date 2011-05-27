@@ -19,5 +19,17 @@
 
 #include <drivers/RTC_mc146818.h>
 #include <types.h>
+#include <io.h>
 
+inline u32_t mc146818_read(u32_t index)
+{
+	writeb(RTC_PORT ,index);
+	return readb(RTC_PORT+1);
+}
+
+inline void mc146818_write(u32_t index ,u32_t data)
+{
+	writeb(RTC_PORT ,index);
+	writeb(RTC_PORT+1 ,data);
+}
 
