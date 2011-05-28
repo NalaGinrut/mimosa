@@ -18,7 +18,9 @@
 
 #include <osconfig.h>
 #include <types.h>
+#include <global.h>
 #include "inc/cpu/segment.h"
+#include "inc/cpu/gdt.h"
 
 /* all descriptors of segment;
  * SEG: type ,base ,lim 
@@ -52,7 +54,8 @@
 // To load the SS register, the CPL must equal the DPL.  Thus,
 // we must duplicate the segments for the user and the kernel.
 //
-seg_des_t gdt[] =
+// FIXME: inner_seg_desc_t is obsolete ,change it to seg_des_t
+inner_seg_desc_t MK_GLOBAL_VAR(gdt[]) =
   {
     // unused (always faults -- for trapping NULL far pointers)
     [NULL_SEG] = SEG_NULL,
@@ -73,7 +76,7 @@ seg_des_t gdt[] =
     [TSS_SEG] = SEG_NULL
   };
 
-struct gdt_prelude gdt_pl = 
+struct gdt_prelude MK_GLOBAL_VAR(gdt_pl) = 
   {
-    sizeof(gdt) - 1, (unsigned long) gdt
+    sizeof(GET_GLOBAL_VAR(gdt)) - 1, (u32_t) GET_GLOBAL_VAR(gdt)
   };

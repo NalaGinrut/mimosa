@@ -20,7 +20,7 @@
 #include <types.h>
 #include <io.h>
 
-void kprintf(const char *fmt, ...)
+void cprintf(const char *fmt, ...)
 {
 
   // TODO: yeah~That's what you want!

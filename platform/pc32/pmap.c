@@ -24,7 +24,7 @@
 #include <error.h>
 #include <bsp/pmap.h>
 #include <bsp/bsp_mm.h>
-
+#include <console.h>
 
 #ifdef __KERN_DEBUG__
 #define kprintf cprintf
@@ -34,16 +34,16 @@
 
 // These variables are set by i386_detect_memory()
 static physaddr_t pa_top;	// top of physical address
-static size_t base_mem;		// Amount of base memory (in bytes)
-static size_t ext_mem;		// Amount of extended memory (in bytes)
+static u32_t base_mem;		// Amount of base memory (in bytes)
+static u32_t ext_mem;		// Amount of extended memory (in bytes)
 
 // These variables are set in i386_vm_init()
 static pde_t* tmp_pgdir;	// Virtual address of boot time page directory
 static physaddr_t tmp_cr3;	// Physical address of boot time page directory
-static char* tmp_freemem = 0;	// Pointer to next byte of free mem
+static void* tmp_freemem = 0;	// Pointer to next byte of free mem
 
 // global variables
-size_t MK_GLOBAL_VAR(npage);		// Amount of physical memory (in pages)
+u32_t MK_GLOBAL_VAR(npage);		// Amount of physical memory (in pages)
 struct Page* MK_GLOBAL_VAR(pages); // Virtual address of physical page array
 static page_list_t MK_GLOBAL_VAR(page_free_list); // Free list of physical pages
 
@@ -56,10 +56,10 @@ static page_list_t MK_GLOBAL_VAR(page_free_list); // Free list of physical pages
 #define pmap_pde(m, v)  (&((m)->pm_pdir[(vm_offset_t)(v) >> PDRSHIFT]))
 #define pdir_pde(m, v) (m[(vm_offset_t)(v) >> PDRSHIFT])
 
-#pmap_pxe_pred(pde ,attr)	(((pde) & (attr)) != 0)
+#define pmap_pxe_pred(pde ,attr)	(((pde) & (attr)) != 0)
 
 #define pmap_pde_p(pde)         pmap_pxe_pred(pde ,PTE_PRESENT) // Page Dirctory is present
-#define pmap_lookup_table_from_pde(la ,pde)	(&((pde)[PDX(la)]))
+#define pmap_lookup_table_from_pde(la ,pde)	(&(pde)[PDX(la)])
 #define pmap_pde_set_attr(pde ,attr) ((u32_t)(pde) | (attr))
 
 #define pmap_pte_w(pte)         pmap_pxe_pred(pte ,PTE_WRITE) 	// Page Table is writable
@@ -67,12 +67,12 @@ static page_list_t MK_GLOBAL_VAR(page_free_list); // Free list of physical pages
 #define pmap_pte_u(pte)         pmap_pxe_pred(pte ,PTE_USER) 	// Page Table is user
 #define pmap_pte_p(pte)         pmap_pxe_pred(pte ,PTE_PRESENT)	// Page Table is present
 
-#define pmap_get_pte_in_pa(addr)	((pte_t)PADDR(addr))
-#define pmap_get_pte_in_ka(addr)	((pte_t)KADDR(addr))
+#define pmap_get_pte_in_pa(addr)	((pte_t)PADDR((u32_t)addr))
+#define pmap_get_pte_in_ka(addr)	((pte_t)KADDR((u32_t)addr))
 #define pmap_pte_set_attr(pte ,attr) 	((u32_t)(pte) | (attr))
 
 #define pmap_map_pa_to_la(table ,pa ,la ,attr)	\
-  do{ table[PTX(la)] = (pa | attr); }while(0);
+  do{ table[PTX(la)] = ((u32_t)pa | attr); }while(0);
 
 void pmap_detect_memory(void)
 {
@@ -93,12 +93,12 @@ static void* pmap_tmp_alloc(u32_t size ,u32_t align)
   
   tmp_freemem = tmp_freemem? tmp_freemem : recondo;
   
-  if( PADDR(tmp_freemem) > pa_top )
+  if( PADDR((physaddr_t)tmp_freemem) > (u32_t)pa_top )
     {
       panic("mmr: memory is not enough!!\n");
     }
 
-  tmp_freemem = ROUND_UP(tmp_freemem ,align);
+  tmp_freemem = (void*)ROUND_UP((u32_t)tmp_freemem ,align);
   va = (void *)tmp_freemem;
   tmp_freemem += size;
 
@@ -108,7 +108,7 @@ static void* pmap_tmp_alloc(u32_t size ,u32_t align)
 
 static pte_t* pmap_tmp_pgdir_lookup(pde_t *pgdir ,laddr_t la)
 {
-  pte_t *ret = pmap_lookup_table_from_pde(la ,pgdir);
+  pte_t *ret = (pte_t*)pmap_lookup_table_from_pde(la ,pgdir);
 
   return pmap_pte_p(*ret)? NULL : ret;
 }
@@ -116,7 +116,7 @@ static pte_t* pmap_tmp_pgdir_lookup(pde_t *pgdir ,laddr_t la)
 static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la)
 {
   void *tmp_ptr = NULL;
-  pte_t *ret = tmp_pgdir_lookup(pgdir ,la);
+  pte_t *ret = pmap_tmp_pgdir_lookup(pgdir ,la);
 
   if( ret != NULL )
     {
@@ -132,7 +132,7 @@ static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la)
   return ret;
 }
 
-static void pmap_tmp_segment_map(pde_t *pgdir ,uintptr_t la ,size_t size,
+static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr)
 {
   u32_t count;
@@ -147,7 +147,7 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,uintptr_t la ,size_t size,
       pg_table = pmap_tmp_pgdir_create(pgdir ,la);
       // NOTE: don't check NULL here, because tmp_alloc already done that.
 
-      tmp_pt = pmap_get_pte_in_ka(PTE_ADDR(*pgtable));
+      tmp_pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pg_table));
       pmap_map_pa_to_la(tmp_pt ,pa ,la ,attr);
     }
 }
@@ -170,16 +170,16 @@ void pmap_vm_init(void)
   pgdir = pmap_tmp_alloc(PT_ENTRIES ,PG_SIZE);
   memset(pgdir ,0 ,PG_SIZE);
   tmp_pgdir = pgdir;
-  tmp_cr3 = PADDR(pgdir);
+  tmp_cr3 = PADDR((u32_t)pgdir);
   kprintf("pmap_vm_init: #1 init pgdir:%p\n",pgdir);
 
-  pmap_map_pa_to_la(pgdir ,PADDR(pgdir) ,vpt ,PTE_WRITE | PTE_PRESENT);
-  pmap_map_pa_to_la(pgdir ,PADDR(pgdir) ,uvpt ,PTE_USER | PTE_PRESENT);
+  pmap_map_pa_to_la(pgdir ,PADDR((u32_t)pgdir) ,vpt ,PTE_WRITE | PTE_PRESENT);
+  pmap_map_pa_to_la(pgdir ,PADDR((u32_t)pgdir) ,uvpt ,PTE_USER | PTE_PRESENT);
   kprintf("pmap_vm_init: #2 map VPT/UVPT\n");
 
   // map tmp_stack
   pmap_tmp_segment_map(pgdir ,kstktop-kstksize ,kstksize,
-		       PADDR(tmp_stack) ,PTE_WRITE);
+		       PADDR((u32_t)tmp_stack) ,PTE_WRITE);
   kprintf("pmap_vm_init: #3 map KERNEL STACK\n");
 
   /* map kernel space, NOTE: we map kernel from 0 ,so we can easily convert
@@ -199,9 +199,93 @@ void pmap_vm_init(void)
   pages = pmap_tmp_alloc(size ,PG_SIZE);
   memset(pages ,0 ,size);
   pmap_tmp_segment_map(pgdir ,upages ,size,
-		       PADDR(pages) ,PTE_PRESENT | PTE_USER);
+		       PADDR((u32_t)pages) ,PTE_PRESENT | PTE_USER);
   kprintf("pmap_vm_init: #5 map meta-PAGE space\n");
 
-
+  check_boot_pgdir();
 
 }
+
+#ifdef __KERN_DEBUG__
+static void check_boot_pgdir(void)
+{
+	u32_t i, n;
+	pde_t *pgdir;
+	const u32_t upages = GET_BSP_VAR(UPAGES);
+	const u32_t npage = GET_GLOBAL_VAR(npage);
+	const u32_t kstksize = KERNEL_STACK_SIZE;
+	const u32_t kstktop = GET_BSP_VAR(KSTKTOP);
+	const u32_t vpt = GET_BSP_VAR(VPT);
+	const u32_t uvpt = GET_BSP_VAR(UVPT);
+	struct Page* pages = GET_GLOBAL_VAR(pages);
+	pgdir = tmp_pgdir;
+	
+	
+	// check pages array
+	n = ROUND_UP(npage*sizeof(struct Page), PG_SIZE);
+	for (i = 0; i < n; i += PG_SIZE)
+	  {	
+	    //cprintf("i:%d\n",i/PGSIZE);
+	    assert(check_va2pa(pgdir, upages + i) == PADDR((u32_t)pages) + i);
+	  }
+
+	// check phys mem
+	for (i = 0; KERN_BASE + i != 0; i += PG_SIZE)
+	  {
+	    //cprintf("i:%d\n",i/PGSIZE);
+
+	    assert( check_va2pa(pgdir, KERN_BASE + i) == i);
+
+	//cprintf("%p->%p\n",KERNBASE+i,		    //== i);
+	  }
+	// check kernel stack
+	for (i = 0; i < kstksize; i += PG_SIZE)
+	  {
+	    //cprintf("i:%d\n",i/PGSIZE);
+	    assert(check_va2pa(pgdir, kstktop - kstksize + i) == PADDR((u32_t)tmp_stack) + i);
+	  }
+
+	// check for zero/non-zero in PDEs
+	for (i = 0; i < PT_ENTRIES; i++) 
+	  {
+	    if(i == PDX(vpt)
+	       || i == PDX(uvpt)
+	       || i == PDX(kstktop-1)
+	       || i == PDX(upages))
+	      {
+		assert(pgdir[i]);
+	      }
+	   
+	    if (i >= PDX(KERN_BASE))
+	      {
+		assert(pgdir[i]);
+	      }
+	    else
+	      {
+		assert(pgdir[i] == 0);
+	      }
+
+	  }
+
+	cprintf("check_boot_pgdir() succeeded!\n");
+}
+
+static physaddr_t check_va2pa(pde_t *pgdir, laddr_t va)
+{
+	pte_t *p;
+
+	pgdir = &pgdir[PDX(va)];
+	
+	if(!pmap_pte_p(*pgdir))
+	  return ~0;
+	
+	p = (pte_t*)KADDR(PTA(*pgdir));
+	
+	if(!pmap_pte_p(p[PTX(va)]))
+	  return ~0;
+	
+	return PTA(p[PTX(va)]);
+
+  return 0;
+}
+#endif // End of __KERN_DEBUG__

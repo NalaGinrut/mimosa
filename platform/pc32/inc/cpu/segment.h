@@ -28,11 +28,11 @@
 #define NULL_SEG	0
 #define	KCODE_SEG	1
 #define KDATA_SEG	2
-#define KSTCK_SEG	3
-#define UCODE_SEG	4
-#define UDATA_SEG	5
-#define USTCK_SEG	6
-#define TSS_SEG		7
+#define UCODE_SEG	3
+#define UDATA_SEG	4
+#define TSS_SEG		5
+#define KSTCK_SEG	6
+#define USTCK_SEG	7
 
 #define NULL_SEL MAKE_SEL(NULL)
 #define KC_SEL MAKE_SEL(KCODE_SEG)

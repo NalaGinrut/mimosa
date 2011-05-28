@@ -24,14 +24,15 @@
 #include <ds/qlist.h>
 #include <bsp/cpu/paging.h>
 #include <bsp/bsp_mm.h>
+#include <global.h>
 
 extern char recondo[];
 extern char tmp_stack[] ,tmp_stack_top[];
 
-extern struct Page *GET_GLOBAL_VAR(pages);
-extern size_t GET_GLOBAL_VAR(npage);
+extern struct Page* GET_GLOBAL_VAR(pages);
+extern u32_t GET_GLOBAL_VAR(npage);
 
-extern seg_des_t GET_GLOBAL_VAR(gdt[]);
+extern inner_seg_desc_t GET_GLOBAL_VAR(gdt[]);
 extern struct gdt_prelude GET_GLOBAL_VAR(gdt_pl);
 
 //extern physaddr_t boot_cr3;
@@ -71,14 +72,14 @@ typedef struct Page
  * and returns the corresponding physical address.  It panics if you pass it a
  * non-kernel virtual address.
  */
-static inline physaddr_t PADDR(physaddr_t kva)
+static inline physaddr_t PADDR(u32_t kva)
 {	
-  physaddr_t __m_kva = (physaddr_t)kva;	
+  physaddr_t __kva = (physaddr_t)kva;	
   
-  if (__m_kva < KERN_BASE)			
-    panic("PADDR called with invalid kva %08lx", __m_kva);
+  if (__kva < KERN_BASE)			
+    panic("PADDR called with invalid kva %08lx", __kva);
 	
-  return (__m_kva - KERN_BASE);					
+  return (__kva - KERN_BASE);					
 }
 
 /* This function takes a physical address and returns the corresponding kernel
@@ -88,7 +89,7 @@ static inline void* KADDR(physaddr_t pa)
 {
   physaddr_t _pa = (pa);
   u32_t _ppn = PPN(_pa);
-  size_t npage = GET_GLOBAL_VAR(npage);
+  u32_t npage = GET_GLOBAL_VAR(npage);
   
   if (_ppn >= npage)
     panic("KADDR called with invalid pa %08lx", _pa);
@@ -98,7 +99,8 @@ static inline void* KADDR(physaddr_t pa)
 
 static inline ppn_t page2ppn(struct Page *pp)
 {
-  return (pp - pages); // neat!
+  struct Page* pages = GET_GLOBAL_VAR(pages);
+  return (ppn_t)(pp - pages); // neat!
 }
 
 static inline physaddr_t page2pa(struct Page *pp)
@@ -108,7 +110,8 @@ static inline physaddr_t page2pa(struct Page *pp)
 
 static inline struct Page* pa2page(physaddr_t pa)
 {
-  size_t npage = GET_GLOBAL_VAR(npage);
+  u32_t npage = GET_GLOBAL_VAR(npage);
+  struct Page* pages = GET_GLOBAL_VAR(pages);
 
   if (PPN(pa) >= npage)
     panic("pa2page called with invalid pa");
@@ -122,5 +125,15 @@ static inline void* page2kva(struct Page *pp)
 
 void pmap_detect_memory(void);
 static void* pmap_tmp_alloc(u32_t n ,u32_t align);
+static pte_t* pmap_tmp_pgdir_lookup(pde_t *pgdir ,laddr_t la);
+static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la);
+static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
+				 physaddr_t pa ,int attr);
+void pmap_vm_init(void);
+
+#ifdef __KERN_DEBUG__
+static void check_boot_pgdir(void);
+static physaddr_t check_va2pa(pte_t *pgdir ,laddr_t va);
+#endif // End of __KERN_DEBUG__
 
 #endif // End of __BSP_PC32_PMAP_H;

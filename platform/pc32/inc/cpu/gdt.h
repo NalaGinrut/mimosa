@@ -54,9 +54,11 @@ typedef struct SEG_DESC
 	unsigned g : 1; // granularity, 0 for 1B per offset-limit, 1 for 4K per offset-limit;
 }seg_des_t ,*seg_des_tp;
 
-// Segment Descriptors
-// Maybe somebody gonna use it ,but I suppose to "seg_des_t";
-struct Inner_Seg_Desc {
+// Inner Segment Descriptors
+// you should use seg_des_t since it's more convenient ,but call SEG() to
+// convert it properly.
+typedef struct Inner_Seg_Desc 
+{
 	unsigned sd_lim_15_0 : 16;  // Low bits of segment limit
 	unsigned sd_base_15_0 : 16; // Low bits of segment base address
 	unsigned sd_base_23_16 : 8; // Middle bits of segment base address
@@ -70,47 +72,45 @@ struct Inner_Seg_Desc {
 	unsigned sd_db : 1;         // 0 = 16-bit segment, 1 = 32-bit segment
 	unsigned sd_g : 1;          // Granularity: limit scaled by 4K when set
 	unsigned sd_base_31_24 : 8; // High bits of segment base address
-}inner_seg_desc ,*inner_seg_desc_p;
+}inner_seg_desc_t ,*inner_seg_desc_tp;
 #endif // End of (__ADDRESS_BITS__ == 64)
 
-#define SEG_NULL	(struct SEG_DESC){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define SEG_NULL	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 // Segment that is loadable but faults when used
-#define SEG_FAULT	(struct SEG_DESC){ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
+#define SEG_FAULT	{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
 
 
 
 // SEG macro handles to fix the segment_descriptor a regular one;
-#define SEG(type ,base ,lim ,dpl ,s ,p ,a ,r ,db ,g) (struct Segdesc)	\
-{((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff ,	\
-	(type) ,(s) ,(dpl) ,(p), (unsigned) (lim) >> 28 ,(a) ,		\
-	(r) ,(db) ,(g) ,(unsigned) (base) >> 24 }			\
+#define SEG(type ,base ,lim ,dpl ,s ,p ,a ,r ,db ,g) 			\
+  { ((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff ,	\
+      (type) ,(s) ,(dpl) ,(p), (unsigned) (lim) >> 28 ,(a) ,		\
+      (r) ,(db) ,(g) ,(unsigned) (base) >> 24 }			
 
-#define SEG16(type, base, lim, dpl) (struct Segdesc)			\
-{ (lim) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,		\
-    type, 1, dpl, 1, (unsigned) (lim) >> 16, 0, 0, 1, 0,		\
-    (unsigned) (base) >> 24 }
+#define SEG16(type, base, lim, dpl) 					\
+  { (lim) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,		\
+      type, 1, dpl, 1, (unsigned) (lim) >> 16, 0, 0, 1, 0,		\
+      (unsigned) (base) >> 24 }
 
 
 
-static __inline__ 
-inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd);
+static inline inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd);
 
 
 
 // functions:
-static __inline__ 
-inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd)
+static inline inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd)
 {    
-	return SEG(sd.type ,
-		   sd.base ,
-		   sd.lim ,
-		   sd.dpl ,
-		   sd.system ,
-		   sd.present ,
-		   sd.available ,
-		   sd.reserved ,
-		   sd.db ,
-		   sd.g);
+  return (inner_seg_desc_t)SEG(sd.type,
+			       sd.base,
+			       sd.limit,
+			       sd.dpl,
+			       sd.system,
+			       sd.present,
+			       sd.available,
+			       sd.reserved,
+			       sd.db,
+			       sd.g);
 }
 
 // we don't need GDT_LOAD as Cee implementation,

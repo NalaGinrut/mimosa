@@ -19,16 +19,17 @@
  */
 
 #include <osconfig.h>
+#include <drivers/nvram.h>
+#include <global.h>
 #include "cpu/paging.h"
 #include "cpu/crx.h"
 #include "cpu/gdt.h"
-#include "cpu/segments.h"
-#include "nvram.h"
+#include "cpu/segment.h"
 
 /* handle paging mode */
 #ifdef PG_SIZE
 #define PTX_SHIFT PG_SHIFT
-#define PDX_SHIFT (ADDR_BITS - PG_SIZE)
+#define PDX_SHIFT 22
 #endif // End of PG_SIZE;
 
 typedef __laddr_t laddr_t;
@@ -36,22 +37,40 @@ typedef __pde_t pde_t;
 typedef __pte_t pte_t;
 
 // page number field of address
-#define PPN(la)		(((uintptr_t) (la)) >> PTX_SHIFT)
+#define PPN(la)		(((laddr_t)(la)) >> PTX_SHIFT)
 #define VPN(la)		PPN(la)		// used to index into vpt[]
 
 // page directory index
-#define PDX(la)		((((uintptr_t) (la)) >> PDX_SHIFT) & 0x3FF)
+#define PDX(la)		((((laddr_t)(la)) >> PDX_SHIFT) & 0x3FF)
 #define VPD(la)		PDX(la)		// used to index into vpd[]
 
 // page table index
-#define PTX(la)		((((uintptr_t) (la)) >> PTX_SHIFT) & 0x3FF)
+#define PTX(la)		((((laddr_t)(la)) >> PTX_SHIFT) & 0x3FF)
 
 // offset in page
-#define PGOFF(la)	(((uintptr_t) (la)) & 0xFFF)
+#define PGOFF(la)	(((laddr_t)(la)) & 0xFFF)
+
+// next pte addr in pte
+#define PTA(pte)	((laddr_t)(pte) & ~0xFFF)
 
 // construct linear address from indexes and offset
 #define PGADDR(d, t, o)	((void*) ((d) << PDX_SHIFT | (t) << PTX_SHIFT | (o)))
 
+// we declare these global bsp addr as u32_t,
+// you should take them to addr by explicitly cast
+extern u32_t GET_BSP_VAR(VPT);
+extern u32_t GET_BSP_VAR(KSTKTOP);
+extern u32_t GET_BSP_VAR(ULIM);
+extern u32_t GET_BSP_VAR(UVPT);
+extern u32_t GET_BSP_VAR(UPAGES);
+extern u32_t GET_BSP_VAR(UENVS);
+extern u32_t GET_BSP_VAR(UTOP);
+extern u32_t GET_BSP_VAR(UXSTKTOP);
+extern u32_t GET_BSP_VAR(USTKTOP);
+extern u32_t GET_BSP_VAR(UTEXT);
+extern u32_t GET_BSP_VAR(UTEMP);
+extern u32_t GET_BSP_VAR(PFTEMP);
+extern u32_t GET_BSP_VAR(USTABDATA);
 
 
 #endif // End of __MIMOSA_BSP_MM_H;

@@ -22,6 +22,12 @@
 #include <console.h>
 #include <stdarg.h>
 
+#ifdef __KERN_DEBUG__
+#define kprintf cprintf
+#else
+#define kprintf
+#endif // End of __KERN_DEBUG__
+
 char *retval_string[20] =
   {
     "invalid size",
@@ -78,4 +84,4 @@ void _warn(const char *file, int line, const char *fmt,...)
 
 
 // static_assert(x) will generate a compile-time error if 'x' is false.
-#define static_assert(x)	switch (x) cas
+//#define static_assert(x)	switch (x) cas

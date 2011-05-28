@@ -20,6 +20,13 @@
 #include <error.h>
 #include <lock.h>
 
+#ifdef __KERN_DEBUG__
+#define kprintf cprintf
+#else
+#define kprintf
+#endif // End of __KERN_DEBUG__
+
+
 void lock_require(void *lock ,u32_t offset ,lock_type type)
 {
   switch(type)

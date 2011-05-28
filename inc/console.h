@@ -21,6 +21,6 @@
 #include <types.h>
 #include <io.h>
 
-void kprintf(const char *fmt, ...);
+void cprintf(const char *fmt, ...);
 
 #endif // End of __MIMOSA_CONSOLE_H;

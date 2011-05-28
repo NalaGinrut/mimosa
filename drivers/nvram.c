@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <osconfig.h>
 #include <drivers/nvram.h>
 #include <types.h>
 #include <bits.h>
