@@ -39,7 +39,6 @@ static u32_t ext_mem;		// Amount of extended memory (in bytes)
 
 // These variables are set in i386_vm_init()
 static pde_t* tmp_pgdir;	// Virtual address of boot time page directory
-static physaddr_t tmp_cr3;	// Physical address of boot time page directory
 static void* tmp_freemem = 0;	// Pointer to next byte of free mem
 
 // global variables
@@ -181,7 +180,6 @@ void pmap_vm_init(void)
   pgdir = pmap_tmp_alloc(PT_ENTRIES ,PG_SIZE);
   memset(pgdir ,0 ,PG_SIZE);
   tmp_pgdir = pgdir;
-  tmp_cr3 = PADDR((u32_t)pgdir);
   kprintf("pmap_vm_init: #1 init pgdir:%p\n",pgdir);
 
   pmap_map_pa_to_la(pgdir ,PADDR((u32_t)pgdir) ,vpt ,PTE_WRITE | PTE_PRESENT);
@@ -215,14 +213,16 @@ void pmap_vm_init(void)
 
   check_boot_pgdir();
 
-  pmap_jump_into_paging_mode(pgdir ,(u32_t)tmp_cr3);
+  pmap_jump_into_paging_mode(pgdir);
   
 }
 
-static void pmap_jump_into_paging_mode(pde_t* pgdir ,u32_t cr3)
+static void pmap_jump_into_paging_mode(pde_t* pgdir)
 {
   const struct gdt_pseudo_desc gdt_pd = GET_GLOBAL_VAR(gdt_pd);  
   u32_t cr0;
+  u32_t cr3 = PADDR((u32_t)pgdir);
+
   //////////////////////////////////////////////////////////////////////
   // On x86, segmentation maps a VA to a LA (linear addr) and
   // paging maps the LA to a PA.  I.e. VA => LA => PA.  If paging is

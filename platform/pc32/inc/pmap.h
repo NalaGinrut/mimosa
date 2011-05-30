@@ -129,7 +129,7 @@ static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la);
 static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr);
 void pmap_vm_init(void);
-static void pmap_jump_into_paging_mode(pde_t* pgdir ,u32_t cr3);
+static void pmap_jump_into_paging_mode(pde_t* pgdir);
 
 #ifdef __KERN_DEBUG__
 static void check_boot_pgdir(void);
