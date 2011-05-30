@@ -74,6 +74,15 @@ static page_list_t MK_GLOBAL_VAR(page_free_list); // Free list of physical pages
 #define pmap_map_pa_to_la(table ,pa ,la ,attr)	\
   do{ table[PTX(la)] = ((u32_t)pa | attr); }while(0);
 
+#define pmap_paging_mode_turn_on(cr0 ,cr3)	\
+  do{						\
+  cr3_set(cr3);					\
+  (cr0) = cr0_get();				\
+  (cr0) |= BSP_PG_MODE_ON;			\
+  (cr0) &= ~(BSP_PG_MODE_OFF);			\
+  cr0_set(cr0);					\
+  }while(0);
+
 void pmap_detect_memory(void)
 {
   base_mem = nvram_get_mem_info(NVRAM_BASELO);
@@ -155,15 +164,17 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 void pmap_vm_init(void)
 {
   pde_t* pgdir;
-  u32_t cr0;
   u32_t size = 0;
-  u32_t vpt = GET_BSP_VAR(VPT);
-  u32_t uvpt = GET_BSP_VAR(UVPT);
-  u32_t kstktop = GET_BSP_VAR(KSTKTOP);
-  u32_t kstksize = KERNEL_STACK_SIZE;
-  u32_t upages = GET_BSP_VAR(UPAGES);
-  u32_t npage = GET_GLOBAL_VAR(npage);
   struct Page* pages = GET_GLOBAL_VAR(pages);
+  
+  // read-only vars
+  const u32_t vpt = GET_BSP_VAR(VPT);
+  const u32_t uvpt = GET_BSP_VAR(UVPT);
+  const u32_t kstktop = GET_BSP_VAR(KSTKTOP);
+  const u32_t kstksize = KERNEL_STACK_SIZE;
+  const u32_t upages = GET_BSP_VAR(UPAGES);
+  const u32_t npage = GET_GLOBAL_VAR(npage);
+  //
 
   /* map VPT/UVPT to same physical address with different attribute
    */
@@ -193,7 +204,7 @@ void pmap_vm_init(void)
 
   /* map meta-page space
    * FIXME: we'll clear all meta-page space, but it causes slowly boot.
-   *	    I expect to clear these space with LD trick. I'll fix it later.
+   *	    I expect it to clear these space with LD trick. I'll fix it later.
    */
   size = npage * sizeof(struct Page);
   pages = pmap_tmp_alloc(size ,PG_SIZE);
@@ -204,23 +215,76 @@ void pmap_vm_init(void)
 
   check_boot_pgdir();
 
+  pmap_jump_into_paging_mode(pgdir ,(u32_t)tmp_cr3);
+  
 }
+
+static void pmap_jump_into_paging_mode(pde_t* pgdir ,u32_t cr3)
+{
+  const struct gdt_pseudo_desc gdt_pd = GET_GLOBAL_VAR(gdt_pd);  
+  u32_t cr0;
+  //////////////////////////////////////////////////////////////////////
+  // On x86, segmentation maps a VA to a LA (linear addr) and
+  // paging maps the LA to a PA.  I.e. VA => LA => PA.  If paging is
+  // turned off the LA is used as the PA.  Note: there is no way to
+  // turn off segmentation.  The closest thing is to set the base
+  // address to 0, so the VA => LA mapping is the identity.
+
+  // Current mapping: VA KERN_BASE+x => PA x.
+  //     (segmentation base=-KERN_BASE and paging is off)
+
+  // From here on down we must maintain this VA KERN_BASE + x => PA x
+  // mapping, even though we are turning on paging and reconfiguring
+  // segmentation.
+
+  // Map VA 0:4MB same as VA KERN_BASE, i.e. to PA 0:4MB.
+  // (Limits our kernel to <4MB)
+  pmap_map_pa_to_la(pgdir ,KERN_BASE ,0 ,0);
+  
+  /* jump into Paging Mode, however, we have 32bit-paging.
+   * If you need a PAE-paging, get to it! get up, you're a hacker!
+   */ 
+  pmap_paging_mode_turn_on(cr0 ,cr3);
+
+  // Reload all segment registers.
+  gdt_load((void*)&gdt_pd);
+
+  gdt_seg_reload(gs ,UD_SEL | RPL_RING3); 
+  gdt_seg_reload(fs ,UD_SEL | RPL_RING3);
+  gdt_seg_reload(es ,KD_SEL | RPL_RING0);
+  gdt_seg_reload(ds ,KD_SEL | RPL_RING0);
+  gdt_seg_reload(ss ,KD_SEL | RPL_RING0);
+
+  gdt_cs_reload();
+  
+  gdt_local_desc_load(0);
+
+  // Final mapping: KERN_BASE+x => KERN_BASE+x => x.
+
+  // This mapping was only used after paging was turned on but
+  // before the segment registers were reloaded.
+  pmap_map_pa_to_la(pgdir ,0 ,0 ,0);
+
+  // Flush the TLB for good measure, to kill the pgdir[0] mapping.
+  cr3_set(cr3);
+}  
 
 #ifdef __KERN_DEBUG__
 static void check_boot_pgdir(void)
 {
 	u32_t i, n;
-	pde_t *pgdir;
+	pde_t *pgdir = tmp_pgdir;
+
+	// read-only vars
 	const u32_t upages = GET_BSP_VAR(UPAGES);
 	const u32_t npage = GET_GLOBAL_VAR(npage);
 	const u32_t kstksize = KERNEL_STACK_SIZE;
 	const u32_t kstktop = GET_BSP_VAR(KSTKTOP);
 	const u32_t vpt = GET_BSP_VAR(VPT);
 	const u32_t uvpt = GET_BSP_VAR(UVPT);
-	struct Page* pages = GET_GLOBAL_VAR(pages);
-	pgdir = tmp_pgdir;
-	
-	
+	const struct Page* pages = GET_GLOBAL_VAR(pages);
+	//
+
 	// check pages array
 	n = ROUND_UP(npage*sizeof(struct Page), PG_SIZE);
 	for (i = 0; i < n; i += PG_SIZE)
@@ -289,3 +353,4 @@ static physaddr_t check_va2pa(pde_t *pgdir, laddr_t va)
   return 0;
 }
 #endif // End of __KERN_DEBUG__
+

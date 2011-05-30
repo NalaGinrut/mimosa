@@ -25,6 +25,7 @@
 #include <bsp/cpu/paging.h>
 #include <bsp/bsp_mm.h>
 #include <global.h>
+#include <bsp/seg.h>
 
 extern char recondo[];
 extern char tmp_stack[] ,tmp_stack_top[];
@@ -32,8 +33,6 @@ extern char tmp_stack[] ,tmp_stack_top[];
 extern struct Page* GET_GLOBAL_VAR(pages);
 extern u32_t GET_GLOBAL_VAR(npage);
 
-extern inner_seg_desc_t GET_GLOBAL_VAR(gdt[]);
-extern struct gdt_prelude GET_GLOBAL_VAR(gdt_pl);
 
 //extern physaddr_t boot_cr3;
 //extern pde_t *boot_pgdir;
@@ -89,7 +88,7 @@ static inline void* KADDR(physaddr_t pa)
 {
   physaddr_t _pa = (pa);
   u32_t _ppn = PPN(_pa);
-  u32_t npage = GET_GLOBAL_VAR(npage);
+  const u32_t npage = GET_GLOBAL_VAR(npage);
   
   if (_ppn >= npage)
     panic("KADDR called with invalid pa %08lx", _pa);
@@ -99,7 +98,7 @@ static inline void* KADDR(physaddr_t pa)
 
 static inline ppn_t page2ppn(struct Page *pp)
 {
-  struct Page* pages = GET_GLOBAL_VAR(pages);
+  const struct Page* pages = GET_GLOBAL_VAR(pages);
   return (ppn_t)(pp - pages); // neat!
 }
 
@@ -130,6 +129,7 @@ static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la);
 static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr);
 void pmap_vm_init(void);
+static void pmap_jump_into_paging_mode(pde_t* pgdir ,u32_t cr3);
 
 #ifdef __KERN_DEBUG__
 static void check_boot_pgdir(void);

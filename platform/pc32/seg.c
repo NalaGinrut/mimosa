@@ -19,6 +19,7 @@
 #include <osconfig.h>
 #include <types.h>
 #include <global.h>
+#include <bsp/seg.h>
 #include "inc/cpu/segment.h"
 #include "inc/cpu/gdt.h"
 
@@ -28,19 +29,19 @@
  *	reserved ,op-size ,granularity
  */
 #define KCODE_DEC SEG(USEG_X | USEG_R ,0x0 ,FULL_ADDR,			\
-		      SEG_RING0 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
+		      DPL_RING0 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
 		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
 
 #define KDATA_DEC SEG(USEG_W ,0x0 ,FULL_ADDR,				\
-		      SEG_RING0 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
+		      DPL_RING0 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
 		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
 
 #define UCODE_DEC SEG(USEG_X | USEG_R ,0x0 ,FULL_ADDR,			\
-		      SEG_RING3 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
+		      DPL_RING3 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
 		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
 
 #define UDATA_DEC SEG(USEG_W ,0x0 ,FULL_ADDR,				\
-		      SEG_RING3 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
+		      DPL_RING3 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
 		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
 
 // KSTACK and USTACK will come later
@@ -76,7 +77,7 @@ inner_seg_desc_t MK_GLOBAL_VAR(gdt[]) =
     [TSS_SEG] = SEG_NULL
   };
 
-struct gdt_prelude MK_GLOBAL_VAR(gdt_pl) = 
+struct gdt_pseudo_desc MK_GLOBAL_VAR(gdt_pd) = 
   {
     sizeof(GET_GLOBAL_VAR(gdt)) - 1, (u32_t) GET_GLOBAL_VAR(gdt)
   };

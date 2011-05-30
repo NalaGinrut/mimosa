@@ -34,13 +34,31 @@
 #define KSTCK_SEG	6
 #define USTCK_SEG	7
 
-#define NULL_SEL MAKE_SEL(NULL)
+#define NULL_SEL MAKE_SEL(NULL_SEG)
 #define KC_SEL MAKE_SEL(KCODE_SEG)
 #define KD_SEL MAKE_SEL(KDATA_SEG)
 #define KS_SEL MAKE_SEL(KSTCK_SEG)
 #define UC_SEL MAKE_SEL(UCODE_SEG)
 #define UD_SEL MAKE_SEL(UDATA_SEG)
 #define UK_SEL MAKE_SEL(USTCK_SEG)
+
+/* Current Privilege Level
+ * CPL is bits0-1 of CS&SS
+ */
+#define CPL_RING3	0x3
+#define CPL_RING0	0x0	    // DO NOT SUPPORT RING2 AND RING1!!!
+
+/* Descriptor Privilege Level
+ * DPL is bits0-1 of any descriptor(include gate)
+ */
+#define DPL_RING3	0x3
+#define DPL_RING0	0x0	    // DO NOT SUPPORT RING2 AND RING1!!!
+
+/* Requested Privilege Level
+ * RPL is bits0-1 of segment selector
+ */
+#define RPL_RING3	0x3
+#define RPL_RING0	0x0	    // DO NOT SUPPORT RING2 AND RING1!!!
 
 
 #ifndef __ASSEMBLER__
@@ -94,8 +112,6 @@
 #define SSEG_TG32	0xF	    // 32-bit Trap Gate
 
 
-#define SEG_RING3	0x3
-#define SEG_RING0	0x0	    // DO NOT SUPPORT RING2 AND RING1!!!
 
 #define SEG_SYSTEM	0x0
 #define SEG_UNIV	0x1	    // code or data

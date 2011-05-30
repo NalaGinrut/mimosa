@@ -116,12 +116,48 @@ static inline inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd)
 // we don't need GDT_LOAD as Cee implementation,
 // just leave it to asm;
 
-struct gdt_prelude {
+struct gdt_pseudo_desc {
 	u16_t lim;		// GDT size
 	u32_t base;		// Base address
 } __attribute__ ((packed));
 
-#endif // End of __ASSEMBLER__
+static inline void gdt_load(void* pseudo_desc);
+static inline void gdt_local_desc_load(u16_t local_desc);
+
+static inline void gdt_load(void* pseudo_desc)
+{
+  __asm__ __volatile__("lgdt %0"
+		   :
+		   :"m" (pseudo_desc)
+		   );
+}
+
+static inline void gdt_local_desc_load(u16_t local_desc)
+{
+  __asm__ __volatile__("lldt %%ax"
+		   :
+		   :"a" (local_desc)
+		   );
+}
+
+#define gdt_seg_reload(reg ,selector)		\
+  do{						\
+  __asm__ __volatile__("movw %%ax ,%%"#reg		\
+		   :				\
+		   :"a" (selector)		\
+		   );				\
+  }while(0);
+
+#define gdt_cs_reload()				\
+  do{						\
+  __asm__ __volatile__("ljmp %0 ,$1f\n\t"		\
+		   "1:"				\
+		   :				\
+		   :"i" (KC_SEL)		\
+		   );				\
+  }while(0);
+
+#endif // End of __ASSEMBLER__ else
 
 
 #endif // End of __MIMOSA_PC32_GDT_H;

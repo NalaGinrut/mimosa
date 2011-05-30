@@ -72,6 +72,9 @@ extern u32_t GET_BSP_VAR(UTEMP);
 extern u32_t GET_BSP_VAR(PFTEMP);
 extern u32_t GET_BSP_VAR(USTABDATA);
 
+// paging mode defined here, you may change it as you wish and be careful ^_^
+#define BSP_PG_MODE_ON CR0_PM|CR0_PG|CR0_AM|CR0_WP|CR0_NE|CR0_TS|CR0_EM|CR0_MP
+#define BSP_PG_MODE_OFF CR0_TS|CR0_EM
 
 #endif // End of __MIMOSA_BSP_MM_H;
 

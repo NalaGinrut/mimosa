@@ -81,19 +81,19 @@
 
 #ifndef __ASSEMBLER__
 // DON'T USE THIS PROCs DIRECTLY!!!
-#define __crx_set(crx ,flag)				\
-  do{							\
+#define __crx_set(crx ,flag)					\
+  do{								\
     __asm__ volatile("movl %%eax ,%%"#crx			\
-		 :					\
-		 :"a" (flag)				\
-		 );					\
+		     :						\
+		     :"a" (flag)				\
+		     );						\
   }while(0);
 
-#define __crx_get(crx)					\
-  do{							\
+#define __crx_get(crx)						\
+  do{								\
     __asm__ volatile("movl %%"#crx" ,%%eax"			\
-		 :"=a" (ret)				\
-		 );					\
+		     :"=a" (ret)				\
+		     );						\
   }while(0);
 //-----------------------------------
 
