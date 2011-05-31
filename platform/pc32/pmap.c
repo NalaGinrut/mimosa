@@ -44,7 +44,9 @@ static void* tmp_freemem = 0;	// Pointer to next byte of free mem
 // global variables
 u32_t MK_GLOBAL_VAR(npage);		// Amount of physical memory (in pages)
 struct Page* MK_GLOBAL_VAR(pages); // Virtual address of physical page array
-static page_list_t MK_GLOBAL_VAR(page_free_list); // Free list of physical pages
+
+// FIXME: I need atomic handler to this free list
+static SLIST_HEAD(,Page) pmap_page_free_list; // Free list of physical pages
 
 #define PMAP_EXT_MEM_FIX(mem)	\
   (MEM_HOLE_END + (mem))
@@ -82,7 +84,7 @@ static page_list_t MK_GLOBAL_VAR(page_free_list); // Free list of physical pages
   cr0_set(cr0);					\
   }while(0);
 
-void pmap_detect_memory(void)
+void pmap_detect_memory()
 {
   base_mem = nvram_get_mem_info(NVRAM_BASELO);
   ext_mem = nvram_get_mem_info(NVRAM_EXTLO);
@@ -160,7 +162,7 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
     }
 }
 
-void pmap_vm_init(void)
+void pmap_vm_init()
 {
   pde_t* pgdir;
   u32_t size = 0;
@@ -220,7 +222,7 @@ void pmap_vm_init(void)
 static void pmap_jump_into_paging_mode(pde_t* pgdir)
 {
   const struct gdt_pseudo_desc gdt_pd = GET_GLOBAL_VAR(gdt_pd);  
-  u32_t cr0;
+  u32_t cr0 = 0;
   u32_t cr3 = PADDR((u32_t)pgdir);
 
   //////////////////////////////////////////////////////////////////////
@@ -270,7 +272,7 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
 }  
 
 #ifdef __KERN_DEBUG__
-static void check_boot_pgdir(void)
+static void check_boot_pgdir()
 {
 	u32_t i, n;
 	pde_t *pgdir = tmp_pgdir;
@@ -353,4 +355,53 @@ static physaddr_t check_va2pa(pde_t *pgdir, laddr_t va)
   return 0;
 }
 #endif // End of __KERN_DEBUG__
+
+
+void pmap_page_init()
+{
+  struct Page* pages = GET_GLOBAL_VAR(pages);
+  struct Page* pp = NULL;
+  
+  // read-only vars
+  const u32_t npage = GET_GLOBAL_VAR(npage);
+  //
+
+  memset(pages ,0 ,npage*sizeof(struct Page));
+  SLIST_INIT(&pmap_page_free_list);
+
+  for(int i = npage-1; i >= 0; i--)
+    {
+      pp = pages+i;
+
+      if(0 == i)
+	{
+	  pp->pg_ref = 1; // mark page0 as used!
+	  kprintf("page0: %p -- %u\n" ,&pages[i] ,pages[i].pg_ref);
+
+	}else if( i >= (IO_PHY_MEM / PG_SIZE) 
+		  && i < (MEM_HOLE_END / PG_SIZE) )
+	{
+	  pp->pg_ref = 1;
+
+	}else if( i >= (IO_PHY_MEM / PG_SIZE)
+		  && i < (KERN_BASE / PG_SIZE) )
+	{
+	  pp->pg_ref = 1;
+
+	}else
+	{
+	  pp->pg_ref = 0;
+	}
+	  
+    if(0 == i)
+      {
+	kprintf("page0: %p -- %u\n" ,&pages[0] ,pages[0].pg_ref);
+      }
+    
+    SLIST_INSERT_HEAD(&pmap_page_free_list ,pp ,pg_link);
+  }
+
+	
+}
+
 

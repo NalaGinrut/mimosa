@@ -33,18 +33,10 @@ extern char tmp_stack[] ,tmp_stack_top[];
 extern struct Page* GET_GLOBAL_VAR(pages);
 extern u32_t GET_GLOBAL_VAR(npage);
 
-
-//extern physaddr_t boot_cr3;
-//extern pde_t *boot_pgdir;
-
-//extern struct Segdesc gdt[];
-//extern struct Pseudodesc gdt_pd;
-
-
 /* define Page List */
 typedef struct Page
 {
-  SLIST_HEAD(,Page_entry) pg_list;
+  SLIST_ENTRY(Page) pg_link;
   u16_t pg_ref;
 }page_list_t;
  
@@ -122,17 +114,17 @@ static inline void* page2kva(struct Page *pp)
   return KADDR(page2pa(pp));
 }
 
-void pmap_detect_memory(void);
+void pmap_detect_memory();
 static void* pmap_tmp_alloc(u32_t n ,u32_t align);
 static pte_t* pmap_tmp_pgdir_lookup(pde_t *pgdir ,laddr_t la);
 static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la);
 static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr);
-void pmap_vm_init(void);
+void pmap_vm_init();
 static void pmap_jump_into_paging_mode(pde_t* pgdir);
 
 #ifdef __KERN_DEBUG__
-static void check_boot_pgdir(void);
+static void check_boot_pgdir();
 static physaddr_t check_va2pa(pte_t *pgdir ,laddr_t va);
 #endif // End of __KERN_DEBUG__
 

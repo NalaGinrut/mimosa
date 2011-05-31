@@ -50,6 +50,7 @@
 #define ADDR_BITS	32
 #define KERN_STACK_SIZE	4096
 #define MEM_HOLE_END	0x100000	// end of memory hole for well known historical reason.
+#define IO_PHY_MEM	0xA0000		// IO mem start
 
 /* how many bytes you need map in boot tmp map.
  * mimosa will map all available kernel space by default.
