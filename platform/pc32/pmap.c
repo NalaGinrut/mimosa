@@ -25,6 +25,7 @@
 #include <bsp/pmap.h>
 #include <bsp/bsp_mm.h>
 #include <console.h>
+#include <retval.h>
 
 #ifdef __KERN_DEBUG__
 #define kprintf cprintf
@@ -46,7 +47,7 @@ u32_t MK_GLOBAL_VAR(npage);		// Amount of physical memory (in pages)
 struct Page* MK_GLOBAL_VAR(pages); // Virtual address of physical page array
 
 // FIXME: I need atomic handler to this free list
-static SLIST_HEAD(,Page) pmap_page_free_list; // Free list of physical pages
+static LIST_HEAD(,Page) pmap_page_free_list; // Free list of physical pages
 
 #define PMAP_EXT_MEM_FIX(mem)	\
   (MEM_HOLE_END + (mem))
@@ -57,11 +58,15 @@ static SLIST_HEAD(,Page) pmap_page_free_list; // Free list of physical pages
 #define pmap_pde(m, v)  (&((m)->pm_pdir[(vm_offset_t)(v) >> PDRSHIFT]))
 #define pdir_pde(m, v) (m[(vm_offset_t)(v) >> PDRSHIFT])
 
+#define pmap_page_set_attr(pg ,attr)	\
+  pmap_pte_set_attr(page2pa(pg) ,attr)
+
 #define pmap_pxe_pred(pde ,attr)	(((pde) & (attr)) != 0)
 
 #define pmap_pde_p(pde)         pmap_pxe_pred(pde ,PTE_PRESENT) // Page Dirctory is present
 #define pmap_lookup_table_from_pde(la ,pde)	(&(pde)[PDX(la)])
-#define pmap_pde_set_attr(pde ,attr) ((u32_t)(pde) | (attr))
+#define pmap_get_pte_from_va(va ,pte)	((pte)[PTX(va)])
+#define pmap_pde_set_attr(pde ,attr) (pde_t)((u32_t)(pde) | (attr))
 
 #define pmap_pte_w(pte)         pmap_pxe_pred(pte ,PTE_WRITE) 	// Page Table is writable
 #define pmap_pte_d(pte)         pmap_pxe_pred(pte ,PTE_DIRTY) 	// Page Table is dirty
@@ -70,10 +75,11 @@ static SLIST_HEAD(,Page) pmap_page_free_list; // Free list of physical pages
 
 #define pmap_get_pte_in_pa(addr)	((pte_t)PADDR((u32_t)addr))
 #define pmap_get_pte_in_ka(addr)	((pte_t)KADDR((u32_t)addr))
-#define pmap_pte_set_attr(pte ,attr) 	((u32_t)(pte) | (attr))
+#define pmap_pte_set_attr(pte ,attr) (pte_t)((u32_t)(pte) | (attr))
 
 #define pmap_map_pa_to_la(table ,pa ,la ,attr)	\
   do{ table[PTX(la)] = ((u32_t)pa | attr); }while(0);
+
 
 #define pmap_paging_mode_turn_on(cr0 ,cr3)	\
   do{						\
@@ -367,7 +373,7 @@ void pmap_page_init()
   //
 
   memset(pages ,0 ,npage*sizeof(struct Page));
-  SLIST_INIT(&pmap_page_free_list);
+  LIST_INIT(&pmap_page_free_list);
 
   for(int i = npage-1; i >= 0; i--)
     {
@@ -398,10 +404,201 @@ void pmap_page_init()
 	kprintf("page0: %p -- %u\n" ,&pages[0] ,pages[0].pg_ref);
       }
     
-    SLIST_INSERT_HEAD(&pmap_page_free_list ,pp ,pg_link);
+    LIST_INSERT_HEAD(&pmap_page_free_list ,pp ,pg_link);
   }
 
 	
 }
+
+static void pmap_page_init_pg(struct Page *pg)
+{
+  memset(pg ,0 ,sizeof(struct Page));
+}
+
+retval pmap_page_alloc(struct Page **pg_store)
+{
+  if( LIST_EMPTY(&pmap_page_free_list) )
+    {
+      kprintf("pmap_page_alloc: empty page list!\n");
+      return ENOMEM;
+    }
+
+  *pg_store = LIST_FIRST(&pmap_page_free_list);
+  LIST_REMOVE(*pg_store ,pg_link);
+
+  if( !(*pg_store) )
+    {
+      kprintf("pmap_page_alloc: invalid pg_store or no mem!\n");
+      return ENOMEM;
+    }
+
+  kprintf("pmap_page_alloc: %p allocated!\n" ,*pg_store);
+  return OK;
+}
+  
+void pmap_page_free(struct Page *pg)
+{
+  kprintf("pmap_page_free: pg-%p pg->pg_ref=%u pg->pg_link=%p\n",
+	  pg ,pg->pg_ref ,pg->pg_link);
+  
+  LIST_INSERT_HEAD(&pmap_page_free_list ,pg ,pg_link);
+}
+
+void pmap_page_dec_ref(struct Page *pg)
+{
+  if(pg->pg_ref != 0 &&
+     --pg->pg_ref == 0)
+    {
+      kprintf("pmap_page_dec_ref: pg->pg_ref ==> %u\n",
+	      pg->pg_ref);
+      
+      pmap_page_free(pg);
+    }
+}
+    
+pte_t* pmap_page_table_lookup(pde_t* pgdir ,const void *va)
+{
+  // FIXME: I need arbitrary level page table lookup
+  pte_t* pt = NULL;
+
+  pt = pmap_lookup_table_from_pde(va ,pgdir);
+  kprintf("pmap_pgdir_lookup: #0 pgdir-%p va-%p pt-%p *pt-%p\n",
+	  pgdir ,va ,pt ,*pt);
+
+#ifdef __KERN_DEBUG__
+  if( pmap_pte_p(*pt) )
+    {
+      kprintf("pmap_pgdir_lookup: #1 find a page_table-%p at %p\n",
+	      *pt ,va);
+    }else
+    {
+      kprintf("pmap_pgdir_lookup: #2 page_table-%p at %p is used,\n"
+	      "I can't find an available one!\n",
+	      *pt ,va);
+    }
+#endif // End of __KERN_DEBUG__
+
+  return pmap_pte_p(*pt)? pt : NULL;
+}
+    
+pte_t* pmap_page_table_create(pde_t *pgdir ,const void* va)
+{
+  // FIXME: I need arbitrary level page table lookup
+  pte_t *pt = pmap_page_table_lookup(pgdir ,va);
+  struct Page *pg = NULL;
+
+  if(NULL != pt)
+    {
+      kprintf("pmap_pgdir_create: #0 va-%p is used by %p!\n" ,va ,pt);
+      return pt;
+    }
+      
+  kprintf("pmap_pgdir_create: #0 request to create one page_table page!\n");
+  
+  if( ENOMEM == pmap_page_alloc(&pg) )
+    {
+      kprintf("pmap_pgdir_create: #1 no free mem!\n");
+      return NULL;
+    }
+
+  *pt = pmap_page_set_attr(pg ,PTE_PRESENT);
+
+  kprintf("pmap_pgdir_create: #2 created a new page_table at *(%p)-%p\n",
+	  *pt ,pt);
+
+  return pt;
+}
+      
+retval pmap_page_insert(pde_t *pgdir ,struct Page *pg ,void *va ,int attr)
+{
+  // FIXME: I need arbitrary level page table lookup
+  pte_t *pt = pmap_page_table_lookup(pgdir ,va);
+  struct Page *tmp_pg = NULL;
+  void *ptr = NULL;
+
+  if(NULL != pt)
+    {
+      kprintf("pmap_page_insert: #0 didn't find page_table. craete one!\n");
+      pt = pmap_page_table_create(pgdir ,va);
+
+      if(NULL != pt)
+	return ENOMEM;
+    }
+
+  kprintf("pmap_page_insert: #1 we got a page_table-%p in va-%p\n",
+	  *pt ,va);
+
+  pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pt));
+  
+  if( pmap_pte_p(pt[PTX(va)]) )
+    {
+      if( PTA(pt[PTX(va)]) == page2pa(pg) )
+	{
+	  kprintf("pmap_page_insert: #2 we find same map between va-%p "
+		  "and pa-%p\n ,do nothing then return!\n" ,va ,pg);
+	  return OK;
+	}
+    }
+  else
+    {
+      kprintf("pmap_page_insert: #3 we find a used page at %p[PTX(%p)]-%p "
+	      "removed it!\n" ,pt ,va ,pt[PTX(va)]);
+      pmap_page_remove(pgdir ,va);
+    }
+      
+  kprintf("pmap_page_insert: #4 insert pg-%p into page_table at %p[PTX(%p)]\n",
+	  pg ,pt ,va);
+
+  pt[PTX(va)] = pmap_page_set_attr(pg ,attr);
+
+  pg->pg_ref++;
+  kprintf("pmap_page_insert: #5 increase %p->pg_ref to %u \n",
+	  pg ,pg->pg_ref);
+  
+  return OK;
+}
+
+struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pte_t** pte_store)
+{
+  pte_t* pt = NULL;
+  
+  kprintf("pmap_page_lookup: #0 get in!\n");
+
+  if(NULL != pte_store)
+    {
+      kprintf("pmap_page_lookup: #1 get valid pte_store-%p\n" ,pte_store);
+ 
+      pt = pmap_page_table_lookup(pgdir ,va);
+
+      if(NULL != pt)
+	{
+	  kprintf("pmap_page_lookup: #2 didn't find it's page_table entry, "
+		  "return NULL!\n");
+	  return NULL;
+	}
+
+      kprintf("pmap_page_lookup: #3 find it's page_table entry: pt-%p *pt-%p\n",
+	      pt ,*pt);
+
+      *pte_store = pt;
+
+      // walk 2-level page table
+      pt = (pte_t*)KADDR(PTA(*pt));
+      pt = (pte_t*)pt[PTX(va)];
+	  
+      kprintf("pmap_page_lookup: #4 pt-%p *pte_store-%p ret-%p "
+	      "%p[PTX(%p)]-%p\n" ,pt ,*pte_store ,pa2page(PTA(pt)));
+
+      return pa2page(PTX(pt));
+
+    }
+  
+  return NULL;
+}
+
+void pmap_page_remove(pde_t *pgdir, void *va)
+{
+}
+
 
 

@@ -26,6 +26,7 @@
 #include <bsp/bsp_mm.h>
 #include <global.h>
 #include <bsp/seg.h>
+#include <retval.h>
 
 extern char recondo[];
 extern char tmp_stack[] ,tmp_stack_top[];
@@ -36,7 +37,7 @@ extern u32_t GET_GLOBAL_VAR(npage);
 /* define Page List */
 typedef struct Page
 {
-  SLIST_ENTRY(Page) pg_link;
+  LIST_ENTRY(Page) pg_link;
   u16_t pg_ref;
 }page_list_t;
  
@@ -122,6 +123,14 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr);
 void pmap_vm_init();
 static void pmap_jump_into_paging_mode(pde_t* pgdir);
+static void pmap_page_init_pg(struct Page *pg);
+retval pmap_page_alloc(struct Page **pg_store);
+void pmap_page_free(struct Page *pg);
+void pmap_page_dec_ref(struct Page *pg);
+pte_t* pmap_page_table_lookup(pde_t* pgdir ,const void* va);
+pte_t* pmap_page_table_create(pde_t* pgdir ,const void* va);
+retval pmap_page_insert(pde_t* pgdir ,struct Page* pg ,void* va ,int attr);
+void pmap_page_remove(pde_t* pgdir ,void* va);
 
 #ifdef __KERN_DEBUG__
 static void check_boot_pgdir();

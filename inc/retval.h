@@ -24,6 +24,7 @@
 typedef enum Return_Number
   {
     EINVSZ=0xE001 ,
+    ENOMEM=0xE002 ,
     OK=0,
   }retval;
 
