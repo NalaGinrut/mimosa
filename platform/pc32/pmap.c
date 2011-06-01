@@ -513,8 +513,6 @@ retval pmap_page_insert(pde_t *pgdir ,struct Page *pg ,void *va ,int attr)
 {
   // FIXME: I need arbitrary level page table lookup
   pte_t *pt = pmap_page_table_lookup(pgdir ,va);
-  struct Page *tmp_pg = NULL;
-  void *ptr = NULL;
 
   if(NULL != pt)
     {
@@ -530,22 +528,20 @@ retval pmap_page_insert(pde_t *pgdir ,struct Page *pg ,void *va ,int attr)
 
   pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pt));
   
-  if( pmap_pte_p(pt[PTX(va)]) )
+  if( !pmap_pte_p(pt[PTX(va)]) ) // table NOT present
     {
-      if( PTA(pt[PTX(va)]) == page2pa(pg) )
-	{
-	  kprintf("pmap_page_insert: #2 we find same map between va-%p "
-		  "and pa-%p\n ,do nothing then return!\n" ,va ,pg);
-	  return OK;
-	}
-    }
-  else
-    {
-      kprintf("pmap_page_insert: #3 we find a used page at %p[PTX(%p)]-%p "
+      kprintf("pmap_page_insert: #2 we find a used page at %p[PTX(%p)]-%p "
 	      "removed it!\n" ,pt ,va ,pt[PTX(va)]);
       pmap_page_remove(pgdir ,va);
     }
-      
+
+  if( PTA(pt[PTX(va)]) == page2pa(pg) )
+    {
+      kprintf("pmap_page_insert: #3 we find same map between va-%p "
+	      "and pa-%p\n ,do nothing then return!\n" ,va ,pg);
+      return OK;
+    }
+
   kprintf("pmap_page_insert: #4 insert pg-%p into page_table at %p[PTX(%p)]\n",
 	  pg ,pt ,va);
 
