@@ -39,7 +39,9 @@ typedef struct Page
 {
   LIST_ENTRY(Page) pg_link;
   u16_t pg_ref;
-}page_list_t;
+}page_t;
+
+typedef LIST_HEAD(Page_list, Page) page_list_t;
  
 // FIXME: I need this pmap struct to unify all page map information;
 /*
@@ -69,7 +71,7 @@ static inline physaddr_t PADDR(u32_t kva)
   physaddr_t __kva = (physaddr_t)kva;	
   
   if (__kva < KERN_BASE)			
-    panic("PADDR called with invalid kva %08lx", __kva);
+    panic("PADDR called with invalid kva %08lx" ,__kva);
 	
   return (__kva - KERN_BASE);					
 }
@@ -131,10 +133,12 @@ pte_t* pmap_page_table_lookup(pde_t* pgdir ,const void* va);
 pte_t* pmap_page_table_create(pde_t* pgdir ,const void* va);
 retval pmap_page_insert(pde_t* pgdir ,struct Page* pg ,void* va ,int attr);
 void pmap_page_remove(pde_t* pgdir ,void* va);
+void pmap_tlb_invalidate(pde_t* pgdir ,void* va);
 
 #ifdef __KERN_DEBUG__
-static void check_boot_pgdir();
-static physaddr_t check_va2pa(pte_t *pgdir ,laddr_t va);
+static void pmap_check_boot_pgdir();
+static physaddr_t pmap_check_va2pa(pte_t *pgdir ,laddr_t va);
+static void pmap_page_check();
 #endif // End of __KERN_DEBUG__
 
 #endif // End of __BSP_PC32_PMAP_H;

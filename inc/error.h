@@ -23,8 +23,8 @@
 
 #ifndef __KERN_DEBUG__
 #include <console.h>
-#define panic(str)	\
-  kprintf(str)
+// FIXME: if no debug, panic must be halted
+#define panic(...)  _panic(__FILE__ ,__LINE__ ,__VA_ARGS__)
 #else
 #include <debug/display.h>
 // FIXME: I need format!
@@ -55,7 +55,15 @@ static void _warn(const char*, int, const char*, ...);
 static void _panic(const char*, int, const char*, ...) no_return;
 */
 
+static inline void halt();
+static inline void halt()
+{
+  while(1);
+}
+
 static void print_errmsg(retval rv);
+void _panic(const char *file, int line, const char *fmt,...);
+void _warn(const char *file, int line, const char *fmt,...);
 
 #endif // End of __MIMOSA_ERROR_H;
 

@@ -45,7 +45,7 @@
 #define PG_SHIFT	12
 #define PG_SIZE		4096
 #define PT_ENTRIES	1024
-#define PT_SIZE		PG_SIZE * PT_ENTRIES
+#define PT_SIZE		(PG_SIZE * PT_ENTRIES)
 #define PD_SIZE		PT_SIZE		// actually, they are same
 #define ADDR_BITS	32
 #define KERN_STACK_SIZE	4096
