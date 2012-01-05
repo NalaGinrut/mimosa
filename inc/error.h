@@ -31,7 +31,7 @@
 #else
 #include <debug/display.h>
 // FIXME: I need format!
-#define panic(str)  \
+#define panic(str ,...)				\
   do{ msg_print(str); halt(); }while(0);
 
 #endif

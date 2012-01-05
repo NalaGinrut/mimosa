@@ -1,0 +1,12 @@
+Makefile
+*.o
+*.d
+*-obj
+mimosa
+bochs.img
+kernel.ld
+boot
+boot.1st
+boot.out
+obj/*
+obj
