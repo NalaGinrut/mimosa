@@ -22,14 +22,18 @@
 #include <retval.h>
 
 #ifndef __KERN_DEBUG__
-#include <console.h>
-// FIXME: if no debug, panic must be halted
-#define panic(...)  _panic(__FILE__ ,__LINE__ ,__VA_ARGS__)
+//#include <console.h>
+/* FIXME: 1. if no debug, panic must be halted
+ *        2. use _panic if cprintf is done
+ */
+//#define panic(...)  _panic(__FILE__ ,__LINE__ ,__VA_ARGS__)
+#define panic(...)
 #else
 #include <debug/display.h>
 // FIXME: I need format!
-#define panic(str ,...)	\
-  msg_print(str)
+#define panic(str)  \
+  do{ msg_print(str); halt(); }while(0);
+
 #endif
 
 #define ASSERT_OUTFMT "func:%s in file:%s Assert:\"%s\" failed!\n"
@@ -62,8 +66,10 @@ static inline void halt()
 }
 
 static void print_errmsg(retval rv);
-void _panic(const char *file, int line, const char *fmt,...);
-void _warn(const char *file, int line, const char *fmt,...);
+
+
+//void _panic(const char *file, int line, const char *fmt,...);
+//void _warn(const char *file, int line, const char *fmt,...);
 
 #endif // End of __MIMOSA_ERROR_H;
 

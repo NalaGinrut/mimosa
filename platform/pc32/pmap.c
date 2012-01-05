@@ -631,7 +631,7 @@ void pmap_tlb_invalidate(pde_t* pgdir ,void* va)
 
 
 #ifdef __KERN_DEBUG__
-static void pmap_page_check()
+void pmap_page_check()
 {
 	struct Page *pp, *pp0, *pp1, *pp2;
 	page_list_t  fl;

@@ -34,18 +34,11 @@ void platform_init()
   bsp_init_clear_tmp();
   bsp_init_console();
 
-#ifdef __KERN_DEBUG__
-  msg_print("In the beginning,God created the heavens and the earth.\t--Genesis 1:1\n");
-#endif
-
-
-  while(1);
-
 #ifdef __KERN_ONLINE_DEBUG__
   bsp_init_online_debug();
 #endif
 
-  //bsp_init_memory();
+  bsp_init_memory();
 
   //TODO: other init needed.
 
@@ -53,6 +46,12 @@ void platform_init()
    * the kernel init procedure. Please be sure that ,you can't write any
    * platform specified code in the kernel module. It's generic.
    */
+
+#ifdef __KERN_DEBUG__
+  msg_print("In the beginning,God created the heavens and the earth.\t--Genesis 1:1\n");
+#endif
+
+  while(1);
 
   //kernel_init();
 }
@@ -93,5 +92,13 @@ static void bsp_init_memory()
    * 3. deal with page mapping
    * 4. check page mapping if necessary
    */
+
+  pmap_detect_memory();
+  pmap_vm_init();
+  pmap_page_init();
+
+#ifdef __KERN_DEBUG__
+  pmap_page_check();
+#endif
 
 }

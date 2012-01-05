@@ -124,6 +124,7 @@ static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la);
 static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr);
 void pmap_vm_init();
+void pmap_page_init();
 static void pmap_jump_into_paging_mode(pde_t* pgdir);
 static void pmap_page_init_pg(struct Page *pg);
 retval pmap_page_alloc(struct Page **pg_store);
@@ -138,7 +139,7 @@ void pmap_tlb_invalidate(pde_t* pgdir ,void* va);
 #ifdef __KERN_DEBUG__
 static void pmap_check_boot_pgdir();
 static physaddr_t pmap_check_va2pa(pte_t *pgdir ,laddr_t va);
-static void pmap_page_check();
+void pmap_page_check();
 #endif // End of __KERN_DEBUG__
 
 #endif // End of __BSP_PC32_PMAP_H;
