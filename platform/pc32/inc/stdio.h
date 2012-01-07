@@ -1,5 +1,7 @@
+#ifndef	__MIMOSA_PC32_STDIO_H
+#define __MIMOSA_PC32_STDIO_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -18,10 +20,9 @@
 
 
 #include <types.h>
-#include <io.h>
+#include <drivers/console.h>
 
-void cprintf(const char *fmt, ...)
-{
+#define __BSP_PUT_CHAR__(ch) console_putc(ch)
+//#define __BSP_GET_CHAR__() console_getc()
 
-  // TODO: yeah~That's what you want!
-}
+#endif // End of __MIMOSA_PC32_STDIO_H;

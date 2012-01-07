@@ -22,7 +22,7 @@
 #include <retval.h>
 
 #ifndef __KERN_DEBUG__
-//#include <console.h>
+#include <libkern.h>
 /* FIXME: 1. if no debug, panic must be halted
  *        2. use _panic if cprintf is done
  */
@@ -59,11 +59,7 @@ static void _warn(const char*, int, const char*, ...);
 static void _panic(const char*, int, const char*, ...) no_return;
 */
 
-static inline void halt();
-static inline void halt()
-{
-  while(1);
-}
+#define halt() while(1)
 
 static void print_errmsg(retval rv);
 

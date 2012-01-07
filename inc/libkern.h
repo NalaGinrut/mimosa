@@ -36,5 +36,6 @@ void *memset(void *str, int c, size_t n);
 void *memchr(void const *str ,int c_in ,size_t n);
 void *memmove(void *dest ,void const *src ,size_t n);
 
+int cprintf(const char *format ,...);
 
 #endif // End of __MIMOSA_LIB_KERNEL_H;

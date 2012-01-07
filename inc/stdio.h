@@ -1,7 +1,7 @@
-#ifndef	__MIMOSA_CONSOLE_H
-#define __MIMOSA_CONSOLE_H
+#ifndef	__MIMOSA_LIB_STDIO_H
+#define __MIMOSA_LIB_STDIO_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -18,9 +18,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include <types.h>
-#include <io.h>
+#include <bsp/stdio.h>
 
-void cprintf(const char *fmt, ...);
+#define __PUT_CHAR__(ch) __BSP_PUT_CHAR__(ch)
 
-#endif // End of __MIMOSA_CONSOLE_H;
+#endif // End of __MIMOSA_LIB_STDIO_H;

@@ -1,7 +1,7 @@
 #ifndef __MIMOSA_TYPES_H
 #define __MIMOSA_TYPES_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -101,6 +101,14 @@ typedef __off_t off_t;
 
 #define offsetof(type ,member)	\
   (off_t)(&((type*)0)->member)	
+
+typedef union Dynamic_Integer_Type
+{
+  s64_t s64;
+  s32_t s32;
+  s16_t s16;
+  s8_t s8;
+}dint_t;
 
 #endif // !__ASSEMBLER__
 

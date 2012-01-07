@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -101,4 +101,11 @@ static void bsp_init_memory()
   pmap_page_check();
 #endif
 
+}
+
+static void bsp_init_platform_specific()
+{
+  /* TODO:
+   * All platform specific init code should be put here
+   */
 }

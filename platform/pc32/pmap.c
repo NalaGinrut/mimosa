@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@
 #include <error.h>
 #include <bsp/pmap.h>
 #include <bsp/bsp_mm.h>
-#include <console.h>
 #include <retval.h>
 
 #ifdef __KERN_DEBUG__
@@ -98,8 +97,8 @@ void pmap_detect_memory()
   pa_top = ext_mem? PMAP_EXT_MEM_FIX(ext_mem) : base_mem;
   GET_GLOBAL_VAR(npage) = pmap_how_many_pages();
 
-  cprintf("Physical memory: %dK available, ", (int)(pa_top/1024));
-  cprintf("base = %dK, extended = %dK\n", (int)(base_mem/1024), (int)(ext_mem/1024));
+  kprintf("Physical memory: %dK available, ", (int)(pa_top/1024));
+  kprintf("base = %dK, extended = %dK\n", (int)(base_mem/1024), (int)(ext_mem/1024));
 }
 
 
@@ -299,23 +298,23 @@ static void pmap_check_boot_pgdir()
 	n = ROUND_UP(npage*sizeof(struct Page), PG_SIZE);
 	for (i = 0; i < n; i += PG_SIZE)
 	  {	
-	    //cprintf("i:%d\n",i/PGSIZE);
+	    //kprintf("i:%d\n",i/PGSIZE);
 	    assert(pmap_check_va2pa(pgdir, upages + i) == PADDR((u32_t)pages) + i);
 	  }
 
 	// check phys mem
 	for (i = 0; KERN_BASE + i != 0; i += PG_SIZE)
 	  {
-	    //cprintf("i:%d\n",i/PGSIZE);
+	    //kprintf("i:%d\n",i/PGSIZE);
 
 	    assert(pmap_check_va2pa(pgdir, KERN_BASE + i) == i);
 
-	//cprintf("%p->%p\n",KERNBASE+i,		    //== i);
+	//kprintf("%p->%p\n",KERNBASE+i,		    //== i);
 	  }
 	// check kernel stack
 	for (i = 0; i < kstksize; i += PG_SIZE)
 	  {
-	    //cprintf("i:%d\n",i/PGSIZE);
+	    //kprintf("i:%d\n",i/PGSIZE);
 	    assert(pmap_check_va2pa(pgdir, kstktop - kstksize + i) == PADDR((u32_t)tmp_stack) + i);
 	  }
 

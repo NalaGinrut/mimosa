@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#include <osconfig.h>
 #include <io.h>
 #include <types.h>
+#include <global.h>
 #include <drivers/console.h>
 #include <drivers/kbd.h>
 #include <libkern.h>
@@ -27,9 +28,7 @@
 #include <debug.h>
 #endif
 
-static u32_t port_6845;
-static u16_t *crt_buf;
-static u16_t crt_pos; 
+static ccb_t MK_GLOBAL_VAR(con_ctr);
 
 void console_init()
 {
@@ -51,35 +50,60 @@ void console_putc(u16_t ch)
 
 }
 
+static inline void cga_update_cursor()
+{
+  ccb_t *ccb = &GET_GLOBAL_VAR(con_ctr);
+  u32_t crt_port = ccb->crt_port;
+  u16_t crt_pos = ccb->crt_pos;
+  
+  writeb(crt_port ,CURSOR_H);
+  writeb(crt_port + 1 ,crt_pos >> 8);
+
+  writeb(crt_port ,CURSOR_L);
+  writeb(crt_port + 1 ,crt_pos);
+}
+
+static inline void cga_get_cursor_pos()
+{
+  ccb_t *ccb = &GET_GLOBAL_VAR(con_ctr);
+  u32_t crt_port = ccb->crt_port;
+  
+  writeb(crt_port ,CURSOR_H);
+  ccb->crt_pos = readb(crt_port + 1) << 8;
+
+  writeb(crt_port ,CURSOR_L);
+  ccb->crt_pos |= readb(crt_port + 1);
+}
 
 static void cga_init()
 {
   u16_t tmp;
-  
+  ccb_t *ccb = &GET_GLOBAL_VAR(con_ctr);
+  u32_t crt_port = ccb->crt_port;
+  u16_t *crt_buf = ccb->crt_buf;
+
   tmp = *CGA_DISP_BUF;
 
   // check out the display mode ,and select one of them. 
   *CGA_DISP_BUF = (u16_t)0xA55A;
-  port_6845 = (*CGA_DISP_BUF == 0xA55A)? CGA_BASE : MONO_BASE;
+  crt_port = (*CGA_DISP_BUF == 0xA55A)? CGA_BASE : MONO_BASE;
   *CGA_DISP_BUF = tmp;
 
   // select MONO or CGA buffer
-  crt_buf = (u16_t*)((port_6845 == MONO_BASE)? MONO_DISP_BUF : CGA_DISP_BUF);
+  crt_buf = (u16_t*)(crt_port == MONO_BASE ? MONO_DISP_BUF : CGA_DISP_BUF);
 
-
-  // get cursor location
-  writeb(port_6845 ,CURSOR_H);
-  crt_pos = readb(port_6845 + 1) << 8;
-
-  writeb(port_6845 ,CURSOR_L);
-  crt_pos |= readb(port_6845 + 1);
-
-}
-
+  // get cursor position
+  cga_get_cursor_pos();
+}	
 
 void cga_putc(u16_t ch)
 {
-  ch = (ch & 0xFF00)? ch : (ch | 0x0700);
+  ccb_t *ccb = &GET_GLOBAL_VAR(con_ctr);
+  u32_t crt_port = ccb->crt_port;
+  u16_t *crt_buf = ccb->crt_buf;
+  u16_t crt_pos = ccb->crt_pos;
+  
+  ch = (ch & 0xFF00)? ch : (ch | BG_BLK_FG_GRAY);
 
   switch( ch & 0xFF )
     {
@@ -106,20 +130,16 @@ void cga_putc(u16_t ch)
 
   if (crt_pos >= CRT_SIZE)
     {
-      int i;
-    
-      memcpy(crt_buf, crt_buf + CRT_COLS, 
-	     (CRT_SIZE - CRT_COLS) * sizeof(u16_t));
-      for (i = CRT_SIZE - CRT_COLS; i < CRT_SIZE; i++)
-			crt_buf[i] = 0x0700 | ' ';
+      memcpy(crt_buf ,crt_buf + CRT_COLS ,(CRT_SIZE - CRT_COLS) * sizeof(u16_t));
+
+      for (int i = CRT_SIZE - CRT_COLS ;i < CRT_SIZE ;i++)
+	crt_buf[i] = 0x0700 | ' ';
+
       crt_pos -= CRT_COLS;
     }
 
-  writeb(port_6845 ,CURSOR_H);
-  writeb(port_6845 + 1 ,crt_pos >> 8);
-
-  writeb(port_6845 ,CURSOR_L);
-  writeb(port_6845 + 1 ,crt_pos);
-
+  ccb->crt_pos = crt_pos;
+  
+  cga_update_cursor();
 }
 

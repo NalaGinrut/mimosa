@@ -19,7 +19,7 @@
 #include <types.h>
 #include <error.h>
 #include <retval.h>
-#include <console.h>
+#include <libkern.h>
 #include <stdarg.h>
 
 #ifdef __KERN_DEBUG__

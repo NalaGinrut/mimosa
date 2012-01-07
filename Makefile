@@ -1,4 +1,4 @@
-#  Copyright (C) 2010-2011  
+#  Copyright (C) 2010-2012  
 #	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 # God bless~ 
 # NalaGinrut@gmail.com
 
-
 # Never change these lines!!!
 TOP := $(shell pwd)
 CONF := $(TOP)/config
@@ -31,6 +30,8 @@ all: kernel.ld mimosa
 
 include $(CONF)/conf.mk
 # DO NOT TOUCH!
+
+GCC_LIB := $(shell $(CC) -print-libgcc-file-name)
 
 KERN_LDS := $(addsuffix -lds,kernel)
 
@@ -46,7 +47,7 @@ endif
 ### TARGET ###
 mimosa: $(mimosa-framework)
 	@echo + generate kernel image... from $^
-	$(V)$(LD) $(LDFLAGS) -o $@ $^
+	$(V)$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIB)
 
 kernel.ld:
 	$(V)$(MAKE) $(KERN_LDS)

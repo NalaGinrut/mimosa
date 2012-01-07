@@ -1,7 +1,7 @@
 #ifndef	__MIMOSA_RETVAL_H
 #define __MIMOSA_RETVAL_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,9 @@
 
 typedef enum Return_Number
   {
-    EINVSZ=0xE001 ,
-    ENOMEM=0xE002 ,
+    EINVSZ = 0xE001,
+    ENOMEM = 0xE002,
+    EINVAL = 0xE003,
     OK=0,
   }retval;
 
