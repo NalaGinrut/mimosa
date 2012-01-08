@@ -147,8 +147,10 @@ static int vsnprintf(char *buf ,int n ,const char *fmt ,va_list ap)
 static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
 		      u32_t base ,int width ,int padc)
 {
-  // FIXME: only handle maximum 64bit number
-  char buf[64] = {0};
+  /* FIXME: only can handle maximum 64bit number,
+   *	    but this should according to max length integer which depends on platform.
+   */
+  char buf[21] = {0};
   int cnt = 0;
   
   while(num > 0)
@@ -170,7 +172,7 @@ static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
       num /= base;
     }
 
-  for(int i=cnt ;i>=0 ;i--)
+  for(int i=cnt-1 ;i>=0 ;i--)
     putch(buf[i] ,spb);
 }
 
