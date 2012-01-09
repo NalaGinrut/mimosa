@@ -141,6 +141,7 @@ void cga_putc(u16_t ch)
     }
 
   ccb->crt_pos = crt_pos;
+  ccb->crt_buf = crt_buf;
   
   cga_update_cursor();
 }

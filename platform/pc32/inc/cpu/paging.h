@@ -111,7 +111,7 @@ static inline void TLB_flush_mem(void *mem)
 {
   __asm__ volatile("invlpg %0\n\t"
 		   :
-		   :"m" (*mem)
+		   :"m" (mem)
 		   );
 }
 #endif //End of __486_COMPAT

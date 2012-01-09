@@ -36,7 +36,7 @@ void flush_tlb_all()
  * <Usage>:
  * Changing a range of kernel page table entries.
  */
-void flush_tlb_kernel_range(start ,end)
+void flush_tlb_kernel_range(void *start ,void *end)
 {}
 
 /* <Discription>:
@@ -54,7 +54,7 @@ void flush_tlb()
  * <Usage>:
  * Forking a new process.
  */
-void flush_tlb_mm(who)
+void flush_tlb_mm(void *who)
 {}
 
 /* <Discription>:
@@ -64,7 +64,7 @@ void flush_tlb_mm(who)
  * <Usage>:
  * address interval of a process
  */
-void flush_tlb_range(who ,range)
+void flush_tlb_range(void *who ,void *range)
 {}
 
 /* <Discription>:
@@ -74,7 +74,7 @@ void flush_tlb_range(who ,range)
  * <Usage>:
  * Releasing some page tables of a process.
  */
-void flush_tlb_pgtables(who ,pt)
+void flush_tlb_pgtables(void *who ,void *pt)
 {}
 
 /* <Discription>:
@@ -83,7 +83,7 @@ void flush_tlb_pgtables(who ,pt)
  * <Usage>:
  * Processing a Page Fault.
  */
-void flush_tlb_page(who)
+void flush_tlb_page(void *who)
 {}
 
 

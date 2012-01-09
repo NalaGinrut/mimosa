@@ -54,7 +54,7 @@ kernel.ld:
 
 $(OBJ)/bochs.img: kernel.ld mimosa $(OBJ)/boot
 	@echo + mk $@
-	$(V)dd if=/dev/zero of=$(OBJ)/$(@F).bak count=10000 
+	$(V)dd if=/dev/zero of=$(OBJ)/$(@F).bak count=10000
 	$(V)dd if=$(OBJ)/boot.out of=$(OBJ)/$(@F).bak conv=notrunc 
 	$(V)dd if=mimosa of=$(OBJ)/$(@F).bak seek=1 conv=notrunc 
 	$(V)mv $(OBJ)/$(@F).bak $(OBJ)/$(@F)

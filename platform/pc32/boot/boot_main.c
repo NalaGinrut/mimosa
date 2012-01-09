@@ -1,19 +1,20 @@
-/* Copyleft(c)2010 HackerFellowship. All lefts reserved.
-   
- * NalaGinrut <NalaGinrut@gmail.com>
+/*	
+ *  Copyright (C) 2010-2012  
+ *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
- * May Lord Bless!Happy Hacking!
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  
- * This program is free software;you can redistribute it and /or modify
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundataion;either version 2 of the License,or (at 
- * your option) any later version.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  
- * You should have read the GNU General Public License before start "RTFSC".
- 
- * If not,see <http://www.gnu.org/licenses/>
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include <elf.h>
 #include <bsp/cpu/port.h>
@@ -88,7 +89,7 @@ int read_seg(__u32_t va ,__u32_t count ,__u32_t byte_offset)
 int read_sect(void *dest ,__u32_t sect_cnt ,__u32_t lba_offset)
 {
   
-  WAIT_DISK_READY;
+  WAIT_FOR_DISK_READY;
 
   port_wb(HDC_HEAD ,HEAD(lba_offset) | LBA_PIO_28b);
   port_wb(HDC_SECT_CNT ,sect_cnt);
@@ -97,7 +98,7 @@ int read_sect(void *dest ,__u32_t sect_cnt ,__u32_t lba_offset)
   port_wb(HDC_CYL_H ,CY_H(lba_offset));
   port_wb(HDC_CMD ,SECT_RR);
 
-  WAIT_DISK_READY;
+  WAIT_FOR_DISK_READY;
 
   port_rnl(HDC_DATA ,dest ,sect_cnt<<7);
 
