@@ -92,6 +92,8 @@ static void cga_init()
   // select MONO or CGA buffer
   crt_buf = (u16_t*)(crt_port == MONO_BASE ? MONO_DISP_BUF : CGA_DISP_BUF);
 
+  ccb->crt_buf = crt_buf;
+  ccb->crt_port = crt_port;
   // get cursor position
   cga_get_cursor_pos();
 }	
