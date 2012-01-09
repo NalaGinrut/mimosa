@@ -70,7 +70,7 @@
  */
 
 
-u32_t mc146818_read(u32_t index);
-void mc146818_write(u32_t index ,u32_t data);
+u32_t mc146818_read_byte(u32_t index);
+void mc146818_write_byte(u32_t index ,int data);
 
 #endif // End of __RTC_MC146818_H;

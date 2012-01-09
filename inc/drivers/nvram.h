@@ -1,7 +1,7 @@
 #ifndef	__DRIVER_NVRAM_H
 #define __DRIVER_NVRAM_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -37,9 +37,10 @@
 #define NVRAM_PEXTLO	(MC_NVRAM_START + 34)	/* low byte; RTC off. 0x30 */
 #define NVRAM_PEXTHI	(MC_NVRAM_START + 35)	/* high byte; RTC off. 0x31 */
 
-#define nvram_read(index) mc146818_read(index)
-#define nvram_write(index ,data) mc146818_write(index ,data)
+u32_t nvram_read_byte(u32_t index);
+void nvram_write_byte(u32_t index ,int data);
 
-u32_t nvram_get_mem_info(u32_t name);
+u32_t nvram_get_base_mem_info();
+u32_t nvram_get_ext_mem_info();
 
 #endif // End of __DRIVER_NVRAM_H;

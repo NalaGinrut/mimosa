@@ -91,8 +91,8 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 
 void pmap_detect_memory()
 {
-  base_mem = nvram_get_mem_info(NVRAM_BASELO);
-  ext_mem = nvram_get_mem_info(NVRAM_EXTLO);
+  base_mem = nvram_get_base_mem_info();
+  ext_mem = nvram_get_ext_mem_info();
 
   pa_top = ext_mem? PMAP_EXT_MEM_FIX(ext_mem) : base_mem;
   GET_GLOBAL_VAR(npage) = pmap_how_many_pages();

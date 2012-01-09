@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -21,13 +21,13 @@
 #include <types.h>
 #include <io.h>
 
-u32_t mc146818_read(u32_t index)
+u32_t mc146818_read_byte(u32_t index)
 {
 	writeb(RTC_PORT ,index);
 	return readb(RTC_PORT+1);
 }
 
-void mc146818_write(u32_t index ,u32_t data)
+void mc146818_write_byte(u32_t index ,int data)
 {
 	writeb(RTC_PORT ,index);
 	writeb(RTC_PORT+1 ,data);
