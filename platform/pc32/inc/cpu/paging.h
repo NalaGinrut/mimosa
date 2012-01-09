@@ -1,7 +1,7 @@
 #ifndef __MIMOSA_PC32_PAGING_H
 #define __MIMOSA_PC32_PAGING_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -90,12 +90,24 @@ typedef __u32_t pfec_t; // Page Fault Error Code;
 
 #define page_enable()  cr0_set(CR0_PG)
 
+static inline void global_pages_enable() __true_inline;
+static inline void global_pages_disable() __true_inline;
+
+static inline void global_pages_enable()
+{
+  cr4_set(cr4_get() | CR4_PGE); 
+}
+
+static inline void global_pages_disable()
+{
+  cr4_set(cr4_get() & ~CR4_PGE);
+}
 
 #ifdef __486_COMPAT
 #define TLB_flush_mem(mem) 	
 #else
-static inline void TLB_flush_mem(__mem_t mem) __true_inline;
-static inline void TLB_flush_mem(__mem_t mem)
+static inline void TLB_flush_mem(void *mem) __true_inline;
+static inline void TLB_flush_mem(void *mem)
 {
   __asm__ volatile("invlpg %0\n\t"
 		   :
