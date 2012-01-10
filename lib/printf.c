@@ -151,6 +151,7 @@ static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
    */
   char buf[21] = {0};
   int cnt = 0;
+  buf[0] = '0'; // sentinel for num==0 situation
   
   while(num > 0)
     {
@@ -171,7 +172,7 @@ static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
       num /= base;
     }
 
-  for(int i=cnt-1 ;i>=0 ;i--)
+  for(int i=cnt?cnt-1:0 ;i>=0 ;i--)
     putch(buf[i] ,spb);
 }
 
@@ -240,8 +241,6 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	case '7':
 	case '8':
 	case '9':
-	  //  for(rc->precision = 0 ;('0' <= ch && ch <= '9') ;)//(*fmt)++)
-	    //for(rc->precision = 0 ; ;(*fmt)++)
 	  {
 	    rc->precision = 0;
 	    do{  
