@@ -204,39 +204,34 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
   register int err;
   u64_t num;
   int base;
-  int lflag = rc->lflag;
-  int width = rc->width;
-  int precision = rc->precision;
-  int altflag = rc->altflag;
-  char padc = rc->padc;
 
 #define	process_precision() 	\
-  if(width < 0)			\
+  if(rc->width < 0)			\
   {				\
-    width = precision;		\
-    precision = -1;		\
+    rc->width = rc->precision;		\
+    rc->precision = -1;		\
   }				
   
-#define process_number() print_num(putch ,spb ,num ,base ,width ,padc)
+#define process_number() print_num(putch ,spb ,num ,base ,rc->width ,rc->padc)
   
   while(1)
     {
-      switch(ch = *(unsigned char *)fmt++)
+      switch(ch = *fmt++)
 	{
 	case '\0':
 	  return;
 
 	  // flag to pad on the right
 	case '-':
-	  padc = '-';
+	  rc->padc = '-';
 	  break;
 			
 	  // flag to pad with 0's instead of spaces
 	case '0':
-	  padc = '0';
+	  rc->padc = '0';
 	  break;
 
-	  // width field
+	  // rc->width field
 	case '1':
 	case '2':
 	case '3':
@@ -246,32 +241,32 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	case '7':
 	case '8':
 	case '9':
-	  for(precision = 0 ;(0 <= ch && ch <= 9) ;fmt++)
+	  for(rc->precision = 0 ;(0 <= ch && ch <= 9) ;fmt++)
 	    {
-	      precision = precision * 10 + ch - '0';
+	      rc->precision = rc->precision * 10 + ch - '0';
 	      ch = *fmt;
 	    }	
 	  process_precision();
 	  break;	
 
 	case '*':
-	  precision = va_arg(ap ,int);
+	  rc->precision = va_arg(ap ,int);
 	  process_precision();
 	  break;
 
 	case '.':
-	  if(width < 0)
-	    width = 0;
+	  if(rc->width < 0)
+	    rc->width = 0;
 	  break;
 
 	case '#':
-	  altflag = 1;
+	  rc->altflag = 1;
 	  break;
 
 
 	  // long flag (doubled for long long)
 	case 'l':
-	  lflag++;
+	  rc->lflag++;
 	  break;
 
 	  // character
@@ -294,21 +289,23 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	case 's':
 	  if(NULL == (p = va_arg(ap ,char *)))
 	    p = "(null)";
-	  if(width > 0 && padc != '-')
-	    for(width -= strnlen(p ,precision) ;width > 0 ;width--)
-	      putch(padc ,spb);
-	  for( ;(ch = *p++) != '\0' && (precision < 0 || --precision >= 0) ;width--)
-	    if(altflag && (ch < ' ' || ch > '~'))
+	  if(rc->width > 0 && rc->padc != '-')
+	    for(rc->width -= strnlen(p ,rc->precision) ;rc->width > 0 ;rc->width--)
+	      putch(rc->padc ,spb);
+	  for(;
+	      (ch = *p++) != '\0' && (rc->precision < 0 || --rc->precision >= 0);
+	      rc->width--)
+	    if(rc->altflag && (ch < ' ' || ch > '~'))
 	      putch('?' ,spb);
 	    else
 	      putch(ch ,spb);
-	  for( ;width > 0 ;width--)
+	  for( ;rc->width > 0 ;rc->width--)
 	    putch(' ' ,spb);
 	  return;
 
 	  // (signed) decimal
 	case 'd':
-	  num = get_int(&ap ,lflag);
+	  num = get_int(&ap ,rc->lflag);
 	  if((s64_t)num < 0)
 	    {
 	      putch('-' ,spb);
@@ -320,14 +317,14 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 
 	  // unsigned decimal
 	case 'u':
-	  num = get_uint(&ap ,lflag);
+	  num = get_uint(&ap ,rc->lflag);
 	  base = 10;
 	  process_number();
 	  return;
 
 	  // (unsigned) octal
 	case 'o':
-	  num = get_uint(&ap ,lflag);
+	  num = get_uint(&ap ,rc->lflag);
 	  base = 8;
 	  process_number();
 	  return;
@@ -343,7 +340,7 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 
 	  // (unsigned) hexadecimal
 	case 'x':
-	  num = get_uint(&ap ,lflag);
+	  num = get_uint(&ap ,rc->lflag);
 	  base = 16;
 	  process_number();
 	  return;
@@ -373,7 +370,7 @@ static void vprintfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,va_list
   
   while(1)
     {
-      while('%' != (ch = *(char *)fmt++))
+      while('%' != (ch = *fmt++))
 	{
 	  if('\0' == ch)
 	    return;
@@ -389,6 +386,7 @@ static void vprintfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,va_list
       rc.altflag = 0;
 
       reswitch(&rc ,putch ,spb ,fmt ,ap);
+      fmt++; // NOTE: Escape %-escape symbol
     }
 }
 
