@@ -64,7 +64,7 @@ static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
 static u64_t get_uint(va_list *ap ,int lflag);
 static s64_t get_int(va_list *ap ,int lflag);
 static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
-			    spbuf_t *spb ,const char *fmt ,va_list *ap);
+			    spbuf_t *spb ,const char **fmt ,va_list *ap);
 static void vprintfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,va_list ap);
 
 int cprintf(const char *fmt ,...)
@@ -196,7 +196,7 @@ static s64_t get_int(va_list *ap ,int lflag)
 }
 
 static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
-			    spbuf_t *spb ,const char *fmt ,va_list *ap)
+			    spbuf_t *spb ,const char **fmt ,va_list *ap)
 {
   register const char *p;
   register char ch;
@@ -215,7 +215,7 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
   
   while(1)
     {
-      switch(ch = *fmt++)
+      switch(ch = *(*fmt)++)
 	{
 	case '\0':
 	  return;
@@ -240,10 +240,10 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	case '7':
 	case '8':
 	case '9':
-	  for(rc->precision = 0 ;(0 <= ch && ch <= 9) ;fmt++)
+	  for(rc->precision = 0 ;(0 <= ch && ch <= 9) ;(*fmt)++)
 	    {
 	      rc->precision = rc->precision * 10 + ch - '0';
-	      ch = *fmt;
+	      ch = **fmt;
 	    }	
 	  process_precision();
 	  break;	
@@ -352,7 +352,7 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	  // unrecognized escape sequence - just print it literally
 	default:
 	  putch('%' ,spb);
-	  for(fmt-- ;fmt[-1] != '%' ;fmt--)
+	  for((*fmt)-- ;*fmt[-1] != '%' ;(*fmt)--)
 	    /* do nothing */;
 	  return;
 	}
@@ -384,8 +384,7 @@ static void vprintfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,va_list
       rc.lflag = 0;
       rc.altflag = 0;
 
-      reswitch(&rc ,putch ,spb ,fmt ,&ap);
-      fmt++; // NOTE: Escape %-escape symbol
+      reswitch(&rc ,putch ,spb ,&fmt ,&ap);
     }
 }
 
