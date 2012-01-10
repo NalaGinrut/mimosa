@@ -65,7 +65,7 @@ static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
 static u64_t get_uint(va_list *ap ,int lflag);
 static s64_t get_int(va_list *ap ,int lflag);
 static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
-			    spbuf_t *spb ,const char *fmt ,va_list ap);
+			    spbuf_t *spb ,const char *fmt ,va_list *ap);
 static void vprintfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,va_list ap);
 
 int cprintf(const char *fmt ,...)
@@ -197,7 +197,7 @@ static s64_t get_int(va_list *ap ,int lflag)
 }
 
 static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
-			    spbuf_t *spb ,const char *fmt ,va_list ap)
+			    spbuf_t *spb ,const char *fmt ,va_list *ap)
 {
   register const char *p;
   register char ch;
@@ -250,7 +250,7 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	  break;	
 
 	case '*':
-	  rc->precision = va_arg(ap ,int);
+	  rc->precision = va_arg(*ap ,int);
 	  process_precision();
 	  break;
 
@@ -271,12 +271,12 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 
 	  // character
 	case 'c':
-	  putch(va_arg(ap ,int) ,spb);
+	  putch(va_arg(*ap ,int) ,spb);
 	  return;
 
 	  // error message
 	case 'e':
-	  err = va_arg(ap ,int);
+	  err = va_arg(*ap ,int);
 	  if(err < 0)
 	    err = -err;
 	  if(err > MAXERROR || NULL == (p = error_string[err]))
@@ -287,7 +287,7 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 
 	  // string
 	case 's':
-	  if(NULL == (p = va_arg(ap ,char *)))
+	  if(NULL == (p = va_arg(*ap ,char *)))
 	    p = "(null)";
 	  if(rc->width > 0 && rc->padc != '-')
 	    for(rc->width -= strnlen(p ,rc->precision) ;rc->width > 0 ;rc->width--)
@@ -305,7 +305,7 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 
 	  // (signed) decimal
 	case 'd':
-	  num = get_int(&ap ,rc->lflag);
+	  num = get_int(ap ,rc->lflag);
 	  if((s64_t)num < 0)
 	    {
 	      putch('-' ,spb);
@@ -317,14 +317,14 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 
 	  // unsigned decimal
 	case 'u':
-	  num = get_uint(&ap ,rc->lflag);
+	  num = get_uint(ap ,rc->lflag);
 	  base = 10;
 	  process_number();
 	  return;
 
 	  // (unsigned) octal
 	case 'o':
-	  num = get_uint(&ap ,rc->lflag);
+	  num = get_uint(ap ,rc->lflag);
 	  base = 8;
 	  process_number();
 	  return;
@@ -333,14 +333,14 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	case 'p':
 	  putch('0' ,spb);
 	  putch('x' ,spb);
-	  num = (uintptr_t)va_arg(ap ,void *);
+	  num = (uintptr_t)va_arg(*ap ,void *);
 	  base = 16;
 	  process_number();
 	  return;
 
 	  // (unsigned) hexadecimal
 	case 'x':
-	  num = get_uint(&ap ,rc->lflag);
+	  num = get_uint(ap ,rc->lflag);
 	  base = 16;
 	  process_number();
 	  return;
@@ -385,7 +385,7 @@ static void vprintfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,va_list
       rc.lflag = 0;
       rc.altflag = 0;
 
-      reswitch(&rc ,putch ,spb ,fmt ,ap);
+      reswitch(&rc ,putch ,spb ,fmt ,&ap);
       fmt++; // NOTE: Escape %-escape symbol
     }
 }
