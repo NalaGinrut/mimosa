@@ -55,7 +55,6 @@ typedef struct Reswitch_Context
   
 typedef void (*putch_func_t)(char ,spbuf_t*);
 
-static int vcprintf(const char *fmt ,va_list ap);
 static void printfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,...);
 static void color_putch(char ch ,spbuf_t *spb);
 static void sprint_putch(char ch ,spbuf_t *spb);
@@ -80,7 +79,7 @@ int cprintf(const char *fmt ,...)
   return cnt;
 }
 
-static int vcprintf(const char *fmt ,va_list ap)
+int vcprintf(const char *fmt ,va_list ap)
 {
   // TODO: provide line buffer
   spbuf_t spb = { .buf = NULL,

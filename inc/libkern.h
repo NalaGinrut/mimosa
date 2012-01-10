@@ -19,6 +19,7 @@
  */
 
 #include <types.h>
+#include <stdarg.h>
 
 #define MAX_STRING_LEN 256
 
@@ -37,5 +38,6 @@ void *memchr(void const *str ,int c_in ,size_t n);
 void *memmove(void *dest ,void const *src ,size_t n);
 
 int cprintf(const char *format ,...);
+int vcprintf(const char *fmt ,va_list ap);
 
 #endif // End of __MIMOSA_LIB_KERNEL_H;

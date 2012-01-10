@@ -1,7 +1,7 @@
 #ifndef __MIMOSA_ERROR_H
 #define __MIMOSA_ERROR_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -20,52 +20,30 @@
 
 #include <types.h>
 #include <retval.h>
-
-#ifndef __KERN_DEBUG__
 #include <libkern.h>
-/* FIXME: 1. if no debug, panic must be halted
- *        2. use _panic if cprintf is done
- */
-//#define panic(...)  _panic(__FILE__ ,__LINE__ ,__VA_ARGS__)
-#define panic(...)
-#else
-#include <debug/display.h>
-// FIXME: I need format!
-#define panic(str ,...)				\
-  do{ msg_print(str); halt(); }while(0);
 
+#ifdef __KERN_DEBUG__
+#include <debug/display.h>
+// TODO: debug
 #endif
+
+#define panic(...)  _panic(__FILE__ ,__LINE__ ,__VA_ARGS__)
 
 #define ASSERT_OUTFMT "func:%s in file:%s Assert:\"%s\" failed!\n"
 
-#define __assert_print(p)	\
+#define __assert_print(p) \
   panic(ASSERT_OUTFMT ,__FUNCTION__ ,__FILE__ ,#p)
 
-#define assert(p)	\
+#define assert(p) \
   do{ if(!(p)) __assert_print(p); }while(0);
 
-/*
-#define assert(x)		\
-	do { if (!(x)) panic("assertion failed: %s", #x); } while (0)
-*/
+void _warn(const char*, int, const char*, ...);
+void _panic(const char*, int, const char*, ...) no_return;
 
-/* FIXME: use these functions while finished format printf;
-#define warn(...) _warn(__FILE__, __LINE__, __VA_ARGS__)
-#define panic(...) _panic(__FILE__, __LINE__, __VA_ARGS__)
-
-
-// func declaration;
-static void _warn(const char*, int, const char*, ...);
-static void _panic(const char*, int, const char*, ...) no_return;
-*/
 
 #define halt() while(1)
 
 static void print_errmsg(retval rv);
-
-
-//void _panic(const char *file, int line, const char *fmt,...);
-//void _warn(const char *file, int line, const char *fmt,...);
 
 #endif // End of __MIMOSA_ERROR_H;
 

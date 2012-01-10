@@ -118,9 +118,9 @@ void cga_putc(u16_t ch)
       break;
     case '\n':
       crt_pos += CRT_COLS;
-      break;
     case '\r':
       crt_pos -= (crt_pos % CRT_COLS);
+      break;
     case '\t':
       console_putc(' ');console_putc(' ');
       console_putc(' ');console_putc(' ');

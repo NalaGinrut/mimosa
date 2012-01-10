@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -42,40 +42,28 @@ static void print_errmsg(retval rv)
   kprintf("Errno %d - %s" ,rv ,retval_msg(rv));
 }
 
-
-
-void _panic(const char *file, int line, const char *fmt,...)
+void _panic(const char *file ,int line ,const char *fmt ,...)
 {
-  /*
-	va_list ap;
+  va_list ap;
 
-	if (panicstr)
-		goto dead;
-	panicstr = fmt;
+  va_start(ap ,fmt);
+  cprintf("kernel panic at %s:%d: " ,file ,line);
+  vcprintf(fmt ,ap);
+  cprintf("\n");
+  va_end(ap);
 
-	va_start(ap, fmt);
-	cprintf("kernel panic at %s:%d: ", file, line);
-	vcprintf(fmt, ap);
-	cprintf("\n");
-	va_end(ap);
-  */
-dead:
-
-	halt();
+  halt();
 }
 
-/* like panic, but don't */
-void _warn(const char *file, int line, const char *fmt,...)
+void _warn(const char *file ,int line ,const char *fmt ,...)
 {	
-  /*
-	va_list ap;
+  va_list ap;
 
-	va_start(ap, fmt);
-	cprintf("kernel warning at %s:%d: ", file, line);
-	vcprintf(fmt, ap);
-	cprintf("\n");
-	va_end(ap);
-  */
+  va_start(ap ,fmt);
+  cprintf("kernel warning at %s:%d: " ,file ,line);
+  vcprintf(fmt ,ap);
+  cprintf("\n");
+  va_end(ap);
 }
 
 
