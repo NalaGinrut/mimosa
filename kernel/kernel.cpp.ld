@@ -39,7 +39,7 @@ SECTIONS
 
 	. = KERNEL_BEGIN;
 	/* principio is default kernel start address */
-	PROVIDE(principio = KERNEL_BEGIN);
+	PROVIDE(principio = .);
 	
 	.text : {
 	      TEXT_SECTION	

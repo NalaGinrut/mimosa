@@ -1,7 +1,7 @@
 #ifndef __MIMOSA_BSP_MM_H
 #define __MIMOSA_BSP_MM_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -58,19 +58,19 @@ typedef __pte_t pte_t;
 
 // we declare these global bsp addr as u32_t,
 // you should take them to addr by explicitly cast
-extern u32_t GET_BSP_VAR(VPT);
-extern u32_t GET_BSP_VAR(KSTKTOP);
-extern u32_t GET_BSP_VAR(ULIM);
-extern u32_t GET_BSP_VAR(UVPT);
-extern u32_t GET_BSP_VAR(UPAGES);
-extern u32_t GET_BSP_VAR(UENVS);
-extern u32_t GET_BSP_VAR(UTOP);
-extern u32_t GET_BSP_VAR(UXSTKTOP);
-extern u32_t GET_BSP_VAR(USTKTOP);
-extern u32_t GET_BSP_VAR(UTEXT);
-extern u32_t GET_BSP_VAR(UTEMP);
-extern u32_t GET_BSP_VAR(PFTEMP);
-extern u32_t GET_BSP_VAR(USTABDATA);
+extern char GET_BSP_VAR(VPT)[];
+extern char GET_BSP_VAR(KSTKTOP)[];
+extern char GET_BSP_VAR(ULIM)[];
+extern char GET_BSP_VAR(UVPT)[];
+extern char GET_BSP_VAR(UPAGES)[];
+extern char GET_BSP_VAR(UENVS)[];
+extern char GET_BSP_VAR(UTOP)[];
+extern char GET_BSP_VAR(UXSTKTOP)[];
+extern char GET_BSP_VAR(USTKTOP)[];
+extern char GET_BSP_VAR(UTEXT)[];
+extern char GET_BSP_VAR(UTEMP)[];
+extern char GET_BSP_VAR(PFTEMP)[];
+extern char GET_BSP_VAR(USTABDATA)[];
 
 // paging mode defined here, you may change it as you wish and be careful ^_^
 #define BSP_PG_MODE_ON CR0_PM|CR0_PG|CR0_AM|CR0_WP|CR0_NE|CR0_TS|CR0_EM|CR0_MP

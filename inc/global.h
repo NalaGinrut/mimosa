@@ -1,7 +1,7 @@
 #ifndef	__MIMOSA_GLOBAL_H
 #define __MIMOSA_GLOBAL_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -26,14 +26,14 @@
 
 #define KERN_SYM(sym)	__mimosa_##sym
 
-#define MK_BSP_SYM(bsp ,sym)	__mimosa_##bsp##_##sym
 #define GET_BSP_VAR(var)	MK_BSP_SYM(MIMOSA_BSP ,var)	
+#define MK_BSP_SYM(bsp ,sym)	__mimosa_##bsp##_##sym
 
 /* Every bsp-specific symbol must use this macro to define it.
  * So we could avoid these symbols knock up against the generic symbols.
  */
 #ifndef BSP_SYM
-#define BSP_SYM(sym)	MK_BSP_SYM(MIMOSA_BSP,sym)
+#define BSP_SYM(sym)	MK_BSP_SYM(MIMOSA_BSP ,sym)
 #endif
 	
 #endif // End of __MIMOSA_GLOBAL_H;

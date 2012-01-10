@@ -24,12 +24,15 @@
 #include <error.h>
 #include <bsp/pmap.h>
 #include <bsp/bsp_mm.h>
+#include <bsp/tlb.h>
 #include <retval.h>
 
 #ifdef __KERN_DEBUG__
 #define kprintf cprintf
+#define MARK_TWAIN kprintf("%s OK\n" ,__func__)
 #else
 #define kprintf
+#define MARK_TWAIN
 #endif 
 
 // These variables are set by i386_detect_memory()
@@ -80,43 +83,47 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
   do{ table[PTX(la)] = ((u32_t)pa | attr); }while(0);
 
 
-#define pmap_paging_mode_turn_on(cr0 ,cr3)	\
-  do{						\
-  cr3_set(cr3);					\
-  (cr0) = cr0_get();				\
-  (cr0) |= BSP_PG_MODE_ON;			\
-  (cr0) &= ~(BSP_PG_MODE_OFF);			\
-  cr0_set(cr0);					\
+#define pmap_paging_mode_turn_on()	\
+  do{					\
+  u32_t cr0 = 0;			\
+  (cr0) = cr0_get();			\
+  (cr0) |= BSP_PG_MODE_ON;		\
+  (cr0) &= ~(BSP_PG_MODE_OFF);		\
+  cr0_set(cr0);				\
   }while(0);
 
 void pmap_detect_memory()
 {
-  base_mem = nvram_get_base_mem_info();
-  ext_mem = nvram_get_ext_mem_info();
+  base_mem = nvram_get_base_mem_size();
+  ext_mem = nvram_get_ext_mem_size();
 
   pa_top = ext_mem? PMAP_EXT_MEM_FIX(ext_mem) : base_mem;
   GET_GLOBAL_VAR(npage) = pmap_how_many_pages();
 
-  kprintf("Physical memory: %dK available, ", (int)(pa_top/1024));
-  kprintf("base = %dK, extended = %dK\n", (int)(base_mem/1024), (int)(ext_mem/1024));
+  cprintf("Physical memory: %uK available, " ,pa_top/1024);
+  cprintf("base = %dK, extended = %dK\n" ,base_mem/1024 ,ext_mem/1024);
+  MARK_TWAIN;
 }
 
 
 static void* pmap_tmp_alloc(u32_t size ,u32_t align)
 {
   void *va;
+  extern char recondo[];
   
   tmp_freemem = tmp_freemem? tmp_freemem : recondo;
-  
+
   if( PADDR((physaddr_t)tmp_freemem) > (u32_t)pa_top )
     {
-      panic("mmr: memory is not enough!!\n");
+      panic("mmr: memory is not enough!!");
     }
 
   tmp_freemem = (void*)ROUND_UP((u32_t)tmp_freemem ,align);
   va = (void *)tmp_freemem;
   tmp_freemem += size;
 
+  cprintf("tmp_freemem:%p va:%p\n" ,tmp_freemem ,va);
+  MARK_TWAIN;
   return va;
 }
 
@@ -133,7 +140,7 @@ static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la)
   void *tmp_ptr = NULL;
   pte_t *ret = pmap_tmp_pgdir_lookup(pgdir ,la);
 
-  if( ret != NULL )
+  if( NULL != ret )
     {
       tmp_ptr = pmap_tmp_alloc(PT_ENTRIES ,PG_SIZE);
       memset(tmp_ptr ,0 ,PD_SIZE);
@@ -144,6 +151,7 @@ static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la)
       *ret = pmap_get_pte_in_pa(tmp_ptr);
     }
 
+  MARK_TWAIN;
   return ret;
 }
 
@@ -154,17 +162,23 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
   pte_t *pg_table = NULL;
   pte_t *tmp_pt = NULL;
   int flag = 0;
+  u32_t n = size/PG_SIZE;
   
   for(count = 0;
-      count < (size/PG_SIZE);
+      count < n;
       count++ ,la += PG_SIZE ,pa += PG_SIZE)
     {
       pg_table = pmap_tmp_pgdir_create(pgdir ,la);
       // NOTE: don't check NULL here, because tmp_alloc already done that.
 
+      cprintf("count:%u pg_table:%p la:%p pa:%p\n",
+	      count ,pg_table ,la ,pa);
       tmp_pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pg_table));
+      cprintf("tmp_pt:%p\n" ,tmp_pt);
       pmap_map_pa_to_la(tmp_pt ,pa ,la ,attr);
     }
+
+  MARK_TWAIN;
 }
 
 void pmap_vm_init()
@@ -172,13 +186,13 @@ void pmap_vm_init()
   pde_t* pgdir;
   u32_t size = 0;
   struct Page* pages = GET_GLOBAL_VAR(pages);
-  
+
   // read-only vars
-  const u32_t vpt = GET_BSP_VAR(VPT);
-  const u32_t uvpt = GET_BSP_VAR(UVPT);
-  const u32_t kstktop = GET_BSP_VAR(KSTKTOP);
+  const u32_t vpt = (u32_t)GET_BSP_VAR(VPT);
+  const u32_t uvpt = (u32_t)GET_BSP_VAR(UVPT);
+  const u32_t kstktop = (u32_t)GET_BSP_VAR(KSTKTOP);
   const u32_t kstksize = KERNEL_STACK_SIZE;
-  const u32_t upages = GET_BSP_VAR(UPAGES);
+  const u32_t upages = (u32_t)GET_BSP_VAR(UPAGES);
   const u32_t npage = GET_GLOBAL_VAR(npage);
   //
 
@@ -187,13 +201,16 @@ void pmap_vm_init()
   pgdir = pmap_tmp_alloc(PT_ENTRIES ,PG_SIZE);
   memset(pgdir ,0 ,PG_SIZE);
   tmp_pgdir = pgdir;
-  kprintf("pmap_vm_init: #1 init pgdir:%p\n",pgdir);
+  kprintf("pmap_vm_init: #1 init pgdir:%p\n" ,pgdir);
 
   pmap_map_pa_to_la(pgdir ,PADDR((u32_t)pgdir) ,vpt ,PTE_WRITE | PTE_PRESENT);
   pmap_map_pa_to_la(pgdir ,PADDR((u32_t)pgdir) ,uvpt ,PTE_USER | PTE_PRESENT);
   kprintf("pmap_vm_init: #2 map VPT/UVPT\n");
 
   // map tmp_stack
+  cprintf("vpt:%p \n" ,vpt);
+  cprintf("recondo:%p\n" ,recondo);
+  cprintf("kstktop:%p kstksize:%p size:%d\n" ,kstktop ,kstksize ,kstktop-kstksize);
   pmap_tmp_segment_map(pgdir ,kstktop-kstksize ,kstksize,
 		       PADDR((u32_t)tmp_stack) ,PTE_WRITE);
   kprintf("pmap_vm_init: #3 map KERNEL STACK\n");
@@ -229,7 +246,6 @@ void pmap_vm_init()
 static void pmap_jump_into_paging_mode(pde_t* pgdir)
 {
   const struct gdt_pseudo_desc gdt_pd = GET_GLOBAL_VAR(gdt_pd);  
-  u32_t cr0 = 0;
   u32_t cr3 = PADDR((u32_t)pgdir);
 
   //////////////////////////////////////////////////////////////////////
@@ -250,11 +266,12 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
   // (Limits our kernel to <4MB)
   pmap_map_pa_to_la(pgdir ,KERN_BASE ,0 ,0);
   
-  /* jump into Paging Mode, however, we have 32bit-paging.
-   * If you need a PAE-paging, get to it! get up, you're a hacker!
+  /* jump into Paging Mode, however, we have 32bit-paging only.
+   * If you need a PAE-paging, go for it! get up, you're a hacker!
    */ 
-  pmap_paging_mode_turn_on(cr0 ,cr3);
-
+  cr3_set(cr3); // Install page table first
+  pmap_paging_mode_turn_on();
+  
   // Reload all segment registers.
   gdt_load((void*)&gdt_pd);
 
@@ -275,7 +292,7 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
   pmap_map_pa_to_la(pgdir ,0 ,0 ,0);
 
   // Flush the TLB for good measure, to kill the pgdir[0] mapping.
-  cr3_set(cr3);
+  __flush_tlb();
 }  
 
 #ifdef __KERN_DEBUG__
@@ -285,12 +302,12 @@ static void pmap_check_boot_pgdir()
 	pde_t *pgdir = tmp_pgdir;
 
 	// read-only vars
-	const u32_t upages = GET_BSP_VAR(UPAGES);
+	const u32_t upages = (u32_t)GET_BSP_VAR(UPAGES);
 	const u32_t npage = GET_GLOBAL_VAR(npage);
 	const u32_t kstksize = KERNEL_STACK_SIZE;
-	const u32_t kstktop = GET_BSP_VAR(KSTKTOP);
-	const u32_t vpt = GET_BSP_VAR(VPT);
-	const u32_t uvpt = GET_BSP_VAR(UVPT);
+	const u32_t kstktop = (u32_t)GET_BSP_VAR(KSTKTOP);
+	const u32_t vpt = (u32_t)GET_BSP_VAR(VPT);
+	const u32_t uvpt = (u32_t)GET_BSP_VAR(UVPT);
 	const struct Page* pages = GET_GLOBAL_VAR(pages);
 	//
 
