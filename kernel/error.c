@@ -42,12 +42,12 @@ static void print_errmsg(retval rv)
   kprintf("Errno %d - %s" ,rv ,retval_msg(rv));
 }
 
-void _panic(const char *file ,int line ,const char *fmt ,...)
+void _panic(const char* func ,const char *file ,int line ,const char *fmt ,...)
 {
   va_list ap;
 
   va_start(ap ,fmt);
-  cprintf("kernel panic at %s:%d: " ,file ,line);
+  cprintf("kernel panic at %s:%d - %s\n" ,file ,line ,func);
   vcprintf(fmt ,ap);
   cprintf("\n");
   va_end(ap);
@@ -55,12 +55,12 @@ void _panic(const char *file ,int line ,const char *fmt ,...)
   halt();
 }
 
-void _warn(const char *file ,int line ,const char *fmt ,...)
+void _warn(const char* func ,const char *file ,int line ,const char *fmt ,...)
 {	
   va_list ap;
 
   va_start(ap ,fmt);
-  cprintf("kernel warning at %s:%d: " ,file ,line);
+  cprintf("kernel warning at %s:%d called by %s" ,file ,line ,func);
   vcprintf(fmt ,ap);
   cprintf("\n");
   va_end(ap);

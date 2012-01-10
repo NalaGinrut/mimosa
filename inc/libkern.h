@@ -20,6 +20,7 @@
 
 #include <types.h>
 #include <stdarg.h>
+#include <osconfig.h>
 
 #define MAX_STRING_LEN 256
 

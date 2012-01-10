@@ -27,7 +27,7 @@
 // TODO: debug
 #endif
 
-#define panic(...)  _panic(__FILE__ ,__LINE__ ,__VA_ARGS__)
+#define panic(...)  _panic(__func__ ,__FILE__ ,__LINE__ ,__VA_ARGS__)
 
 #define ASSERT_OUTFMT "func:%s in file:%s Assert:\"%s\" failed!\n"
 
@@ -37,8 +37,8 @@
 #define assert(p) \
   do{ if(!(p)) __assert_print(p); }while(0);
 
-void _warn(const char*, int, const char*, ...);
-void _panic(const char*, int, const char*, ...) no_return;
+void _warn(const char* ,const char* ,int ,const char* ,...);
+void _panic(const char* ,const char* ,int ,const char* ,...) no_return;
 
 
 #define halt() while(1)

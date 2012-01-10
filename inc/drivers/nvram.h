@@ -40,7 +40,8 @@
 u32_t nvram_read_byte(u32_t index);
 void nvram_write_byte(u32_t index ,int data);
 
-u32_t nvram_get_base_mem_info();
-u32_t nvram_get_ext_mem_info();
+// size in kilobytes
+u32_t nvram_get_base_mem_size();
+u32_t nvram_get_ext_mem_size();
 
 #endif // End of __DRIVER_NVRAM_H;

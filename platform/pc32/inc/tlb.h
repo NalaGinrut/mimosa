@@ -19,8 +19,8 @@
  */
 
 #include <types.h>
-#include <cpu/crx.h>
-#include <cpu/paging.h>
+#include "cpu/crx.h"
+#include "cpu/paging.h"
 
 static inline void __flush_tlb() __true_inline;
 static inline void __flush_tlb_global() __true_inline;

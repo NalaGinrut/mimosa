@@ -63,10 +63,10 @@
  */
 
 #define ROUND_UP(x ,n)			\
-  ((n)&0x1 ? __RU_2(x ,n) : __RU_G(x ,n))
+  ((n)&0x1 ? __RU_G(x ,n) : __RU_2(x ,n))
 
 #define ROUND_DOWN(x ,n)		\
-  ((n)&0x1 ? __RD_2(x ,n) : __RD_G(x ,n))
+  ((n)&0x1 ? __RD_G(x ,n) : __RD_2(x ,n))
 
 #define __RU_G(x ,n)	  	\
   ( ((x)+(n)-1) / (n) )

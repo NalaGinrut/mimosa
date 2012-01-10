@@ -130,11 +130,11 @@ void cga_putc(u16_t ch)
       break;
     }
 
-  if (crt_pos >= CRT_SIZE)
+  if(crt_pos >= CRT_SIZE)
     {
       memcpy(crt_buf ,crt_buf + CRT_COLS ,(CRT_SIZE - CRT_COLS) * sizeof(u16_t));
 
-      for (int i = CRT_SIZE - CRT_COLS ;i < CRT_SIZE ;i++)
+      for(int i = CRT_SIZE - CRT_COLS ;i < CRT_SIZE ;i++)
 	crt_buf[i] = 0x0700 | ' ';
 
       crt_pos -= CRT_COLS;

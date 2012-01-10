@@ -22,7 +22,7 @@
 #include <bits.h>
 
 // will return in Kilobytes
-u32_t nvram_get_base_mem_info()
+u32_t nvram_get_base_mem_size()
 {
   u32_t mem_lo = nvram_read_byte(NVRAM_BASELO);
   u32_t mem_hi = nvram_read_byte(NVRAM_BASEHI);
@@ -30,7 +30,8 @@ u32_t nvram_get_base_mem_info()
   return ROUND_DOWN(ret ,PG_SIZE);
 }
 
-u32_t nvram_get_ext_mem_info()
+// will return in Kilobytes
+u32_t nvram_get_ext_mem_size()
 {
   u32_t mem_lo = nvram_read_byte(NVRAM_EXTLO);
   u32_t mem_hi = nvram_read_byte(NVRAM_EXTHI);
