@@ -60,7 +60,7 @@ static void color_putch(char ch ,spbuf_t *spb);
 static void sprint_putch(char ch ,spbuf_t *spb);
 static int vsnprintf(char *buf ,int n ,const char *fmt ,va_list ap);
 static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
-		      u32_t base ,int width ,int padc);
+		      u32_t base ,int width ,char padc);
 static u64_t get_uint(va_list *ap ,int lflag);
 static s64_t get_int(va_list *ap ,int lflag);
 static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
@@ -144,7 +144,7 @@ static int vsnprintf(char *buf ,int n ,const char *fmt ,va_list ap)
 }
 
 static void print_num(putch_func_t putch ,spbuf_t *spb ,u64_t num,
-		      u32_t base ,int width ,int padc)
+		      u32_t base ,int width ,char padc)
 {
   /* FIXME: only can handle maximum 64bit number,
    *	    but this should according to max length integer which depends on platform.
@@ -205,9 +205,9 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
   int base;
 
 #define	process_precision() 	\
-  if(rc->width < 0)			\
+  if(rc->width < 0)		\
   {				\
-    rc->width = rc->precision;		\
+    rc->width = rc->precision;	\
     rc->precision = -1;		\
   }				
   
@@ -240,14 +240,22 @@ static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
 	case '7':
 	case '8':
 	case '9':
-	  for(rc->precision = 0 ;(0 <= ch && ch <= 9) ;(*fmt)++)
-	    {
+	  //  for(rc->precision = 0 ;('0' <= ch && ch <= '9') ;)//(*fmt)++)
+	    //for(rc->precision = 0 ; ;(*fmt)++)
+	  {
+	    rc->precision = 0;
+	    do{  
 	      rc->precision = rc->precision * 10 + ch - '0';
 	      ch = **fmt;
-	    }	
-	  process_precision();
-	  break;	
 
+	      if (ch < '0' || ch > '9')
+		break;
+	    }while((*fmt)++); // can't be 0, or it'll be a 0-addr error.	
+
+	    process_precision();
+	    break;
+	  }
+	  
 	case '*':
 	  rc->precision = va_arg(*ap ,int);
 	  process_precision();
