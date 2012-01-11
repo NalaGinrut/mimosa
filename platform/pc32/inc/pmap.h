@@ -70,10 +70,12 @@ static inline physaddr_t PADDR(u32_t kva)
 {	
   physaddr_t __kva = (physaddr_t)kva;	
 
-  cprintf("kva:%p __kva:%p KERN_BASE:%p\n",kva,__kva,KERN_BASE);
-  if (__kva < KERN_BASE)			
-    panic("PADDR called with invalid kva %08lx" ,__kva);
-	
+  //cprintf("kva:%p __kva:%p KERN_BASE:%p\n",kva,__kva,KERN_BASE);
+  if(__kva < KERN_BASE)			
+    {
+      panic("PADDR called with invalid kva %08lx" ,__kva);
+    }
+  
   return (__kva - KERN_BASE);					
 }
 
@@ -82,16 +84,17 @@ static inline physaddr_t PADDR(u32_t kva)
  */
 static inline void* KADDR(physaddr_t pa)
 {
-  physaddr_t _pa = (pa);
-  u32_t _ppn = PPN(_pa);
-  const u32_t npage = GET_GLOBAL_VAR(npage);
+  physaddr_t __pa = pa;
+  u32_t ppn = (u32_t)PPN(__pa);
+  const u32_t npage = (u32_t)GET_GLOBAL_VAR(npage);
 
-  cprintf("pa:%p _pa:%p npage:%u ppn:%u PTX_SHIFT:%u\n",pa,_pa,npage,_ppn,
-	  PTX_SHIFT);
-  if (_ppn >= npage)
-    panic("KADDR called with invalid pa %08lx", _pa);
+  //if(ppn >= npage)
+  //{
+  //  panic("KADDR called with invalid pa %08lx ,npage:%d ,_ppn:%d %d",
+  //	  __pa ,npage ,ppn ,ppn-npage);
+  //}
   
-  return (void*) (_pa + KERN_BASE);	
+  return (void*) (__pa + KERN_BASE);	
 }
 
 static inline ppn_t page2ppn(struct Page *pp)

@@ -55,6 +55,7 @@
 /* how many bytes you need map in boot tmp map.
  * mimosa will map all available kernel space by default.
  */
-#define KERN_TMP_MAP_SIZE (FULL_ADDR - KERN_BASE + 1)
-		
+//#define KERN_TMP_MAP_SIZE (FULL_ADDR - KERN_BASE + 1)
+#define KERN_TMP_MAP_SIZE 4096*1024
+
 #endif // End of __OS_CONFIG_H;

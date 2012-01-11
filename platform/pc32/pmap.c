@@ -122,8 +122,8 @@ static void* pmap_tmp_alloc(u32_t size ,u32_t align)
   va = (void *)tmp_freemem;
   tmp_freemem += size;
 
-  cprintf("tmp_freemem:%p va:%p\n" ,tmp_freemem ,va);
-  MARK_TWAIN;
+  //cprintf("tmp_freemem:%p va:%p\n" ,tmp_freemem ,va);
+  //MARK_TWAIN;
   return va;
 }
 
@@ -151,7 +151,7 @@ static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la)
       *ret = pmap_get_pte_in_pa(tmp_ptr);
     }
 
-  MARK_TWAIN;
+  //MARK_TWAIN;
   return ret;
 }
 
@@ -171,14 +171,14 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
       pg_table = pmap_tmp_pgdir_create(pgdir ,la);
       // NOTE: don't check NULL here, because tmp_alloc already done that.
 
-      cprintf("count:%u pg_table:%p la:%p pa:%p\n",
-	      count ,pg_table ,la ,pa);
-      tmp_pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pg_table));
-      cprintf("tmp_pt:%p\n" ,tmp_pt);
+      //      cprintf("count:%u pg_table:%p la:%p pa:%p\n",
+      //   count ,pg_table ,la ,pa);
+      tmp_pt = (pte_t*)pmap_get_pte_in_ka(PTA(pg_table));
+      //cprintf("tmp_pt:%p\n" ,tmp_pt);
       pmap_map_pa_to_la(tmp_pt ,pa ,la ,attr);
     }
 
-  MARK_TWAIN;
+  //MARK_TWAIN;
 }
 
 void pmap_vm_init()
@@ -210,7 +210,7 @@ void pmap_vm_init()
   // map tmp_stack
   cprintf("vpt:%p \n" ,vpt);
   cprintf("recondo:%p\n" ,recondo);
-  cprintf("kstktop:%p kstksize:%p size:%d\n" ,kstktop ,kstksize ,kstktop-kstksize);
+  cprintf("kstktop:%p kstksize:%p size:%u\n" ,kstktop ,kstktop-kstksize ,kstksize);
   pmap_tmp_segment_map(pgdir ,kstktop-kstksize ,kstksize,
 		       PADDR((u32_t)tmp_stack) ,PTE_WRITE);
   kprintf("pmap_vm_init: #3 map KERNEL STACK\n");
