@@ -32,8 +32,7 @@ typedef __u32_t __laddr_t;
 
 //--- PDE definition;
 #define PDE_PRESENT	_B(0)
-#define PDE_READ	_B(1)
-#define PTE_WRITE	(~(_B(1)))
+#define PDE_WRITE	_B(1) // no PTE_READ since any page can be read
 #define PDE_USER	_B(2)
 #define PDE_WRITE_TH	_B(3)
 #define PDE_CACHE_D	_B(4)
@@ -46,8 +45,7 @@ typedef __u32_t __pde_t; // Page Directory Entry;
 
 //--- PTE definition;
 #define PTE_PRESENT	_B(0)
-#define PTE_READ	_B(1)
-#define PTE_WRITE	(~(_B(1)))
+#define PTE_WRITE	_B(1) // no PTE_READ since any page can be read
 #define PTE_USER	_B(2)
 #define PTE_WRITE_TH	_B(3)
 #define PTE_CACHE_D	_B(4)
