@@ -60,7 +60,7 @@ void _warn(const char* func ,const char *file ,int line ,const char *fmt ,...)
   va_list ap;
 
   va_start(ap ,fmt);
-  cprintf("kernel warning at %s:%d called by %s" ,file ,line ,func);
+  cprintf("kernel warning at %s:%d called by %s\n" ,file ,line ,func);
   vcprintf(fmt ,ap);
   cprintf("\n");
   va_end(ap);

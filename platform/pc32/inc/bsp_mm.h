@@ -51,7 +51,7 @@ typedef __pte_t pte_t;
 #define PGOFF(la)	(((laddr_t)(la)) & 0xFFF)
 
 // next pte addr in pte
-#define PTA(pte)	((laddr_t)(pte) & ~0xFFF)
+#define PTA(pte)	((physaddr_t)(pte) & ~0xFFF)
 
 // construct linear address from indexes and offset
 #define PGADDR(d, t, o)	((void*) ((d) << PDX_SHIFT | (t) << PTX_SHIFT | (o)))

@@ -28,19 +28,30 @@
 #endif
 
 #define panic(...)  _panic(__func__ ,__FILE__ ,__LINE__ ,__VA_ARGS__)
+#define warn(...) _warn(__func__ ,__FILE__ ,__LINE__ ,__VA_ARGS__)
 
-#define ASSERT_OUTFMT "func:%s in file:%s Assert:\"%s\" failed!\n"
+#define ASSERT_OUTFMT "Assert:\"%s\" failed!\n"
 
 #define __assert_print(p) \
-  panic(ASSERT_OUTFMT ,__FUNCTION__ ,__FILE__ ,#p)
+  panic(ASSERT_OUTFMT ,#p)
 
 #define assert(p) \
   do{ if(!(p)) __assert_print(p); }while(0);
 
+#define catch_then_do(p) \
+  if(p) { warn(ASSERT_OUTFMT ,#p);
+
+#define catch_else() }else{
+
+#define catch_context_end() }
+
 void _warn(const char* ,const char* ,int ,const char* ,...);
 void _panic(const char* ,const char* ,int ,const char* ,...) no_return;
 
-
+/* FIXME: This 'halt' is too naive. I need something like:
+ *	  1. a monitor to show info
+ *        2. a debugger server
+ */
 #define halt() while(1)
 
 static void print_errmsg(retval rv);

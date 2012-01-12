@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,5 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-###################################
-# Date:		2011.4.29	  #
-# NalaGinrut<NalaGinrut@gmail.com>#
-###################################
-I need to design a exokernel frameworks.
+1. pmap_map_pa_to_la shouldn't set PTE_PRESENT default. We haven't finished page error
+handler. This would be a bug after that.

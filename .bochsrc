@@ -441,7 +441,7 @@ debugger_log: -
 #   parport2: enabled=1, file="/dev/lp0"
 #   parport1: enabled=0
 #=======================================================================
-parport1: enabled=1, file="/dev/stdout"
+#parport1: enabled=1, file="bochs.out"
 
 #=======================================================================
 # SB16:

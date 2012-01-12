@@ -70,7 +70,7 @@ static inline physaddr_t PADDR(u32_t kva)
 {	
   physaddr_t __kva = (physaddr_t)kva;	
 
-  //cprintf("kva:%p __kva:%p KERN_BASE:%p\n",kva,__kva,KERN_BASE);
+  //cprintf("__kva:%p KERN_BASE:%p ret:%u\n",__kva,KERN_BASE,__kva-KERN_BASE);
   if(__kva < KERN_BASE)			
     {
       panic("PADDR called with invalid kva %08lx" ,__kva);
@@ -88,11 +88,11 @@ static inline void* KADDR(physaddr_t pa)
   u32_t ppn = (u32_t)PPN(__pa);
   const u32_t npage = (u32_t)GET_GLOBAL_VAR(npage);
 
-  //if(ppn >= npage)
-  //{
-  //  panic("KADDR called with invalid pa %08lx ,npage:%d ,_ppn:%d %d",
-  //	  __pa ,npage ,ppn ,ppn-npage);
-  //}
+  if(npage <= ppn)
+    {
+      panic("KADDR called with invalid pa %08lx ,npage:%d ,_ppn:%d %d",
+	    __pa ,npage ,ppn ,ppn-npage);
+    }
   
   return (void*) (__pa + KERN_BASE);	
 }
@@ -123,9 +123,10 @@ static inline void* page2kva(struct Page *pp)
   return KADDR(page2pa(pp));
 }
 
+physaddr_t pmap_va2pa(pde_t *pgdir ,laddr_t va);
 void pmap_detect_memory();
 static void* pmap_tmp_alloc(u32_t n ,u32_t align);
-static pte_t* pmap_tmp_pgdir_lookup(pde_t *pgdir ,laddr_t la);
+static pte_t* pmap_tmp_lookup_dir(pde_t *pgdir ,laddr_t la);
 static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la);
 static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr);
