@@ -62,11 +62,11 @@
  * and mod/div is the same instruction under X86;
  */
 
-#define ROUND_UP(x ,n)			\
-  ((n)&0x1 ? __RU_G(x ,n) : __RU_2(x ,n))
+/* #define ROUND_UP(x ,n)			\ */
+/*   ((n)&0x1 ? __RU_G(x ,n) : __RU_2(x ,n)) */
 
-#define ROUND_DOWN(x ,n)		\
-  ((n)&0x1 ? __RD_G(x ,n) : __RD_2(x ,n))
+/* #define ROUND_DOWN(x ,n)		\ */
+/*   ((n)&0x1 ? __RD_G(x ,n) : __RD_2(x ,n)) */
 
 #define __RU_G(x ,n)	  	\
   ( ((x)+(n)-1) / (n) )
@@ -79,6 +79,15 @@
 
 #define __RU_2(x ,n)	  	\
   ( __RD_2(x ,n) + (n) )
+
+// Rounding operations (efficient when n is a power of 2)
+// Round down to the nearest multiple of n
+#define ROUND_DOWN(a, n) \
+  ((a) - (a) % (n))				
+
+// Round up to the nearest multiple of n
+#define ROUND_UP(a, n)	\
+  (ROUND_DOWN((a) + (n) - 1, (n)))	
 
 
 #endif // End of __MIMOSA_BITS_H;

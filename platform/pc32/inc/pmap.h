@@ -126,8 +126,8 @@ static inline void* page2kva(struct Page *pp)
 physaddr_t pmap_va2pa(pde_t *pgdir ,laddr_t va);
 void pmap_detect_memory();
 static void* pmap_tmp_alloc(u32_t n ,u32_t align);
-static pte_t* pmap_tmp_lookup_dir(pde_t *pgdir ,laddr_t la);
-static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la);
+static inline pte_t* pmap_tmp_lookup_dir(pde_t *pgdir ,laddr_t la);
+static pte_t* pmap_tmp_pgdir_get(pde_t *pgdir ,laddr_t la);
 static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 				 physaddr_t pa ,int attr);
 void pmap_vm_init();

@@ -79,7 +79,11 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 #define pmap_get_pte_in_ka(addr)	((pte_t)KADDR((u32_t)addr))
 #define pmap_pte_set_attr(pte ,attr) (pte_t)((u32_t)(pte) | (attr))
 
-#define pmap_map_pa_to_la(table ,pa ,la ,attr)	\
+// use PD in case mess up with pmap_map_pa_to_la
+#define pmap_map_PD_to_la(dir ,pd ,la ,attr)	\
+  do{ dir[PDX(la)] = ((u32_t)pd | PTE_PRESENT | attr); }while(0);
+
+#define pmap_map_pa_to_la(table ,pa ,la ,attr) \
   do{ table[PTX(la)] = ((u32_t)pa | PTE_PRESENT | attr); }while(0);
 
 #define pmap_paging_mode_turn_on()	\
@@ -102,9 +106,7 @@ void pmap_detect_memory()
   ext_mem = nvram_get_ext_mem_size();
 
   pa_top = ext_mem? PMAP_EXT_MEM_FIX(ext_mem) : base_mem;
-  cprintf("npage:%u\n",GET_GLOBAL_VAR(npage));
   GET_GLOBAL_VAR(npage) = pmap_how_many_pages();
-  cprintf("npage:%u\n",GET_GLOBAL_VAR(npage));
 
   cprintf("Physical memory: %uK available, " ,pa_top/1024);
   cprintf("base = %dK, extended = %dK\n" ,base_mem/1024 ,ext_mem/1024);
@@ -127,33 +129,37 @@ static void* pmap_tmp_alloc(u32_t size ,u32_t align)
   va = (void *)tmp_freemem;
   tmp_freemem += size;
 
-  //cprintf("tmp_freemem:%p va:%p\n" ,tmp_freemem ,va);
   //MARK_TWAIN;
   return va;
 }
 
 // NOTE: search present page ,NULL for opposite
-static pte_t* pmap_tmp_lookup_dir(pde_t *pgdir ,laddr_t la)
+static inline pde_t* pmap_tmp_lookup_dir(pde_t *pgdir ,laddr_t la)
 {
-  return (pte_t*)pmap_lookup_dir_from_pde(la ,pgdir);
+  return (pde_t*)pmap_lookup_dir_from_pde(la ,pgdir);
 }
 
-static pte_t* pmap_tmp_pgdir_create(pde_t *pgdir ,laddr_t la)
+/* create a pgdir in tmp-stage
+ * if the pgdir is present, just return it.
+ * or create a new one then map it.
+ */
+static pde_t* pmap_tmp_pgdir_get(pde_t *pgdir ,laddr_t la)
 {
-  void *tmp_ptr = NULL;
-  pte_t *ret = pmap_tmp_lookup_dir(pgdir ,la);
-
-  // found a present page
+  pde_t *pd = NULL;
+  pde_t *ret = pmap_tmp_lookup_dir(pgdir ,la);
+  // pd is pgdir-addr ,*pd is the pgdir
+  
+  // if found a present page dir than return it
   if(!pmap_pte_p(*ret))
     {
 
-      // else alloc a new page and map to new present page
-      tmp_ptr = (void*)pmap_tmp_alloc(PT_ENTRIES ,PG_SIZE);
-      memset(ret ,0 ,PT_ENTRIES);
-      tmp_ptr = (void*)pmap_pte_set_attr(tmp_ptr ,PTE_WRITE | PTE_PRESENT);
+      // else alloc a new page dir and map it
+      pd = (pde_t*)pmap_tmp_alloc(PT_ENTRIES ,PG_SIZE);
+      memset(pd ,0 ,PT_ENTRIES);
+      pd = (pde_t*)pmap_pte_set_attr(pd ,PTE_WRITE | PTE_PRESENT);
             
-      // NOTE: return pa rather than kva
-      *ret = (pte_t)pmap_get_pte_in_pa(tmp_ptr);
+      // NOTE: page content is physaddr
+      *ret = (pde_t)pmap_get_pte_in_pa(pd);
     }
   
   //MARK_TWAIN;
@@ -167,23 +173,18 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
   pde_t *pd = NULL;
   pte_t *pt = NULL;
   u32_t n = size/PG_SIZE;
+  const u32_t kstktop = (u32_t)GET_BSP_VAR(KSTKTOP);
+  const u32_t kstksize = KERNEL_STACK_SIZE;
 
   for(count = 0;
       count < n;
       count++ ,la += PG_SIZE ,pa += PG_SIZE)
     {
-      pd = pmap_tmp_pgdir_create(pgdir ,la);
+      pd = pmap_tmp_pgdir_get(pgdir ,la);
       // NOTE: don't check NULL here, because tmp_alloc already done that.
 
       pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pd));
       pmap_map_pa_to_la(pt ,pa ,la ,attr);
-      //tmp_pt = (pte_t*)KADDR(PTA(*pg_table));
-      //tmp_pt[PTX(la)] = ((u32_t)pa | PTE_PRESENT | attr);
-      /* if(0xbf018000 == (u32_t) la) */
-      /* 	{ */
-      /* 	  warn("tmp_pt:%p tmp_pt[PTX(%p)]:%p\n",pt ,la ,pt[PTX(la)]); */
-      /* 	  panic("%p table:%p\n",la ,pgdir[PDX(la)]); */
-      /* 	} */
     }
 
   //MARK_TWAIN;
@@ -191,7 +192,7 @@ static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
 
 void pmap_vm_init()
 {
-  pde_t* pgdir;
+  pde_t *pgdir;
   u32_t size = 0;
   struct Page** pages = &GET_GLOBAL_VAR(pages);
 
@@ -211,12 +212,12 @@ void pmap_vm_init()
   tmp_pgdir = pgdir;
   kprintf("pmap_vm_init: #1 init pgdir:%p\n" ,pgdir);
 
-  pmap_map_pa_to_la(pgdir ,PADDR((u32_t)pgdir) ,vpt ,PTE_WRITE);
-  pmap_map_pa_to_la(pgdir ,PADDR((u32_t)pgdir) ,uvpt ,PTE_USER);
+  pmap_map_PD_to_la(pgdir ,PADDR((u32_t)pgdir) ,vpt ,PTE_WRITE);
+  pmap_map_PD_to_la(pgdir ,PADDR((u32_t)pgdir) ,uvpt ,PTE_USER);
   kprintf("pmap_vm_init: #2 map VPT/UVPT\n");
 
   // map tmp_stack
-  size = ROUND_UP(kstksize ,PG_SIZE);
+  size = kstksize;
   pmap_tmp_segment_map(pgdir ,kstktop-kstksize ,size,
   		       PADDR((u32_t)tmp_stack) ,PTE_WRITE);
   kprintf("pmap_vm_init: #3 map KERNEL STACK\n");
@@ -224,9 +225,9 @@ void pmap_vm_init()
   /* map kernel space, NOTE: we map kernel from 0 ,so we can easily convert
    * kernel address to physical address by simple minus. You'll enjoy it later.
    */
-  size = ROUND_UP(KERN_TMP_MAP_SIZE ,PG_SIZE);
-  pmap_tmp_segment_map(pgdir ,KERN_BASE ,size,
-		       0 ,PTE_WRITE);
+  //size = ROUND_UP(KERN_TMP_MAP_SIZE ,PG_SIZE);
+  size = KERN_TMP_MAP_SIZE;
+  pmap_tmp_segment_map(pgdir ,KERN_BASE ,size ,0 ,PTE_WRITE);
   // clear 1 page to avoid some trouble when you init pages
   memset((void*)KERN_BASE ,0 ,PG_SIZE);
   kprintf("pmap_vm_init: #4 map KERNEL space\n");
@@ -235,7 +236,9 @@ void pmap_vm_init()
    * FIXME: we'll clear all meta-page space, but it causes slowly boot.
    *	    I expect it to clear these space with LD trick. I'll fix it later.
    */
-  size = ROUND_UP(npage * sizeof(struct Page) ,PG_SIZE);
+  //size = ROUND_UP(npage * sizeof(struct Page) ,PG_SIZE);
+  size = npage * sizeof(struct Page);
+  //  kprintf("page size:%u origin:%u\n",size ,npage*sizeof(struct Page));
   *pages = pmap_tmp_alloc(size ,PG_SIZE);
   memset(*pages ,0 ,size);
   pmap_tmp_segment_map(pgdir ,upages ,size,
@@ -273,7 +276,7 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
 
   // Map VA 0:4MB same as VA KERN_BASE, i.e. to PA 0:4MB.
   // (Limits our kernel to <4MB)
-  pmap_map_pa_to_la(pgdir ,KERN_BASE ,0 ,0);
+  pgdir[0] = pgdir[PDX(KERN_BASE)];
   
   /* jump into Paging Mode, however, we have 32bit-paging only.
    * If you need a PAE-paging, go for it! get up, you're a hacker!
@@ -298,7 +301,7 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
 
   // This mapping was only used after paging was turned on but
   // before the segment registers were reloaded.
-  pmap_map_pa_to_la(pgdir ,0 ,0 ,0);
+  pmap_map_PD_to_la(pgdir ,0 ,0 ,0);
 
   // Flush the TLB for good measure, to kill the pgdir[0] mapping.
   __flush_tlb();
@@ -324,27 +327,30 @@ static void pmap_check_boot_pgdir()
   //  panic("size:%u\n",n/PG_SIZE);
   for(i = 0; i < n; i += PG_SIZE)
     {
-      kprintf("[npage]i:%d va:%p %p\n",i/PG_SIZE ,upages+i ,PADDR((u32_t)pages)+i);
+      //kprintf("[npage]i:%d\n",i);
       assert(pmap_check_va2pa(pgdir ,upages + i) == PADDR((u32_t)pages) + i);
     }
-
+  kprintf("[1]page check ok!\n");
   // check phys mem
   for(i = 0; KERN_BASE + i != 0; i += PG_SIZE)
     {
       //kprintf("i:%d\n",i/PGSIZE);
-      kprintf("[kern]i:%d %p\n",i/PG_SIZE ,PADDR((u32_t)pages)+i);
-
+      //kprintf("[kern]i:%d i:%p %p\n",i/PG_SIZE ,i ,PADDR((u32_t)KERN_BASE)+i);
+      //kprintf("[kern]pa:%p\n" ,pmap_check_va2pa(pgdir ,KERN_BASE+i));
       assert(pmap_check_va2pa(pgdir, KERN_BASE + i) == i);
 
       //kprintf("%p->%p\n",KERNBASE+i,		    //== i);
     }
+  kprintf("[2]kern check ok!\n");
+
   // check kernel stack
   for(i = 0; i < kstksize; i += PG_SIZE)
     {
-      kprintf("[stack]i:%d %p\n",i/PG_SIZE ,PADDR((u32_t)pages)+i);
+      //kprintf("[stack]i:%d %p\n",i/PG_SIZE ,PADDR((u32_t)tmp_stack)+i);
       //kprintf("i:%d\n",i/PGSIZE);
       assert(pmap_check_va2pa(pgdir, kstktop - kstksize + i) == PADDR((u32_t)tmp_stack) + i);
     }
+  kprintf("[3]kstack check ok!\n");
 
   // check for zero/non-zero in PDEs
   for(i = 0; i < PT_ENTRIES; i++) 
@@ -355,6 +361,7 @@ static void pmap_check_boot_pgdir()
 	 || i == PDX(upages))
 	{
 	  assert(pgdir[i]);
+	  continue;
 	}
 	   
       if(i >= PDX(KERN_BASE))
@@ -377,8 +384,9 @@ static physaddr_t pmap_check_va2pa(pde_t *pgdir, laddr_t va)
   pte_t *pt = NULL;
   pte_t p = 0;
 
+  //warn("pgdir:%p pd:%p table:%p va:%p\n" ,pgdir ,pd ,*pd ,va);
   pd = (pte_t*)pmap_tmp_lookup_dir(pgdir ,va);
-  //warn("pgdir:%p pt:%p *pt:%p va:%p\n" ,pgdir ,pd ,*pd ,va);
+  
   if(!pmap_pte_p(*pd))
     {
       panic("page table %p didn't map\n" ,*pd);
