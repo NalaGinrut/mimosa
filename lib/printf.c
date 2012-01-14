@@ -183,7 +183,7 @@ static u64_t get_uint(va_list *ap ,int lflag)
   else if(lflag)
     return (u64_t)va_arg(*ap ,u32_t);
   else
-    return (u64_t)va_arg(*ap ,u16_t);
+    return (u64_t)va_arg(*ap ,u32_t);
 }
 
 static s64_t get_int(va_list *ap ,int lflag)
@@ -193,7 +193,7 @@ static s64_t get_int(va_list *ap ,int lflag)
   else if(lflag)
     return (s64_t)va_arg(*ap ,s32_t);
   else
-    return (s64_t)va_arg(*ap ,s16_t);
+    return (s64_t)va_arg(*ap ,s32_t);
 }
 
 static inline void reswitch(resw_cont_t *rc ,putch_func_t putch,
