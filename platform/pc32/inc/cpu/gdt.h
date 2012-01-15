@@ -121,15 +121,14 @@ struct gdt_pseudo_desc {
 	u32_t base;		// Base address
 } __attribute__ ((packed));
 
-static inline void gdt_load(void* pseudo_desc);
+static inline void gdt_load(struct gdt_pseudo_desc gdt_pd);
 static inline void gdt_local_desc_load(u16_t local_desc);
 
-static inline void gdt_load(void* pseudo_desc)
+static inline void gdt_load(struct gdt_pseudo_desc gdt_pd)
 {
   __asm__ __volatile__("lgdt %0"
 		       :
-		       : "m" (pseudo_desc)
-		       : "memory"
+		       : "m" (gdt_pd)
 		       );
 }
 
@@ -145,8 +144,7 @@ static inline void gdt_local_desc_load(u16_t local_desc)
   do{						\
   __asm__ __volatile__("movw %%ax ,%%"#reg	\
 		       :			\
-		       : "r" (selector)		\
-		       : "%eax"			\
+		       : "a" (selector)		\
 		       );			\
   }while(0);
 

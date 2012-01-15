@@ -88,11 +88,10 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 
 #define pmap_paging_mode_turn_on()	\
   do{					\
-  u32_t cr0 = 0;			\
-  (cr0) = cr0_get();			\
-  (cr0) |= BSP_PG_MODE_ON;		\
-  (cr0) &= ~(BSP_PG_MODE_OFF);		\
-  cr0_set(cr0);				\
+    u32_t cr0 = cr0_get();		\
+    cr0 |= BSP_PG_MODE_ON;		\
+    cr0 &= ~(BSP_PG_MODE_OFF);		\
+    cr0_set(cr0);			\
   }while(0);
 
 physaddr_t pmap_va2pa(pde_t *pgdir ,laddr_t va)
@@ -257,9 +256,10 @@ void pmap_vm_init()
 
 static void pmap_jump_into_paging_mode(pde_t* pgdir)
 {
-  const struct gdt_pseudo_desc gdt_pd = GET_GLOBAL_VAR(gdt_pd);  
+  const struct gdt_pseudo_desc *gdt_pd = &GET_GLOBAL_VAR(gdt_pd);  
   u32_t cr3 = PADDR((u32_t)pgdir);
-
+  
+  warn("0");
   //////////////////////////////////////////////////////////////////////
   // On x86, segmentation maps a VA to a LA (linear addr) and
   // paging maps the LA to a PA.  I.e. VA => LA => PA.  If paging is
@@ -277,34 +277,37 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
   // Map VA 0:4MB same as VA KERN_BASE, i.e. to PA 0:4MB.
   // (Limits our kernel to <4MB)
   pgdir[0] = pgdir[PDX(KERN_BASE)];
-  
+  warn("1");
   /* jump into Paging Mode, however, we have 32bit-paging only.
    * If you need a PAE-paging, go for it! get up, you're a hacker!
    */ 
   cr3_set(cr3); // Install page table first
   pmap_paging_mode_turn_on();
-  
+  warn("2");
+  print_seg();
   // Reload all segment registers.
-  gdt_load((void*)&gdt_pd);
-
+  gdt_load(*gdt_pd);
+  warn("3");
   gdt_seg_reload(gs ,UD_SEL | RPL_RING3); 
   gdt_seg_reload(fs ,UD_SEL | RPL_RING3);
   gdt_seg_reload(es ,KD_SEL | RPL_RING0);
   gdt_seg_reload(ds ,KD_SEL | RPL_RING0);
   gdt_seg_reload(ss ,KD_SEL | RPL_RING0); // FIXME: I need a kernel stack selector
-
+  warn("4");
   gdt_cs_reload();
-  
+  warn("5");
   gdt_local_desc_load(0);
-
+  warn("6");
   // Final mapping: KERN_BASE+x => KERN_BASE+x => x.
 
   // This mapping was only used after paging was turned on but
   // before the segment registers were reloaded.
   pmap_map_PD_to_la(pgdir ,0 ,0 ,0);
-
+  warn("7");
   // Flush the TLB for good measure, to kill the pgdir[0] mapping.
   __flush_tlb();
+  warn("8");
+  MARK_TWAIN;
 }  
 
 #ifdef __KERN_DEBUG__
