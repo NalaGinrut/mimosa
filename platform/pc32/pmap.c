@@ -224,7 +224,6 @@ void pmap_vm_init()
   /* map kernel space, NOTE: we map kernel from 0 ,so we can easily convert
    * kernel address to physical address by simple minus. You'll enjoy it later.
    */
-  //size = ROUND_UP(KERN_TMP_MAP_SIZE ,PG_SIZE);
   size = KERN_TMP_MAP_SIZE;
   pmap_tmp_segment_map(pgdir ,KERN_BASE ,size ,0 ,PTE_WRITE);
   // clear 1 page to avoid some trouble when you init pages
@@ -235,9 +234,7 @@ void pmap_vm_init()
    * FIXME: we'll clear all meta-page space, but it causes slowly boot.
    *	    I expect it to clear these space with LD trick. I'll fix it later.
    */
-  //size = ROUND_UP(npage * sizeof(struct Page) ,PG_SIZE);
   size = npage * sizeof(struct Page);
-  //  kprintf("page size:%u origin:%u\n",size ,npage*sizeof(struct Page));
   *pages = pmap_tmp_alloc(size ,PG_SIZE);
   memset(*pages ,0 ,size);
   pmap_tmp_segment_map(pgdir ,upages ,size,
@@ -256,9 +253,9 @@ void pmap_vm_init()
 
 static void pmap_jump_into_paging_mode(pde_t* pgdir)
 {
-  const struct gdt_pseudo_desc *gdt_pd = &GET_GLOBAL_VAR(gdt_pd);  
+  const struct gdt_pseudo_desc const *gdt_pd = &GET_GLOBAL_VAR(gdt_pd);  
   u32_t cr3 = PADDR((u32_t)pgdir);
-  
+  kprintf("pgdir:%p cr3:%p\n" ,pgdir ,cr3);
   warn("0");
   //////////////////////////////////////////////////////////////////////
   // On x86, segmentation maps a VA to a LA (linear addr) and
@@ -284,7 +281,6 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
   cr3_set(cr3); // Install page table first
   pmap_paging_mode_turn_on();
   warn("2");
-  print_seg();
   // Reload all segment registers.
   gdt_load(*gdt_pd);
   warn("3");
@@ -295,6 +291,7 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
   gdt_seg_reload(ss ,KD_SEL | RPL_RING0); // FIXME: I need a kernel stack selector
   warn("4");
   gdt_cs_reload();
+  //__asm__ volatile("ljmp %0,$1f\n 1:\n" :: "i" (KC_SEL));
   warn("5");
   gdt_local_desc_load(0);
   warn("6");

@@ -150,7 +150,7 @@ static inline void gdt_local_desc_load(u16_t local_desc)
 
 #define gdt_cs_reload()				\
   do{						\
-  __asm__ __volatile__("ljmp %0 ,$1f\n\t"	\
+  __asm__ __volatile__("ljmp %0 ,$1f\n"		\
 		       "1:"			\
 		       :			\
 		       : "i" (KC_SEL)		\
