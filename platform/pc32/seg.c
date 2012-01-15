@@ -30,19 +30,19 @@
  */
 #define KCODE_DEC SEG(USEG_X | USEG_R ,0x0 ,FULL_ADDR,			\
 		      DPL_RING0 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
-		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
+		      SEG_RES ,SEG_32BIT ,SEG_G4K)
 
 #define KDATA_DEC SEG(USEG_W ,0x0 ,FULL_ADDR,				\
 		      DPL_RING0 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
-		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
+		      SEG_RES ,SEG_32BIT ,SEG_G4K)
 
 #define UCODE_DEC SEG(USEG_X | USEG_R ,0x0 ,FULL_ADDR,			\
 		      DPL_RING3 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
-		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
+		      SEG_RES ,SEG_32BIT ,SEG_G4K)
 
 #define UDATA_DEC SEG(USEG_W ,0x0 ,FULL_ADDR,				\
 		      DPL_RING3 ,SEG_UNIV ,SEG_PRESENT ,SEG_AVAIL,	\
-		      SEG_RES ,SEG_32BIT ,SEG_GULIM)
+		      SEG_RES ,SEG_32BIT ,SEG_G4K)
 
 // KSTACK and USTACK will come later
 
@@ -60,7 +60,7 @@ inner_seg_desc_t MK_GLOBAL_VAR(gdt[]) =
   {
     // unused (always faults -- for trapping NULL far pointers)
     [NULL_SEG] = SEG_NULL,
-
+    
     // code segment
     [KCODE_SEG] = KCODE_DEC,
 
@@ -79,5 +79,8 @@ inner_seg_desc_t MK_GLOBAL_VAR(gdt[]) =
 
 struct gdt_pseudo_desc MK_GLOBAL_VAR(gdt_pd) = 
   {
-    sizeof(GET_GLOBAL_VAR(gdt)) - 1, (u32_t) GET_GLOBAL_VAR(gdt)
+    sizeof(GET_GLOBAL_VAR(gdt)) - 1 ,(u32_t)GET_GLOBAL_VAR(gdt)
   };
+
+
+	      
