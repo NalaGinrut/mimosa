@@ -20,12 +20,13 @@
 
 
 #include <types.h>
+#include <bits.h>
 
 typedef enum Return_Number
   {
-    EINVSZ = 0xE001,
-    ENOMEM = 0xE002,
-    EINVAL = 0xE003,
+    EINVSZ = _E(1),
+    ENOMEM = _E(2),
+    EINVAL = _E(2),
     OK=0,
   }retval;
 

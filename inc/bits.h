@@ -1,7 +1,7 @@
-#ifndef MIMOSA_BITS_H
-#define MIMOSA_BITS_H
+#ifndef __MIMOSA_BITS_H
+#define __MIMOSA_BITS_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -28,5 +28,6 @@
  * others coming soon...
  */
 
+#define _E(x)	(-(0xE000 + x))
 
-#endif // End of MIMOSA_BITS_H;
+#endif // End of __MIMOSA_BITS_H;
