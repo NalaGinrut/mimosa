@@ -124,7 +124,7 @@ struct gdt_pseudo_desc {
 static inline void gdt_load(struct gdt_pseudo_desc gdt_pd);
 static inline void gdt_local_desc_load(u16_t local_desc);
 
-static inline void gdt_load(struct gdt_pseudo_desc gdt_pd)
+static inline void gdt_load(struct gdt_pseudo_desc const gdt_pd)
 {
   __asm__ __volatile__("lgdt %0"
 		       :

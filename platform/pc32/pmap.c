@@ -193,7 +193,7 @@ void pmap_vm_init()
 {
   pde_t *pgdir;
   u32_t size = 0;
-  struct Page** pages = &GET_GLOBAL_VAR(pages);
+  DECL_MUTABLE_GLOBAL_PTRVAR(struct Page** ,pages);
 
   // read-only vars
   const u32_t vpt = (u32_t)GET_BSP_VAR(VPT);
@@ -201,7 +201,7 @@ void pmap_vm_init()
   const u32_t kstktop = (u32_t)GET_BSP_VAR(KSTKTOP);
   const u32_t kstksize = KERNEL_STACK_SIZE;
   const u32_t upages = (u32_t)GET_BSP_VAR(UPAGES);
-  const u32_t npage = GET_GLOBAL_VAR(npage);
+  DECL_IMMUTABLE_GLOBAL_VAR(u32_t ,npage);
   //
 
   /* map VPT/UVPT to same physical address with different attribute
@@ -253,10 +253,10 @@ void pmap_vm_init()
 
 static void pmap_jump_into_paging_mode(pde_t* pgdir)
 {
-  const struct gdt_pseudo_desc const *gdt_pd = &GET_GLOBAL_VAR(gdt_pd);  
+  DECL_IMMUTABLE_GLOBAL_PTRVAR(struct gdt_pseudo_desc* ,gdt_pd);
   u32_t cr3 = PADDR((u32_t)pgdir);
   kprintf("pgdir:%p cr3:%p\n" ,pgdir ,cr3);
-  warn("0");
+
   //////////////////////////////////////////////////////////////////////
   // On x86, segmentation maps a VA to a LA (linear addr) and
   // paging maps the LA to a PA.  I.e. VA => LA => PA.  If paging is
@@ -274,36 +274,35 @@ static void pmap_jump_into_paging_mode(pde_t* pgdir)
   // Map VA 0:4MB same as VA KERN_BASE, i.e. to PA 0:4MB.
   // (Limits our kernel to <4MB)
   pgdir[0] = pgdir[PDX(KERN_BASE)];
-  warn("1");
+
   /* jump into Paging Mode, however, we have 32bit-paging only.
    * If you need a PAE-paging, go for it! get up, you're a hacker!
    */ 
   cr3_set(cr3); // Install page table first
   pmap_paging_mode_turn_on();
-  warn("2");
+
   // Reload all segment registers.
   gdt_load(*gdt_pd);
-  warn("3");
+
   gdt_seg_reload(gs ,UD_SEL | RPL_RING3); 
   gdt_seg_reload(fs ,UD_SEL | RPL_RING3);
   gdt_seg_reload(es ,KD_SEL | RPL_RING0);
   gdt_seg_reload(ds ,KD_SEL | RPL_RING0);
   gdt_seg_reload(ss ,KD_SEL | RPL_RING0); // FIXME: I need a kernel stack selector
-  warn("4");
+
   gdt_cs_reload();
-  //__asm__ volatile("ljmp %0,$1f\n 1:\n" :: "i" (KC_SEL));
-  warn("5");
+
   gdt_local_desc_load(0);
-  warn("6");
+
   // Final mapping: KERN_BASE+x => KERN_BASE+x => x.
 
   // This mapping was only used after paging was turned on but
   // before the segment registers were reloaded.
   pmap_map_PD_to_la(pgdir ,0 ,0 ,0);
-  warn("7");
+
   // Flush the TLB for good measure, to kill the pgdir[0] mapping.
   __flush_tlb();
-  warn("8");
+
   MARK_TWAIN;
 }  
 
@@ -315,39 +314,32 @@ static void pmap_check_boot_pgdir()
 
   // read-only vars
   const u32_t upages = (u32_t)GET_BSP_VAR(UPAGES);
-  const u32_t npage = GET_GLOBAL_VAR(npage);
   const u32_t kstksize = KERNEL_STACK_SIZE;
   const u32_t kstktop = (u32_t)GET_BSP_VAR(KSTKTOP);
   const u32_t vpt = (u32_t)GET_BSP_VAR(VPT);
   const u32_t uvpt = (u32_t)GET_BSP_VAR(UVPT);
-  const struct Page* pages = GET_GLOBAL_VAR(pages);
+  DECL_IMMUTABLE_GLOBAL_VAR(struct Page* ,pages);
+  DECL_IMMUTABLE_GLOBAL_VAR(u32_t ,npage);
+
   //
   // check pages array
   n = ROUND_UP(npage*sizeof(struct Page) ,PG_SIZE);
-  //  panic("size:%u\n",n/PG_SIZE);
+
   for(i = 0; i < n; i += PG_SIZE)
     {
-      //kprintf("[npage]i:%d\n",i);
       assert(pmap_check_va2pa(pgdir ,upages + i) == PADDR((u32_t)pages) + i);
     }
   kprintf("[1]page check ok!\n");
   // check phys mem
   for(i = 0; KERN_BASE + i != 0; i += PG_SIZE)
     {
-      //kprintf("i:%d\n",i/PGSIZE);
-      //kprintf("[kern]i:%d i:%p %p\n",i/PG_SIZE ,i ,PADDR((u32_t)KERN_BASE)+i);
-      //kprintf("[kern]pa:%p\n" ,pmap_check_va2pa(pgdir ,KERN_BASE+i));
       assert(pmap_check_va2pa(pgdir, KERN_BASE + i) == i);
-
-      //kprintf("%p->%p\n",KERNBASE+i,		    //== i);
     }
   kprintf("[2]kern check ok!\n");
 
   // check kernel stack
   for(i = 0; i < kstksize; i += PG_SIZE)
     {
-      //kprintf("[stack]i:%d %p\n",i/PG_SIZE ,PADDR((u32_t)tmp_stack)+i);
-      //kprintf("i:%d\n",i/PGSIZE);
       assert(pmap_check_va2pa(pgdir, kstktop - kstksize + i) == PADDR((u32_t)tmp_stack) + i);
     }
   kprintf("[3]kstack check ok!\n");
@@ -384,7 +376,6 @@ static physaddr_t pmap_check_va2pa(pde_t *pgdir, laddr_t va)
   pte_t *pt = NULL;
   pte_t p = 0;
 
-  //warn("pgdir:%p pd:%p table:%p va:%p\n" ,pgdir ,pd ,*pd ,va);
   pd = (pte_t*)pmap_tmp_lookup_dir(pgdir ,va);
   
   if(!pmap_pte_p(*pd))
@@ -395,7 +386,6 @@ static physaddr_t pmap_check_va2pa(pde_t *pgdir, laddr_t va)
   
   pt = (pte_t*)KADDR(PTA(*pd));
   p = (pte_t)pt[PTX(va)];
-  //cprintf("ka:%p p:%p\n" ,pt ,p);
   
   if(!pmap_pte_p(p))
     {
@@ -411,24 +401,26 @@ static physaddr_t pmap_check_va2pa(pde_t *pgdir, laddr_t va)
 
 void pmap_page_init()
 {
-  struct Page* pages = GET_GLOBAL_VAR(pages);
+  DECL_MUTABLE_GLOBAL_PTRVAR(struct Page** ,pages);
+  //struct Page* pages = GET_GLOBAL_VAR(pages);
   struct Page* pp = NULL;
   
   // read-only vars
-  const u32_t npage = GET_GLOBAL_VAR(npage);
+  DECL_IMMUTABLE_GLOBAL_VAR(u32_t ,npage);
+  //const u32_t npage = GET_GLOBAL_VAR(npage);
   //
 
-  memset(pages ,0 ,npage*sizeof(struct Page));
+  memset(*pages ,0 ,npage*sizeof(struct Page));
   LIST_INIT(&pmap_page_free_list);
 
   for(int i = npage-1; i >= 0; i--)
     {
-      pp = pages+i;
+      pp = *pages+i;
 
       if(0 == i)
 	{
 	  pp->pg_ref = 1; // mark page0 as used!
-	  kprintf("page0: %p -- %u\n" ,&pages[i] ,pages[i].pg_ref);
+	  kprintf("page0: %p -- %u\n" ,&(*pages)[i] ,(*pages)[i].pg_ref);
 
 	}else if( i >= (IO_PHY_MEM / PG_SIZE) 
 		  && i < (MEM_HOLE_END / PG_SIZE) )
@@ -447,7 +439,7 @@ void pmap_page_init()
 	  
     if(0 == i)
       {
-	kprintf("page0: %p -- %u\n" ,&pages[0] ,pages[0].pg_ref);
+	kprintf("page0: %p -- %u\n" ,&(*pages)[0] ,(*pages)[0].pg_ref);
       }
     
     LIST_INSERT_HEAD(&pmap_page_free_list ,pp ,pg_link);

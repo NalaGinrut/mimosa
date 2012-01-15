@@ -35,5 +35,17 @@
 #ifndef BSP_SYM
 #define BSP_SYM(sym)	MK_BSP_SYM(MIMOSA_BSP ,sym)
 #endif
-	
+
+#define DECL_IMMUTABLE_GLOBAL_VAR(type ,name) \
+  const type name = (type)GET_GLOBAL_VAR(name)
+
+#define DECL_MUTABLE_GLOBAL_VAR(type ,name) \
+  type name = (type)GET_GLOBAL_VAR(name)
+
+#define DECL_IMMUTABLE_GLOBAL_PTRVAR(type ,name) \
+  const type name = &GET_GLOBAL_VAR(name)
+
+#define DECL_MUTABLE_GLOBAL_PTRVAR(type ,name) \
+  type name = &GET_GLOBAL_VAR(name)
+
 #endif // End of __MIMOSA_GLOBAL_H;

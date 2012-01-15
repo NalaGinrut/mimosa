@@ -23,10 +23,8 @@
 #include <global.h>
 #include <osconfig.h>
 #include <bsp/bsp_mm.h>
-
+#include <libkern.h>
 extern inner_seg_desc_t GET_GLOBAL_VAR(gdt[]);
 extern struct gdt_pseudo_desc GET_GLOBAL_VAR(gdt_pd);
-
-
 
 #endif // End of __MIMOSA_PC32_SEG_H;
