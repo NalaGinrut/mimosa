@@ -1,7 +1,7 @@
 #ifndef __MIMOSA_PC32_GDT_H
 #define __MIMOSA_PC32_GDT_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 	.byte 0, 0, 0, 0
 
 // SET_INIT is just used for P_MODE during BOOT time;
-#define SEG_INIT(type,base,lim)					\
+#define SEG_INIT(type ,base ,lim)				\
 	.word (((lim) >> 12) & 0xffff), ((base) & 0xffff);	\
 	.byte (((base) >> 16) & 0xff), (0x90 | (type)),		\
 		(0xC0 | (((lim) >> 28) & 0xf)), (((base) >> 24) & 0xff)
@@ -75,21 +75,21 @@ typedef struct Inner_Seg_Desc
 }inner_seg_desc_t ,*inner_seg_desc_tp;
 #endif // End of (__ADDRESS_BITS__ == 64)
 
-#define SEG_NULL	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define SEG_NULL	{ 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 }
 // Segment that is loadable but faults when used
-#define SEG_FAULT	{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 }
+#define SEG_FAULT	{ 0 ,0 ,0 ,0 ,1 ,0 ,1 ,0 ,0 ,0 ,1 ,0 ,0 }
 
 
 
 // SEG macro handles to fix the segment_descriptor a regular one;
 #define SEG(type ,base ,lim ,dpl ,s ,p ,a ,r ,db ,g) 			\
-  { ((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff ,	\
-      (type) ,(s) ,(dpl) ,(p), (unsigned) (lim) >> 28 ,(a) ,		\
+  { ((lim) >> 12) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,	\
+      (type) ,(s) ,(dpl) ,(p), (unsigned) (lim) >> 28 ,(a),		\
       (r) ,(db) ,(g) ,(unsigned) (base) >> 24 }			
 
-#define SEG16(type, base, lim, dpl) 					\
-  { (lim) & 0xffff, (base) & 0xffff, ((base) >> 16) & 0xff,		\
-      type, 1, dpl, 1, (unsigned) (lim) >> 16, 0, 0, 1, 0,		\
+#define SEG16(type ,base ,lim ,dpl) 					\
+  { (lim) & 0xffff ,(base) & 0xffff ,((base) >> 16) & 0xff,		\
+      type ,1 ,dpl ,1 ,(unsigned) (lim) >> 16 ,0 ,0 ,1 ,0,		\
       (unsigned) (base) >> 24 }
 
 
@@ -127,34 +127,36 @@ static inline void gdt_local_desc_load(u16_t local_desc);
 static inline void gdt_load(void* pseudo_desc)
 {
   __asm__ __volatile__("lgdt %0"
-		   :
-		   :"m" (pseudo_desc)
-		   );
+		       :
+		       : "m" (pseudo_desc)
+		       : "memory"
+		       );
 }
 
 static inline void gdt_local_desc_load(u16_t local_desc)
 {
   __asm__ __volatile__("lldt %%ax"
-		   :
-		   :"a" (local_desc)
-		   );
+		       :
+		       : "a" (local_desc)
+		       );
 }
 
 #define gdt_seg_reload(reg ,selector)		\
   do{						\
-  __asm__ __volatile__("movw %%ax ,%%"#reg		\
-		   :				\
-		   :"a" (selector)		\
-		   );				\
+  __asm__ __volatile__("movw %%ax ,%%"#reg	\
+		       :			\
+		       : "r" (selector)		\
+		       : "%eax"			\
+		       );			\
   }while(0);
 
 #define gdt_cs_reload()				\
   do{						\
-  __asm__ __volatile__("ljmp %0 ,$1f\n\t"		\
-		   "1:"				\
-		   :				\
-		   :"i" (KC_SEL)		\
-		   );				\
+  __asm__ __volatile__("ljmp %0 ,$1f\n\t"	\
+		       "1:"			\
+		       :			\
+		       : "i" (KC_SEL)		\
+		       );			\
   }while(0);
 
 #endif // End of __ASSEMBLER__ else
