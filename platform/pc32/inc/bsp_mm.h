@@ -25,6 +25,7 @@
 #include "cpu/crx.h"
 #include "cpu/gdt.h"
 #include "cpu/segment.h"
+#include "pmap.h"
 
 /* handle paging mode */
 #ifdef PG_SIZE

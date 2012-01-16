@@ -42,9 +42,10 @@ void platform_init()
 
   //TODO: other init needed.
 
-  /* If all the init depended on platform have done ,we'd jump into
+  /* NOTE:
+   * If all the init work depended on platform has been done ,we'd jump into
    * the kernel init procedure. Please be sure that ,you can't write any
-   * platform specified code in the kernel module. It's generic.
+   * platform specified code in the kernel module ,since it must be generic.
    */
 
 #ifdef __KERN_DEBUG__

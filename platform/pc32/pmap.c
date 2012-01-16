@@ -66,7 +66,7 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 #define pmap_pxe_pred(pde ,attr)	((pde) & (attr))
 
 #define pmap_pde_p(pde)         pmap_pxe_pred(pde ,PTE_PRESENT) // Page Dirctory is present
-#define pmap_lookup_dir_from_pde(la ,pde)	(&(pde)[PDX(la)])
+#define pmap_lookup_dir_from_pde(la ,pde)	(&((pde)[PDX(la)]))
 #define pmap_get_pte_from_va(va ,pte)	((pte)[PTX(va)])
 #define pmap_pde_set_attr(pde ,attr) (pde_t)((u32_t)(pde) | (attr))
 
@@ -445,7 +445,7 @@ void pmap_page_init()
     LIST_INSERT_HEAD(&pmap_page_free_list ,pp ,pg_link);
   }
 
-	
+  //panic("ok");	
 }
 
 static void pmap_page_init_pg(struct Page *pg)
@@ -457,7 +457,8 @@ retval pmap_page_alloc(struct Page **pg_store)
 {
   if( LIST_EMPTY(&pmap_page_free_list) )
     {
-      kprintf("pmap_page_alloc: empty page list!\n");
+      //warn("[0]%x\n",ENOMEM);
+      //kprintf("pmap_page_alloc: empty page list!\n");
       return ENOMEM;
     }
 
@@ -466,11 +467,14 @@ retval pmap_page_alloc(struct Page **pg_store)
 
   if( !(*pg_store) )
     {
-      kprintf("pmap_page_alloc: invalid pg_store or no mem!\n");
+      //warn("[1]%x\n",ENOMEM);
+      //kprintf("pmap_page_alloc: invalid pg_store or no mem!\n");
       return ENOMEM;
     }
 
-  kprintf("pmap_page_alloc: %p allocated!\n" ,*pg_store);
+  //warn("[2]%x\n",ENOMEM);
+
+  //kprintf("pmap_page_alloc: %p allocated!\n" ,*pg_store);
   return OK;
 }
   
@@ -495,41 +499,42 @@ void pmap_page_dec_ref(struct Page *pg)
 }
 
 // FIXME: it should be dir_lookup
-pte_t* pmap_page_table_lookup(pde_t* pgdir ,const void *va)
+pde_t* pmap_page_dir_lookup(pde_t* pgdir ,const void *va)
 {
   // FIXME: I need arbitrary level page table lookup
   pde_t* pd = NULL;
 
   pd = pmap_lookup_dir_from_pde(va ,pgdir);
-  kprintf("pmap_pgdir_lookup: #0 pgdir-%p va-%p pt-%p *pt-%p\n",
+  kprintf("pmap_pgdir_lookup: #0 pgdir-%p va-%p pd-%p *pd-%p\n",
 	  pgdir ,va ,pd ,*pd);
 
 #ifdef __KERN_DEBUG__
   if( pmap_pde_p(*pd) )
     {
-      kprintf("pmap_pgdir_lookup: #1 find a page_table-%p at %p\n",
-	      *pd ,va);
-    }else
+      kprintf("pmap_pgdir_lookup: #1 find a page_dir-*(%p):%p at %p\n",
+	      pd ,*pd ,va);
+    }
+  else
     {
-      kprintf("pmap_pgdir_lookup: #2 page_table-%p at %p is used,\n"
+      kprintf("pmap_pgdir_lookup: #2 page_dir-%p at %p is used,\n"
 	      "I can't find an available one!\n",
 	      *pd ,va);
     }
 #endif // End of __KERN_DEBUG__
 
-  return pmap_pte_p(*pd)? pd : NULL;
+  return pmap_pde_p(*pd)? pd : NULL;
 }
     
-pte_t* pmap_page_table_create(pde_t *pgdir ,const void* va)
+pde_t* pmap_page_dir_create(pde_t *pgdir ,const void* va)
 {
   // FIXME: I need arbitrary level page table lookup
-  pte_t *pt = pmap_page_table_lookup(pgdir ,va);
+  pde_t *pd = pmap_page_dir_lookup(pgdir ,va);
   struct Page *pg = NULL;
 
-  if(NULL == pt)
+  if(NULL != pd)
     {
-      kprintf("pmap_pgdir_create: #0 va-%p is used by %p!\n" ,va ,pt);
-      return pt;
+      kprintf("pmap_pgdir_create: #0 va-%p is used by %p!\n" ,va ,pd);
+      return pd;
     }
       
   kprintf("pmap_pgdir_create: #0 request to create one page_table page!\n");
@@ -540,51 +545,59 @@ pte_t* pmap_page_table_create(pde_t *pgdir ,const void* va)
       return NULL;
     }
 
-  *pt = pmap_page_set_attr(pg ,PTE_PRESENT);
+  *pd = pmap_page_set_attr(pg ,PTE_PRESENT);
 
-  kprintf("pmap_pgdir_create: #2 created a new page_table at *(%p)-%p\n",
-	  *pt ,pt);
+  kprintf("pmap_pgdir_create: #2 created a new page_dir at *(%p)-%p\n",
+	  *pd ,pd);
 
-  return pt;
+  return pd;
 }
       
 retval pmap_page_insert(pde_t *pgdir ,struct Page *pg ,void *va ,int attr)
 {
   // FIXME: I need arbitrary level page table lookup
-  pte_t *pt = pmap_page_table_lookup(pgdir ,va);
-
-  if(NULL == pt)
+  pde_t *pd = pmap_page_dir_lookup(pgdir ,va);
+  pte_t *pt = NULL;
+  
+  if(NULL == pd)
     {
-      kprintf("pmap_page_insert: #0 didn't find page_table. craete one!\n");
-      pt = pmap_page_table_create(pgdir ,va);
+      kprintf("pmap_page_insert: #0 didn't find page_dir. craete one!\n");
+      pd = pmap_page_dir_create(pgdir ,va);
 
-      if(NULL == pt)
+      if(NULL == pd)
 	return ENOMEM;
     }
 
-  kprintf("pmap_page_insert: #1 we got a page_table-%p in va-%p\n",
-	  *pt ,va);
+  kprintf("pmap_page_insert: #1 we got a page_dir-%p in va-%p\n",
+	  *pd ,va);
 
-  pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pt));
+  pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pd));
   
-  if( !pmap_pte_p(pt[PTX(va)]) ) // table NOT present
+  if( pmap_pte_p(pt[PTX(va)]) ) // table present
     {
-      kprintf("pmap_page_insert: #2 we find a used page at %p[PTX(%p)]-%p "
-	      "removed it!\n" ,pt ,va ,pt[PTX(va)]);
-      pmap_page_remove(pgdir ,va);
-    }
-
-  if( PTA(pt[PTX(va)]) == page2pa(pg) )
-    {
-      kprintf("pmap_page_insert: #3 we find same map between va-%p "
-	      "and pa-%p\n ,do nothing then return!\n" ,va ,pg);
-      return OK;
+      if( PTA(pt[PTX(va)]) == page2pa(pg) ) 
+	{
+	  // if the page is present and has the same map ,then return OK
+	  kprintf("pmap_page_insert: #2 we find same map between va-%p "
+		  "and pa-%p\n ,do nothing then return!\n" ,va ,pg);
+	  return OK;
+	}
+      else
+	{
+	  /* if the page is present but has different map ,then delete it
+	   * so we'll remap it later
+	   * TLB will be updated during pmap_page_remove
+	   */
+	  kprintf("pmap_page_insert: #3 we find a used page at %p[PTX(%p)]-%p "
+		  "removed it!\n" ,pt ,va ,pt[PTX(va)]);
+	  pmap_page_remove(pgdir ,va);
+	}
     }
 
   kprintf("pmap_page_insert: #4 insert pg-%p into page_table at %p[PTX(%p)]\n",
 	  pg ,pt ,va);
 
-  pt[PTX(va)] = pmap_page_set_attr(pg ,attr);
+  pt[PTX(va)] = pmap_page_set_attr((void*)page2pa(pg) ,attr);
 
   pg->pg_ref++;
   kprintf("pmap_page_insert: #5 increase %p->pg_ref to %u \n",
@@ -593,36 +606,37 @@ retval pmap_page_insert(pde_t *pgdir ,struct Page *pg ,void *va ,int attr)
   return OK;
 }
 
-struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pte_t** pte_store)
+struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pde_t** pde_store)
 {
+  pde_t* pd = NULL;
   pte_t* pt = NULL;
   
   kprintf("pmap_page_lookup: #0 get in!\n");
 
-  if(NULL == pte_store)
+  if(NULL != pde_store)
     {
-      kprintf("pmap_page_lookup: #1 get valid pte_store-%p\n" ,pte_store);
+      kprintf("pmap_page_lookup: #1 get valid pte_store-%p\n" ,pde_store);
  
-      pt = pmap_page_table_lookup(pgdir ,va);
+      pd = pmap_page_dir_lookup(pgdir ,va);
 
-      if(NULL == pt)
+      if(NULL == pd)
 	{
-	  kprintf("pmap_page_lookup: #2 didn't find it's page_table entry, "
+	  kprintf("pmap_page_lookup: #2 didn't find it's page_dir entry, "
 		  "return NULL!\n");
 	  return NULL;
 	}
 
-      kprintf("pmap_page_lookup: #3 find it's page_table entry: pt-%p *pt-%p\n",
-	      pt ,*pt);
+      kprintf("pmap_page_lookup: #3 find it's page_dir entry: pd-%p *pd-%p\n",
+	      pd ,*pd);
 
-      *pte_store = pt;
+      *pde_store = pd;
 
       // walk 2-level page table
-      pt = (pte_t*)KADDR(PTA(*pt));
-      pt = (pte_t*)pt[PTX(va)];
+      pd = (pte_t*)KADDR(PTA(*pd));
+      pt = (pte_t*)pd[PTX(va)];
 	  
-      kprintf("pmap_page_lookup: #4 pt-%p *pte_store-%p ret-%p "
-	      "%p[PTX(%p)]-%p\n" ,pt ,*pte_store ,pa2page(PTA(pt)));
+      kprintf("pmap_page_lookup: #4 pt-%p *pde_store-%p ret-%p "
+	      "%p[PTX(%p)]-%p\n" ,pt ,*pde_store ,pa2page(PTA(pt)));
 
       return pa2page(PTX(pt));
 
@@ -633,26 +647,28 @@ struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pte_t** pte_store)
 
 void pmap_page_remove(pde_t *pgdir, void *va)
 {
+  pde_t* pd = NULL;
   pte_t* pt = NULL;
-  struct Page *pg = pmap_page_lookup(pgdir ,va ,&pt);
+  struct Page *pg = pmap_page_lookup(pgdir ,va ,&pd);
 
   kprintf("pmap_page_remove: #0 get in!\n");
 
   if(NULL == pg)
     {
-      kprintf("pmap_page_remove: #1 pt-%p pt[PTX(%p)]-%p pg-%p didn't mapped!\n",
-	      pt ,va ,pt[PTX(va)] ,pg);
+      warn("pd-%p PTX(%p)-%p pg-%p\n",pd ,va ,PTX(va));
+      kprintf("pmap_page_remove: #1 pd-%p pt[PTX(%p)]-%p pg-%p didn't mapped!\n",
+	      pd ,va ,pd[PTX(va)] ,pg);
       return;
     }
-
-  pt = (pte_t*)KADDR(PTA(*pt));
+  warn("here!");
+  pt = (pte_t*)KADDR(PTA(*pd));
   kprintf("pmap_page_remove: #2 release va-%p\n" ,va);
 
   pmap_page_dec_ref(pg);
   kprintf("pmap_page_remove: #3 pt[PTX(va)]==%p[PTX(%p)]-%p\n"
 	  "pg-%p pg->pg_link-%p pg->pg_ref-%u\n",
 	  pt ,va ,pt[PTX(va)] ,pg ,pg->pg_link ,pg->pg_ref);
-  
+
   pt[PTX(va)] = pmap_pte_set_attr(pt[PTX(va)] ,PTE_PRESENT);
   pmap_tlb_invalidate(pgdir ,va);
   kprintf("pmap_page_remove: #4 FINISHED!\n");
@@ -663,169 +679,169 @@ void pmap_tlb_invalidate(pde_t* pgdir ,void* va)
   /* FIXME: we have only 2-level page table now, so we just flush va directly.
    *	    But I need an arbitrary n-level page table. so fixme later please.
    */	
-  TLB_flush_mem(va);
+  //TLB_flush_mem(va);
+  __flush_tlb(va);
 }
-
 
 #ifdef __KERN_DEBUG__
 void pmap_page_check()
 {
-	struct Page *pp, *pp0, *pp1, *pp2;
-	page_list_t  fl;
-	pte_t *ptep;
+  struct Page *pp ,*pp0 ,*pp1 ,*pp2;
+  page_list_t fl;
+  pte_t *ptep;
 
-	kprintf("ok pg check #1\n");
-	// should be able to allocate three pages
-	pp0 = pp1 = pp2 = 0;
-	assert(pmap_page_alloc(&pp0) == 0);
-	assert(pmap_page_alloc(&pp1) == 0);
-	assert(pmap_page_alloc(&pp2) == 0);
-
-
-	kprintf("ok pg check #2\n");
-
-	assert(pp0);
-	assert(pp1 && pp1 != pp0);
-	assert(pp2 && pp2 != pp1 && pp2 != pp0);
-
-	kprintf("ok pg check #3\n"
-		"pp0-%p pp0->pg_ref-%u page0-%p\n"
-		"pp1-%p pp1->pg_ref-%u page1-%p\n"
-		"pp2-%p pp2->pg_ref-%u page2-%p\n",
-		pp0 ,pp0->pg_ref ,page2pa(pp0) ,
-		pp1 ,pp1->pg_ref ,page2pa(pp1) ,
-		pp2 ,pp2->pg_ref ,page2pa(pp2));
+  kprintf("ok pg check #1\n");
+  // should be able to allocate three pages
+  pp0 = pp1 = pp2 = NULL;
+  assert(pmap_page_alloc(&pp0) == 0);
+  assert(pmap_page_alloc(&pp1) == 0);
+  assert(pmap_page_alloc(&pp2) == 0);
 
 
-	// temporarily steal the rest of the free pages
-	fl = pmap_page_free_list;
-	LIST_INIT(&pmap_page_free_list);
+  kprintf("ok pg check #2\n");
 
-	kprintf("ok pg check #4\n");
+  assert(pp0);
+  assert(pp1 && pp1 != pp0);
+  assert(pp2 && pp2 != pp1 && pp2 != pp0);
 
-	// should be no free memory
-	assert(pmap_page_alloc(&pp) == ENOMEM);
-	kprintf("ok pg check #4.1\n");
+  /* kprintf("ok pg check #3\n" */
+  /* 	  "pp0-%p pp0->pg_ref-%u page0-%p\n" */
+  /* 	  "pp1-%p pp1->pg_ref-%u page1-%p\n" */
+  /* 	  "pp2-%p pp2->pg_ref-%u page2-%p\n", */
+  /* 	  pp0 ,pp0->pg_ref ,page2pa(pp0) , */
+  /* 	  pp1 ,pp1->pg_ref ,page2pa(pp1) , */
+  /* 	  pp2 ,pp2->pg_ref ,page2pa(pp2)); */
 
-	// there is no page allocated at address 0
-	assert(pmap_page_lookup(tmp_pgdir, (void *) 0x0, &ptep) == NULL);
 
-	kprintf("ok pg check #4.2\n");
+  // temporarily steal the rest of the free pages
+  fl = pmap_page_free_list;
+  LIST_INIT(&pmap_page_free_list);
 
-	// there is no free memory, so we can't allocate a page table 
-	assert(pmap_page_insert(tmp_pgdir, pp1, 0x0, 0) < 0);
+  kprintf("ok pg check #4\n");
 
-	kprintf("ok pg check #5\n");
+  // should be no free memory
+  assert(pmap_page_alloc(&pp) == ENOMEM);
+  kprintf("ok pg check #4.1\n");
 
-	// free pp0 and try again: pp0 should be used for page table
-	pmap_page_free(pp0);
-		kprintf("ok pg check #5.1\n");
-	assert(pmap_page_insert(tmp_pgdir, pp1, 0x0, 0) == 0);
-		kprintf("ok pg check #5.2\n");
-	assert(PTA(tmp_pgdir[0]) == page2pa(pp0));
-		kprintf("ok pg check #5.3\n");
-	assert(pmap_check_va2pa(tmp_pgdir, 0x0) == page2pa(pp1));
-		kprintf("ok pg check #5.4\n");
-	assert(pp1->pg_ref == 1);
-	kprintf("ok pg check #5.5 pp0-%p pp1-%p\n"
-		"pp0->pg_ref: %u ,pp1->pg_ref: %u\n",
-		pp0 ,pp1 ,pp0->pg_ref ,pp1->pg_ref);
-	assert(pp0->pg_ref == 1);
+  // there is no page allocated at address 0
+  assert(pmap_page_lookup(tmp_pgdir, (void *) 0x0, &ptep) == NULL);
 
-	kprintf("ok pg check #6\n");
+  kprintf("ok pg check #4.2\n");
 
-	// should be able to map pp2 at PG_SIZE because pp0 is already allocated for page table
-	assert(pmap_page_insert(tmp_pgdir, pp2, (void*) PG_SIZE, 0) == 0);
-	assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp2));
-	assert(pp2->pg_ref == 1);
+  // there is no free memory, so we can't allocate a page table 
+  assert(pmap_page_insert(tmp_pgdir, pp1, 0x0, 0) < 0);
 
-	kprintf("ok pg check #7\n");
+  kprintf("ok pg check #5\n");
 
-	// should be no free memory
-	assert(pmap_page_alloc(&pp) == ENOMEM);
-	kprintf("ok pg check #7.1\n");
-	// should be able to map pp2 at PG_SIZE because it's already there
-	assert(pmap_page_insert(tmp_pgdir, pp2, (void*) PG_SIZE, 0) == 0);
-	kprintf("ok pg check #7.2\n");
-	assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp2));
-	kprintf("ok pg check #7.3 va:%p <=> pa:%p c_v2p:%p \n",
-		PG_SIZE ,page2pa(pp2) ,pmap_check_va2pa(tmp_pgdir ,PG_SIZE));
-	assert(pp2->pg_ref == 1);
+  // free pp0 and try again: pp0 should be used for page table
+  pmap_page_free(pp0);
+  kprintf("ok pg check #5.1\n");
+  assert(pmap_page_insert(tmp_pgdir, pp1, 0x0, 0) == 0);
+  kprintf("ok pg check #5.2\n");
+  assert(PTA(tmp_pgdir[0]) == page2pa(pp0));
+  kprintf("ok pg check #5.3\n");
+  assert(pmap_check_va2pa(tmp_pgdir, 0x0) == page2pa(pp1));
+  kprintf("ok pg check #5.4\n");
+  assert(pp1->pg_ref == 1);
+  kprintf("ok pg check #5.5 pp0-%p pp1-%p\n"
+	  "pp0->pg_ref: %u ,pp1->pg_ref: %u\n",
+	  pp0 ,pp1 ,pp0->pg_ref ,pp1->pg_ref);
+  assert(pp0->pg_ref == 1);
 
-	kprintf("ok pg check #8\n");
+  kprintf("ok pg check #6\n");
 
-	// pp2 should NOT be on the free list
-	// could happen in ref counts are handled sloppily in page_insert
-	assert(pmap_page_alloc(&pp) == ENOMEM);
-	kprintf("ok pg check #8.1\n");
-	// should not be able to map at PT_SIZE because need free page for page table
-	assert(pmap_page_insert(tmp_pgdir, pp0, (void*) PT_SIZE, 0) < 0);
-	kprintf("ok pg check #8.2\n");
-	// insert pp1 at PG_SIZE (replacing pp2)
-	assert(pmap_page_insert(tmp_pgdir, pp1, (void*) PG_SIZE, 0) == 0);
-	kprintf("ok pg check #8.3\n");
-	// should have pp1 at both 0 and PG_SIZE, pp2 nowhere, ...
-	assert(pmap_check_va2pa(tmp_pgdir, 0) == page2pa(pp1));
-	kprintf("ok pg check #8.4\n");
-	assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp1));
-	kprintf("ok pg check #8.5\n");
-	// ... and ref counts should reflect this
-	assert(pp1->pg_ref == 2);
-	kprintf("ok pg check #8.6\n"
-		"pp1-%p pp2-%p\n"
-		"pp1->pg_ref: %u ,pp2->pg_ref: %u\n",
-		pp1 ,pp2 ,pp1->pg_ref ,pp2->pg_ref);
+  // should be able to map pp2 at PG_SIZE because pp0 is already allocated for page table
+  assert(pmap_page_insert(tmp_pgdir, pp2, (void*) PG_SIZE, 0) == 0);
+  assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp2));
+  assert(pp2->pg_ref == 1);
 
-	assert(pp2->pg_ref == 0);
-	kprintf("ok pg check #8.7\n");
+  kprintf("ok pg check #7\n");
+
+  // should be no free memory
+  assert(pmap_page_alloc(&pp) == ENOMEM);
+  kprintf("ok pg check #7.1\n");
+  // should be able to map pp2 at PG_SIZE because it's already there
+  assert(pmap_page_insert(tmp_pgdir, pp2, (void*) PG_SIZE, 0) == 0);
+  kprintf("ok pg check #7.2\n");
+  assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp2));
+  kprintf("ok pg check #7.3 va:%p <=> pa:%p c_v2p:%p \n",
+	  PG_SIZE ,page2pa(pp2) ,pmap_check_va2pa(tmp_pgdir ,PG_SIZE));
+  assert(pp2->pg_ref == 1);
+
+  kprintf("ok pg check #8\n");
+
+  // pp2 should NOT be on the free list
+  // could happen in ref counts are handled sloppily in page_insert
+  assert(pmap_page_alloc(&pp) == ENOMEM);
+  kprintf("ok pg check #8.1\n");
+  // should not be able to map at PT_SIZE because need free page for page table
+  assert(pmap_page_insert(tmp_pgdir, pp0, (void*) PT_SIZE, 0) < 0);
+  kprintf("ok pg check #8.2\n");
+  // insert pp1 at PG_SIZE (replacing pp2)
+  assert(pmap_page_insert(tmp_pgdir, pp1, (void*) PG_SIZE, 0) == 0);
+  kprintf("ok pg check #8.3\n");
+  // should have pp1 at both 0 and PG_SIZE, pp2 nowhere, ...
+  assert(pmap_check_va2pa(tmp_pgdir, 0) == page2pa(pp1));
+  kprintf("ok pg check #8.4\n");
+  assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp1));
+  kprintf("ok pg check #8.5\n");
+  // ... and ref counts should reflect this
+  assert(pp1->pg_ref == 2);
+  kprintf("ok pg check #8.6\n"
+	  "pp1-%p pp2-%p\n"
+	  "pp1->pg_ref: %u ,pp2->pg_ref: %u\n",
+	  pp1 ,pp2 ,pp1->pg_ref ,pp2->pg_ref);
+
+  assert(pp2->pg_ref == 0);
+  kprintf("ok pg check #8.7\n");
 	
-	// pp2 should be returned by pmap_page_alloc
-	assert(pmap_page_alloc(&pp) == 0 && pp == pp2);
+  // pp2 should be returned by pmap_page_alloc
+  assert(pmap_page_alloc(&pp) == 0 && pp == pp2);
 
-	kprintf("ok pg check #9\n");
+  kprintf("ok pg check #9\n");
 
 
-	// unmapping pp1 at 0 should keep pp1 at PG_SIZE
-	pmap_page_remove(tmp_pgdir, 0x0);
-	assert(pmap_check_va2pa(tmp_pgdir, 0x0) == ~0);
-	assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp1));
-	assert(pp1->pg_ref == 1);
-	assert(pp2->pg_ref == 0);
+  // unmapping pp1 at 0 should keep pp1 at PG_SIZE
+  pmap_page_remove(tmp_pgdir, 0x0);
+  assert(pmap_check_va2pa(tmp_pgdir, 0x0) == ~0);
+  assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == page2pa(pp1));
+  assert(pp1->pg_ref == 1);
+  assert(pp2->pg_ref == 0);
 
-	kprintf("ok pg check #10\n");
+  kprintf("ok pg check #10\n");
 
-	// unmapping pp1 at PG_SIZE should free it
-	pmap_page_remove(tmp_pgdir, (void*) PG_SIZE);
-	assert(pmap_check_va2pa(tmp_pgdir, 0x0) == ~0);
-	assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == ~0);
-	assert(pp1->pg_ref == 0);
-	assert(pp2->pg_ref == 0);
+  // unmapping pp1 at PG_SIZE should free it
+  pmap_page_remove(tmp_pgdir, (void*) PG_SIZE);
+  assert(pmap_check_va2pa(tmp_pgdir, 0x0) == ~0);
+  assert(pmap_check_va2pa(tmp_pgdir, PG_SIZE) == ~0);
+  assert(pp1->pg_ref == 0);
+  assert(pp2->pg_ref == 0);
 
-	kprintf("ok pg check #11\n");
+  kprintf("ok pg check #11\n");
 
-	// so it should be returned by pmap_page_alloc
-	assert(pmap_page_alloc(&pp) == 0 && pp == pp1);
+  // so it should be returned by pmap_page_alloc
+  assert(pmap_page_alloc(&pp) == 0 && pp == pp1);
 
-	// should be no free memory
-	assert(pmap_page_alloc(&pp) == ENOMEM);
+  // should be no free memory
+  assert(pmap_page_alloc(&pp) == ENOMEM);
 
-	// forcibly take pp0 back
-	assert(PTA(tmp_pgdir[0]) == page2pa(pp0));
-	tmp_pgdir[0] = 0;
-	assert(pp0->pg_ref == 1);
-	pp0->pg_ref = 0;
+  // forcibly take pp0 back
+  assert(PTA(tmp_pgdir[0]) == page2pa(pp0));
+  tmp_pgdir[0] = 0;
+  assert(pp0->pg_ref == 1);
+  pp0->pg_ref = 0;
 
-	kprintf("ok pg check #12\n");
+  kprintf("ok pg check #12\n");
 
-	// give free list back
-	pmap_page_free_list = fl;
+  // give free list back
+  pmap_page_free_list = fl;
 
-	// free the pages we took
-	pmap_page_free(pp0);
-	pmap_page_free(pp1);
-	pmap_page_free(pp2);
+  // free the pages we took
+  pmap_page_free(pp0);
+  pmap_page_free(pp1);
+  pmap_page_free(pp2);
 
-	kprintf("pmap_page_check() succeeded!\n");
+  kprintf("pmap_page_check() succeeded!\n");
 }
 #endif // End of __KERN_DEBUG__
 

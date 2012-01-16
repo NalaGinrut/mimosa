@@ -35,14 +35,15 @@ extern struct Page* GET_GLOBAL_VAR(pages);
 extern u32_t GET_GLOBAL_VAR(npage);
 
 /* define Page List */
+typedef LIST_HEAD(Page_list, Page) page_list_t;
+typedef LIST_ENTRY(Page) page_list_entry_t;
 typedef struct Page
 {
-  LIST_ENTRY(Page) pg_link;
+  page_list_entry_t pg_link;
   u16_t pg_ref;
 }page_t;
 
-typedef LIST_HEAD(Page_list, Page) page_list_t;
- 
+			 
 // FIXME: I need this pmap struct to unify all page map information;
 /*
   typedef struct Page_map_struct
@@ -137,8 +138,8 @@ static void pmap_page_init_pg(struct Page *pg);
 retval pmap_page_alloc(struct Page **pg_store);
 void pmap_page_free(struct Page *pg);
 void pmap_page_dec_ref(struct Page *pg);
-pte_t* pmap_page_table_lookup(pde_t* pgdir ,const void* va);
-pte_t* pmap_page_table_create(pde_t* pgdir ,const void* va);
+pte_t* pmap_page_dir_lookup(pde_t* pgdir ,const void* va);
+pte_t* pmap_page_dir_create(pde_t* pgdir ,const void* va);
 retval pmap_page_insert(pde_t* pgdir ,struct Page* pg ,void* va ,int attr);
 void pmap_page_remove(pde_t* pgdir ,void* va);
 void pmap_tlb_invalidate(pde_t* pgdir ,void* va);
