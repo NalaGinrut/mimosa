@@ -23,14 +23,11 @@
 #include <types.h>
 #include <error.h>
 
-typedef struct FrameInfo
+typedef struct Frame_Info
 {
   //TODO: all info about frame, argc,args, others.....;
-}frame_info;// should we need pass frame_info pointer to accelerate??
+}frame_info_t;// should we need pass frame_info pointer to accelerate??
 
-retval pcall_backtrace(frame_info fi ,u32_t back_count);  
-
-
-
+retval pcall_backtrace(frame_info_t fi ,u32_t back_count);  
 
 #endif // End of __MIMOSA_DEBUG_TRACE_H;

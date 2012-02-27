@@ -40,6 +40,8 @@
 #define __writenw(d,s,n) port_wnw(d,s,n)
 #define __writenl(d,s,n) port_wnl(d,s,n)
 
+#define __get_frame_pointer() read_ebp()
+
 // Video output
 #define __VIDEO_BUFFER	CGA_DISP_BUF
 

@@ -1,5 +1,3 @@
-#ifndef __MIMOSA_KSHELL_H__
-#define __MIMOSA_KSHELL_H__
 /*	
  *  Copyright (C) 2012
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
@@ -18,30 +16,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define KSC_DESC_LEN	256
-#define KSC_NAME_LEN	64
-#define KSC_BUF_SIZE	80	// enough for one VGA text line
+#include <libkern.h>
+#include <types.h>
 
-typedef int (*ksc_run_t)(int ,char** ,struct Trapframe*);
-
-typedef struct Kernel_Shell_Command
+/* Last Bit Counter
+ * Inspired from http://www-graphics.stanford.edu/~seander/bithacks.html#IntegerLog
+ * A bisect last bit search ,e.g:
+ *	000110100 ==> 2
+ *      876543210
+ *
+ * FIXME: the register reserved word for less-32bit CPU?
+ */
+u32_t lbc(u32_t v)
 {
-  const char name[KSC_NAME_LEN];
-  const char desc[KSC_DESC_LEN];
+  register u32_t r; // result of log2(v) will go here
+  register u32_t shift;
 
-  // return -1 to force kshell to exit
-  ksc_run_t run;
-}ksc_t;
+  r =     (v > 0xFFFF) << 4; v >>= r;
+  shift = (v > 0xFF  ) << 3; v >>= shift; r |= shift;
+  shift = (v > 0xF   ) << 2; v >>= shift; r |= shift;
+  shift = (v > 0x3   ) << 1; v >>= shift; r |= shift;
+  r |= (v >> 1);
 
-// Activate the kernel monitor,
-// optionally providing a trap frame indicating the current state
-// (NULL if none).
-void mimosa_kshell_run(struct Trapframe *tf);
+  return r;
+}
 
-// Functions implementing monitor commands.
-
-int get_pgstat(const char *);
-
-
-
-#endif // End of __MIMOSA_KSHELL_H__;

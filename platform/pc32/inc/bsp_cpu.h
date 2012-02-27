@@ -18,8 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <bsp/cpu/_cpu.h>
-
+#include "cpu/_cpu.h"
+#include "cpu/trap.h"
 
 
 #endif // End of __MIMOSA_BSP_CPU_H;

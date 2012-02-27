@@ -25,6 +25,7 @@
 
 // function declaratioin:
 static __inline__ ereg_t read_ebp() __true_inline;
+static ereg_t read_eip();
 
 // get data operate;
 static __inline__ __u8_t port_rb(__u32_t port) __true_inline;
@@ -153,7 +154,17 @@ static __inline__ ereg_t read_ebp()
   return value;
 }
 
-
+// return EIP of caller.
+// does not work if inlined.
+// putting at the end of the file seems to prevent inlining.
+static ereg_t read_eip()
+{
+  ereg_t value;
+  __asm__ __volatile__ ("movl 4(%%ebp) ,%0"
+		      : "=r" (value)
+		      );
+  return value;
+}
 
 static __inline__ void port_wb(__u32_t port ,__u8_t data)
 {

@@ -25,20 +25,22 @@
 #define MAX_STRING_LEN 256
 
 char *strndup(const char *str ,size_t n);
-size_t strnlen(const char *str, size_t n);
-char *strncat(char *dest, const char *src, size_t n);
-char *strncpy(char *dest, const char *src, size_t n);
-int strncmp(const char *p, const char *q, size_t n);
-void *strchr(void const *str ,int c_in);
+size_t strnlen(const char *str ,size_t n);
+char *strncat(char *dest ,const char *src ,size_t n);
+char *strncpy(char *dest ,const char *src ,size_t n);
+int strncmp(const char *p ,const char *q ,size_t n);
+char *strchr(void const *str ,int c_in);
 long strtol(const char *s ,char **endptr ,int base);
 
-
 void *memcpy (void *dest ,void const *src ,size_t n);
-void *memset(void *str, int c, size_t n);
+void *memset(void *str, int c ,size_t n);
 void *memchr(void const *str ,int c_in ,size_t n);
 void *memmove(void *dest ,void const *src ,size_t n);
 
+u32_t fbc(u32_t v);
+
 int cprintf(const char *format ,...);
 int vcprintf(const char *fmt ,va_list ap);
+char *read_line(const char *prompt);
 
 #endif // End of __MIMOSA_LIB_KERNEL_H;

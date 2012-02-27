@@ -19,12 +19,12 @@
 #include <libkern.h>
 #include <types.h>
 
-void *strchr(void const *str ,int c_in)
+char *strchr(void const *str ,int c_in)
 {
   size_t len = strnlen(str ,MAX_STRING_LEN);
   
   if( !len )
     return (void*)str;
   
-  return memchr(str ,c_in ,len);
+  return (char*)memchr(str ,c_in ,len);
 }

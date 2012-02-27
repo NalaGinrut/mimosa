@@ -25,14 +25,19 @@
 
 #ifdef __KERN_DEBUG__
 #include <debug.h>
+#include <kshell.h>
 #endif
 
 void kernel_init()
 {
 
   //TODO: init all kernel modules
-  
 
+#ifdef __KERN_DEBUG__
+  struct Trapframe *tf;
+  mimosa_kshell_run();
+#endif
+    
   // Call env_init at the end
 
   env_init();

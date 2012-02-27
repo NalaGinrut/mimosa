@@ -23,10 +23,13 @@
 #include <error.h>
 #include <ds/qlist.h>
 #include <bsp/cpu/paging.h>
-#include <bsp/bsp_mm.h>
 #include <global.h>
 #include <bsp/seg.h>
 #include <retval.h>
+
+typedef __laddr_t laddr_t;
+typedef __pde_t pde_t;
+typedef __pte_t pte_t;
 
 extern char recondo[];
 extern char tmp_stack[] ,tmp_stack_top[];
@@ -42,7 +45,6 @@ typedef struct Page
   page_list_entry_t pg_link;
   u16_t pg_ref;
 }page_t;
-
 			 
 // FIXME: I need this pmap struct to unify all page map information;
 /*
@@ -111,12 +113,12 @@ static inline physaddr_t page2pa(struct Page *pp)
 
 static inline struct Page* pa2page(physaddr_t pa)
 {
-  u32_t npage = GET_GLOBAL_VAR(npage);
-  struct Page* pages = GET_GLOBAL_VAR(pages);
+  const u32_t npage = GET_GLOBAL_VAR(npage);
+  const struct Page* pages = GET_GLOBAL_VAR(pages);
 
   if (PPN(pa) >= npage)
     panic("pa2page called with invalid pa");
-  return &pages[PPN(pa)];
+  return (struct Page*)&pages[PPN(pa)];
 }
 
 static inline void* page2kva(struct Page *pp)
@@ -126,15 +128,8 @@ static inline void* page2kva(struct Page *pp)
 
 physaddr_t pmap_va2pa(pde_t *pgdir ,laddr_t va);
 void pmap_detect_memory();
-static void* pmap_tmp_alloc(u32_t n ,u32_t align);
-static inline pte_t* pmap_tmp_lookup_dir(pde_t *pgdir ,laddr_t la);
-static pte_t* pmap_tmp_pgdir_get(pde_t *pgdir ,laddr_t la);
-static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
-				 physaddr_t pa ,int attr);
 void pmap_vm_init();
 void pmap_page_init();
-static void pmap_jump_into_paging_mode(pde_t* pgdir);
-static void pmap_page_init_pg(struct Page *pg);
 retval pmap_page_alloc(struct Page **pg_store);
 void pmap_page_free(struct Page *pg);
 void pmap_page_dec_ref(struct Page *pg);
@@ -143,10 +138,10 @@ pte_t* pmap_page_dir_create(pde_t* pgdir ,const void* va);
 retval pmap_page_insert(pde_t* pgdir ,struct Page* pg ,void* va ,int attr);
 void pmap_page_remove(pde_t* pgdir ,void* va);
 void pmap_tlb_invalidate(pde_t* pgdir ,void* va);
+struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pde_t** pde_store);
+pde_t *pmap_get_tmp_pgdir();
 
 #ifdef __KERN_DEBUG__
-static void pmap_check_boot_pgdir();
-static physaddr_t pmap_check_va2pa(pte_t *pgdir ,laddr_t va);
 void pmap_page_check();
 #endif // End of __KERN_DEBUG__
 

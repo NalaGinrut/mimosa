@@ -30,10 +30,20 @@
 #ifdef __KERN_DEBUG__
 #define kprintf cprintf
 #define MARK_TWAIN kprintf("%s OK\n" ,__func__)
+static void pmap_check_boot_pgdir();
+static physaddr_t pmap_check_va2pa(pte_t *pgdir ,laddr_t va);
 #else
 #define kprintf
 #define MARK_TWAIN
 #endif 
+
+static void pmap_jump_into_paging_mode(pde_t* pgdir);
+static void pmap_page_init_pg(struct Page *pg);
+static void* pmap_tmp_alloc(u32_t n ,u32_t align);
+static inline pte_t* pmap_tmp_lookup_dir(pde_t *pgdir ,laddr_t la);
+static pte_t* pmap_tmp_pgdir_get(pde_t *pgdir ,laddr_t la);
+static void pmap_tmp_segment_map(pde_t *pgdir ,laddr_t la ,size_t size,
+				 physaddr_t pa ,int attr);
 
 // These variables are set by i386_detect_memory()
 static physaddr_t pa_top;	// top of physical address
@@ -97,6 +107,11 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 physaddr_t pmap_va2pa(pde_t *pgdir ,laddr_t va)
 {
   return 0;
+}
+
+pde_t *pmap_get_tmp_pgdir()
+{
+ return tmp_pgdir;
 }
 
 void pmap_detect_memory()
@@ -688,7 +703,7 @@ void pmap_page_check()
 {
   struct Page *pp ,*pp0 ,*pp1 ,*pp2;
   page_list_t fl;
-  pte_t *ptep;
+  pde_t *pd = NULL;
 
   kprintf("ok pg check #1\n");
   // should be able to allocate three pages
@@ -724,7 +739,7 @@ void pmap_page_check()
   kprintf("ok pg check #4.1\n");
 
   // there is no page allocated at address 0
-  assert(pmap_page_lookup(tmp_pgdir, (void *) 0x0, &ptep) == NULL);
+  assert(pmap_page_lookup(tmp_pgdir, (void *) 0x0, &pd) == NULL);
 
   kprintf("ok pg check #4.2\n");
 

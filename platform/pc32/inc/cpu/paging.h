@@ -22,6 +22,7 @@
 
 #include <bsp/bsp_types.h>
 #include <bsp/bsp_bits.h>
+#include <osconfig.h>
 #include "crx.h"
 
 #ifdef __BIT32_PAGING__
@@ -86,7 +87,33 @@ typedef __u32_t pfec_t; // Page Fault Error Code;
 		       * IA32_EFER.NXE=0);
 		       */
 
+// page number field of address
+#define PPN(la)		(((laddr_t)(la)) >> PTX_SHIFT)
+#define VPN(la)		PPN(la)		// used to index into vpt[]
+
+// page directory index
+#define PDX(la)		((((laddr_t)(la)) >> PDX_SHIFT) & 0x3FF)
+#define VPD(la)		PDX(la)		// used to index into vpd[]
+
+// page table index
+#define PTX(la)		((((laddr_t)(la)) >> PTX_SHIFT) & 0x3FF)
+
+// offset in page
+#define PGOFF(la)	(((laddr_t)(la)) & 0xFFF)
+
+// next pte addr in pte
+#define PTA(pte)	((physaddr_t)(pte) & ~0xFFF)
+
+// construct linear address from indexes and offset
+#define PGADDR(d, t, o)	((void*) ((d) << PDX_SHIFT | (t) << PTX_SHIFT | (o)))
+
 #define page_enable()  cr0_set(CR0_PG)
+
+/* handle paging mode */
+#ifdef PG_SIZE
+#define PTX_SHIFT PG_SHIFT
+#define PDX_SHIFT 22
+#endif // End of PG_SIZE;
 
 static inline void global_pages_enable() __true_inline;
 static inline void global_pages_disable() __true_inline;
