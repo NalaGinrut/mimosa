@@ -1,7 +1,7 @@
 #ifndef __MIMOSA_QUICK_LIST_H
 #define __MIMOSA_QUICK_LIST_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 /* NOTE: This file is modified from dragonflyBSD which contains 3-clauses BSD
  *	 Licenses, since we know it's compatible with GPL. Such a data-structure
- *	 implemetation is so beautiful that I can't help using it. Enjoy! .
+ *	 implemetation is so beautiful that I can't help using it. Enjoy!
  */
 
 /*-

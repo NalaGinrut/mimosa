@@ -107,7 +107,7 @@ typedef __u32_t pfec_t; // Page Fault Error Code;
 // construct linear address from indexes and offset
 #define PGADDR(d, t, o)	((void*) ((d) << PDX_SHIFT | (t) << PTX_SHIFT | (o)))
 
-#define page_enable()  cr0_set(CR0_PG)
+#define page_enable()  cr0_set(cr0_get() | CR0_PG)
 
 /* handle paging mode */
 #ifdef PG_SIZE

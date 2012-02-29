@@ -196,9 +196,7 @@ static int ksc_set_pgstat(int argc ,char **argv ,struct Trapframe *tf)
 	paddr = pd[PTX(begin)];
 	  
 	cprintf("%p:  ==> %p\n mapped?:%s\n",
-		begin ,(void*)ROUND_DOWN(paddr ,PG_SIZE)
-		,flag?"yes":"no");
-
+		begin ,(void*)ROUND_DOWN(paddr ,PG_SIZE) ,flag?"yes":"no");
 	  
 	// modify status
 	for(i=st_idx ;i<argc ;i++)

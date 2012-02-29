@@ -93,7 +93,7 @@ static inline void* KADDR(physaddr_t pa)
 
   if(npage <= ppn)
     {
-      panic("KADDR called with invalid pa %08lx ,npage:%d ,_ppn:%d %d",
+      panic("KADDR called with invalid pa %08lx ,npage:%d ,ppn:%d diff:%d",
 	    __pa ,npage ,ppn ,ppn-npage);
     }
   
@@ -130,11 +130,11 @@ physaddr_t pmap_va2pa(pde_t *pgdir ,laddr_t va);
 void pmap_detect_memory();
 void pmap_vm_init();
 void pmap_page_init();
-retval pmap_page_alloc(struct Page **pg_store);
+struct Page* pmap_page_alloc();
 void pmap_page_free(struct Page *pg);
 void pmap_page_dec_ref(struct Page *pg);
 pte_t* pmap_page_dir_lookup(pde_t* pgdir ,const void* va);
-pte_t* pmap_page_dir_create(pde_t* pgdir ,const void* va);
+pte_t* pmap_page_dir_create(pde_t* pgdir ,const void* va ,pde_t *npd);
 retval pmap_page_insert(pde_t* pgdir ,struct Page* pg ,void* va ,int attr);
 void pmap_page_remove(pde_t* pgdir ,void* va);
 void pmap_tlb_invalidate(pde_t* pgdir ,void* va);

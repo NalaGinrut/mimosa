@@ -50,7 +50,8 @@
 
 #include <bsp/bsp_types.h>
 
-struct PushRegs {
+struct PushRegs
+{
   /* registers as pushed by pusha */
   __u32_t reg_edi;
   __u32_t reg_esi;
@@ -60,9 +61,10 @@ struct PushRegs {
   __u32_t reg_edx;
   __u32_t reg_ecx;
   __u32_t reg_eax;
-};
+} __attribute__((packed));
 
-struct Trapframe {
+struct Trapframe
+{
   struct PushRegs tf_regs;
   __u16_t tf_es;
   __u16_t tf_padding1;
@@ -79,7 +81,7 @@ struct Trapframe {
   __uintptr_t tf_esp;
   __u16_t tf_ss;
   __u16_t tf_padding4;
-};
+} __attribute__((packed));
 
 
 #endif // End of !__ASSEMBLER__

@@ -116,9 +116,10 @@ static inline inner_seg_desc_t SEG_DESC_FIX(seg_des_t sd)
 // we don't need GDT_LOAD as Cee implementation,
 // just leave it to asm;
 
-struct gdt_pseudo_desc {
-	u16_t lim;		// GDT size
-	u32_t base;		// Base address
+struct gdt_pseudo_desc
+{
+  u16_t lim;  // GDT size
+  u32_t base; // Base address
 } __attribute__ ((packed));
 
 static inline void gdt_load(struct gdt_pseudo_desc gdt_pd);

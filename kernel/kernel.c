@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,13 @@ void kernel_init()
   struct Trapframe *tf;
   mimosa_kshell_run();
 #endif
-    
+
+  /*
+  mimosa_memory_init();
+  mimosa_fs_init();
+  mimosa_interrupt_init();
+  */
+  
   // Call env_init at the end
 
   env_init();

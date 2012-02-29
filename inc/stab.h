@@ -50,10 +50,10 @@
 struct Stab
 {
   u32_t n_strx;	// index into string table of name
+  uintptr_t n_value; // value of symbol
+  u16_t n_desc; // description field
   u8_t n_type;  // type of symbol
   u8_t n_other; // misc info (usually empty)
-  u16_t n_desc; // description field
-  uintptr_t n_value;	// value of symbol
-};
+} __attribute__((aligned(1)));
 
 #endif // End of __MIMOSA_STAB_H__;
