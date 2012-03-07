@@ -40,12 +40,12 @@ extern u32_t GET_GLOBAL_VAR(npage);
 /* define Page List */
 typedef LIST_HEAD(Page_list, Page) page_list_t;
 typedef LIST_ENTRY(Page) page_list_entry_t;
-typedef struct Page
+typedef struct Page 
 {
   page_list_entry_t pg_link;
   u16_t pg_ref;
 }page_t;
-			 
+
 // FIXME: I need this pmap struct to unify all page map information;
 /*
   typedef struct Page_map_struct

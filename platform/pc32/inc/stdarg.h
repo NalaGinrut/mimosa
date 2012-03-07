@@ -18,15 +18,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <types.h>
-
 typedef	char* __va_list;
 
 /*
  * Standard va types and macros
  */
 #define	__va_size(type) \
-	(((sizeof(type) + sizeof(s32_t) - 1) / sizeof(s32_t)) * sizeof(s32_t))
+	(((sizeof(type) + sizeof(long) - 1) / sizeof(long)) * sizeof(long))
 
 
 /* Provide a free-standing implementation */

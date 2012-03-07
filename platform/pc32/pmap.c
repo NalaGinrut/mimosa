@@ -27,6 +27,7 @@
 #include <bsp/tlb.h>
 #include <retval.h>
 
+static int debug=0;
 #ifdef __KERN_DEBUG__
 #define kprintf cprintf
 #define MARK_TWAIN kprintf("%s OK\n" ,__func__)
@@ -70,7 +71,10 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 #define pmap_pde(m, v)  (&((m)->pm_pdir[(vm_offset_t)(v) >> PDRSHIFT]))
 #define pdir_pde(m, v) (m[(vm_offset_t)(v) >> PDRSHIFT])
 
-#define pmap_page_set_attr(pg ,attr)	\
+#define pmap_page_clr_attr(pg ,attr)	\
+  pmap_pte_clr_attr(page2pa(pg) ,attr)
+
+#define pmap_page_set_attr(pg ,attr)		\
   pmap_pte_set_attr(page2pa(pg) ,attr)
 
 #define pmap_pxe_pred(pde ,attr)	((pde) & (attr))
@@ -79,6 +83,7 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 #define pmap_lookup_dir_from_pde(la ,pde)	(&((pde)[PDX(la)]))
 #define pmap_get_pte_from_va(va ,pte)	((pte)[PTX(va)])
 #define pmap_pde_set_attr(pde ,attr) (pde_t)((u32_t)(pde) | (attr))
+#define pmap_pde_clr_attr(pde ,attr) (pde_t)((u32_t)(pde) & (attr))
 
 #define pmap_pte_w(pte)         pmap_pxe_pred(pte ,PTE_WRITE) 	// Page Table is writable
 #define pmap_pte_d(pte)         pmap_pxe_pred(pte ,PTE_DIRTY) 	// Page Table is dirty
@@ -88,6 +93,7 @@ static page_list_t pmap_page_free_list; // Free list of physical pages
 #define pmap_get_pte_in_pa(addr)	((pte_t)PADDR((u32_t)addr))
 #define pmap_get_pte_in_ka(addr)	((pte_t)KADDR((u32_t)addr))
 #define pmap_pte_set_attr(pte ,attr) (pte_t)((u32_t)(pte) | (attr))
+#define pmap_pte_clr_attr(pte ,attr) (pte_t)((u32_t)(pte) & (attr))
 
 // use PD in case mess up with pmap_map_pa_to_la
 #define pmap_map_PD_to_la(dir ,pd ,la ,attr)	\
@@ -396,7 +402,7 @@ static physaddr_t pmap_check_va2pa(pde_t *pgdir, laddr_t va)
   
   if(!pmap_pte_p(*pd))
     {
-      panic("page table %p didn't map\n" ,*pd);
+      kprintf("page table %p didn't map\n" ,*pd);
       return ~0;
     }
   
@@ -405,7 +411,7 @@ static physaddr_t pmap_check_va2pa(pde_t *pgdir, laddr_t va)
   
   if(!pmap_pte_p(p))
     {
-      panic("va:%p didn't map\n" ,va);
+      kprintf("va:%p didn't map\n" ,va);
       return ~0;
     }
 
@@ -502,13 +508,18 @@ void pmap_page_free(struct Page *pg)
 
 void pmap_page_dec_ref(struct Page *pg)
 {
+  kprintf("pmap_page_dec_ref[0]: get in!\n");
+  kprintf("pmap_page_dec_ref[1]: pg->pg_ref ==> %u pg==>%p\n",
+	  pg->pg_ref ,pg);
   if(pg->pg_ref != 0 && --pg->pg_ref == 0)
     {
-      kprintf("pmap_page_dec_ref: pg->pg_ref ==> %u\n",
+      kprintf("pmap_page_dec_ref[2]: pg->pg_ref ==> %u\n",
 	      pg->pg_ref);
       
       pmap_page_free(pg);
     }
+  kprintf("pmap_page_dec_ref[3]: pg->pg_ref ==> %u\n",
+	  pg->pg_ref);
 }
 
 pde_t* pmap_page_dir_lookup(pde_t* pgdir ,const void *va)
@@ -560,8 +571,9 @@ pde_t* pmap_page_dir_create(pde_t *pgdir ,const void* va ,pde_t *npd)
 
   kprintf("pmap_pgdir_create: #1.1 alloc new page %p\n" ,pg);
   kprintf("pmap_pgdir_create: #1.2 origin *(%p)-%p\n" ,pd ,*pd);
+  kprintf("pmap_pgdir_create: #1.3 pa:%p\n" ,page2pa(pg));
 
-  *pd = pmap_page_set_attr((void*)page2pa(pg) ,PTE_PRESENT);
+  *pd = pmap_page_set_attr(pg ,PTE_PRESENT);
 
   kprintf("pmap_pgdir_create: #2 created a new page_dir at *(%p)-%p\n",
 	  pd ,*pd);
@@ -586,7 +598,7 @@ retval pmap_page_insert(pde_t *pgdir ,struct Page *pg ,void *va ,int attr)
 
   kprintf("pmap_page_insert: #1 we got a page_dir-%p in va-%p\n" ,*pd ,va);
 
-  pt = (pte_t*)pmap_get_pte_in_ka(PTA(*pd));
+  pt = (pte_t*)KADDR(PTA(*pd));
   
   if( pmap_pte_p(pt[PTX(va)]) ) // table present
     {
@@ -612,12 +624,12 @@ retval pmap_page_insert(pde_t *pgdir ,struct Page *pg ,void *va ,int attr)
   kprintf("pmap_page_insert: #4 insert pg-%p into page_table at %p[PTX(%p)]\n",
 	  pg ,pt ,va);
 
-  pt[PTX(va)] = pmap_page_set_attr((void*)page2pa(pg) ,attr);
+  pt[PTX(va)] = pmap_page_set_attr(pg ,attr|PTE_PRESENT);
 
   pg->pg_ref++;
   kprintf("pmap_page_insert: #5 increase %p->pg_ref to %u \n",
 	  pg ,pg->pg_ref);
-  
+
   return OK;
 }
 
@@ -628,7 +640,7 @@ struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pde_t** pde_store)
   
   kprintf("pmap_page_lookup: #0 get in!\n");
 
-  if(NULL != pde_store)
+  if(pde_store)
     {
       kprintf("pmap_page_lookup: #1 get valid pte_store-%p\n" ,pde_store);
  
@@ -654,7 +666,6 @@ struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pde_t** pde_store)
 	      pt ,*pde_store ,pa2page(PTA(pt)));
 
       return pa2page(PTA(pt));
-
     }
   
   return NULL;
@@ -668,23 +679,26 @@ void pmap_page_remove(pde_t *pgdir, void *va)
 
   kprintf("pmap_page_remove: #0 get in!\n");
 
-  if(NULL == pg)
+  if(!pg)
     {
       warn("pd-%p PTX(%p)-%p pg-%p\n",pd ,va ,PTX(va));
       kprintf("pmap_page_remove: #1 pd-%p pt[PTX(%p)]-%p pg-%p didn't mapped!\n",
 	      pd ,va ,pd[PTX(va)] ,pg);
       return;
     }
-  warn("here!");
+  
   pt = (pte_t*)KADDR(PTA(*pd));
   kprintf("pmap_page_remove: #2 release va-%p\n" ,va);
 
+  kprintf("pmap_page_remove: #2.1 pg->pg_ref=%u\n", 
+	  pg->pg_ref);
   pmap_page_dec_ref(pg);
-  kprintf("pmap_page_remove: #3 pt[PTX(va)]==%p[PTX(%p)]-%p\n"
-	  "pg-%p pg->pg_link-%p pg->pg_ref-%u\n",
-	  pt ,va ,pt[PTX(va)] ,pg ,pg->pg_link ,pg->pg_ref);
+  kprintf("pmap_page_remove: #3 pg->pg_link=%p pg->pg_ref=%p\n",
+	  pg->pg_link ,pg->pg_ref);
+  kprintf("pmap_page_remove: #3.1 pg->pg_ref=%u\n", 
+	  pg->pg_ref);
 
-  pt[PTX(va)] = pmap_pte_set_attr(pt[PTX(va)] ,PTE_PRESENT);
+  pt[PTX(va)] = pmap_pte_clr_attr(pt[PTX(va)] ,~PTE_PRESENT);
   pmap_tlb_invalidate(pgdir ,va);
   kprintf("pmap_page_remove: #4 FINISHED!\n");
 }
@@ -752,8 +766,10 @@ void pmap_page_check()
   kprintf("ok pg check #5.1\n");
   assert(pmap_page_insert(tmp_pgdir ,pp1 ,0x0 ,0) == OK);
   kprintf("ok pg check #5.2\n");
+  kprintf("page2pa(%p)-%p\n" ,pp0 ,page2pa(pp0));
   assert(PTA(tmp_pgdir[0]) == page2pa(pp0));
   kprintf("ok pg check #5.3\n");
+  debug=1;
   assert(pmap_check_va2pa(tmp_pgdir ,0x0) == page2pa(pp1));
   kprintf("ok pg check #5.4\n");
   assert(pp1->pg_ref == 1);
@@ -817,9 +833,13 @@ void pmap_page_check()
 
   // unmapping pp1 at 0 should keep pp1 at PG_SIZE
   pmap_page_remove(tmp_pgdir ,0x0);
+  kprintf("ok pg check #9.1\n");
   assert(pmap_check_va2pa(tmp_pgdir ,0x0) == ~0);
+  kprintf("ok pg check #9.2\n");
   assert(pmap_check_va2pa(tmp_pgdir ,PG_SIZE) == page2pa(pp1));
+  kprintf("ok pg check #9.3\n");
   assert(pp1->pg_ref == 1);
+  kprintf("ok pg check #9.4\n");
   assert(pp2->pg_ref == 0);
 
   kprintf("ok pg check #10\n");

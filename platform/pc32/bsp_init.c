@@ -49,7 +49,10 @@ void platform_init()
    */
 
 #ifdef __KERN_DEBUG__
-  msg_print("In the beginning,God created the heavens and the earth.\t--Genesis 1:1\n");
+  msg_print("And the earth was without form and void,\n"
+	    "and darkness was upon the face of the deep.\n"
+	    "And the Spirit of God moved upon the face of the waters.\n"
+	    "                                           --Genesis 1:2\n");
 #endif
 
   while(1);

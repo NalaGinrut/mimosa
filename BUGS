@@ -1,0 +1,7 @@
+* cprintf get error arg_list order occasionally, e.g:
+  -------------------------
+  kprintf("%d %d\n" ,a ,b)
+  -------------------------	       
+  Could print as "b a".
+  But for most situations it's OK. I didn't find out the reason.
+  It first occurs when platform/pc32/pmap.c (pmap_page_remove: #3) debug printing.
