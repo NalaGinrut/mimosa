@@ -116,10 +116,7 @@
 static int kbd_proc_data(void);
 void kbd_intr(void);
 void kbd_init(void);
-void cons_intr(int (*proc)(void));
-int cons_getc(void);
-void cons_putc(int c);
-int getchar(void);
+int kbd_getc(void);
 int iscons(int fdnum);
 
 
