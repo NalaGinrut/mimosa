@@ -331,10 +331,8 @@ static int run_cmd(char *buf ,struct Trapframe *tf)
   if(0 == argc)
     return 0;
 
-  cprintf("argv[0]:%s\n",argv[0]);
   for (i = 0 ;i < KSC_CNT ;i++)
     {
-      cprintf("name:%s\n",kernel_shell_cmd[i].name);
       if(0 == strncmp(argv[0] ,kernel_shell_cmd[i].name ,KSC_NAME_LEN))
 	return kernel_shell_cmd[i].run(argc ,argv ,tf);
     }
