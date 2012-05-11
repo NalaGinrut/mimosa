@@ -40,7 +40,7 @@ static int ksc_backtrace(int argc ,char **argv ,struct Trapframe *tf);
 
 static int run_cmd(char *buf ,struct Trapframe *tf);
 
-static void ksc_error_handler(retval rv);
+static void ksc_error_handler(retval rv ,char *cmd);
 
 static ksc_t kernel_shell_cmd[] =
   {
@@ -331,8 +331,10 @@ static int run_cmd(char *buf ,struct Trapframe *tf)
   if(0 == argc)
     return 0;
 
+  cprintf("argv[0]:%s\n",argv[0]);
   for (i = 0 ;i < KSC_CNT ;i++)
     {
+      cprintf("name:%s\n",kernel_shell_cmd[i].name);
       if(0 == strncmp(argv[0] ,kernel_shell_cmd[i].name ,KSC_NAME_LEN))
 	return kernel_shell_cmd[i].run(argc ,argv ,tf);
     }
@@ -342,7 +344,7 @@ static int run_cmd(char *buf ,struct Trapframe *tf)
 
 void mimosa_kshell_run(struct Trapframe *tf)
 {
-  char *buf;
+  char *cmd;
   retval rv;
 
   cprintf("Welcome to the Mimosa kernel shell!\n");
@@ -350,21 +352,24 @@ void mimosa_kshell_run(struct Trapframe *tf)
 
   while(1)
     {
-      buf = read_line("K> ");
+      cmd = read_line("K> ");
 
-      if(NULL != buf && (rv = run_cmd(buf ,tf)) < 0)
+      if(NULL != cmd && (rv = run_cmd(cmd ,tf)) < 0)
 	{
 	  /* TODO: use error handler to catch retval
 	   *       1. invalid cmd will throw exception
 	   *       2. exit ksc mode and call regular mode
 	   *	   3. restart/shutdown
 	   */
-	  //ksc_error_handler(rv);
+	  ksc_error_handler(rv ,cmd);
 	  break;
 	}
     }
 }
 
-static void ksc_error_handler(retval rv)
-{}
+static void ksc_error_handler(retval rv ,char *cmd)
+{
+  cprintf("retval:%d\n,cmd:%s\n,len-cmd:%d\n",
+	  rv ,cmd ,strnlen(cmd ,KSC_BUF_SIZE));
+}
 

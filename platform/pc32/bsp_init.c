@@ -55,9 +55,9 @@ void platform_init()
 	    "                                           --Genesis 1:2\n");
 #endif
 
-  while(1);
+  //while(1);
 
-  //kernel_init();
+  kernel_init();
 }
 
 static void bsp_init_clear_tmp()

@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#include <osconfig.h>
 #include <types.h>
 #include <kernel.h>
 #include <mm/mm.h>
@@ -34,8 +34,7 @@ void kernel_init()
   //TODO: init all kernel modules
 
 #ifdef __KERN_DEBUG__
-  struct Trapframe *tf;
-  mimosa_kshell_run();
+  mimosa_kshell_run(NULL);
 #endif
 
   /*
