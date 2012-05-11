@@ -77,7 +77,6 @@ static void bsp_init_console()
 {
   // TODO: init console ,then we could print message.
   console_init();
-
 }
 
 static void bsp_init_online_debug()
