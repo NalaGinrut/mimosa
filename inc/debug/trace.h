@@ -22,6 +22,7 @@
 #include <retval.h>
 #include <types.h>
 #include <error.h>
+#include <bsp/cpu/trap.h>
 
 typedef struct Frame_Info
 {
@@ -29,5 +30,7 @@ typedef struct Frame_Info
 }frame_info_t;// should we need pass frame_info pointer to accelerate??
 
 retval pcall_backtrace(frame_info_t fi ,u32_t back_count);  
+
+
 
 #endif // End of __MIMOSA_DEBUG_TRACE_H;
