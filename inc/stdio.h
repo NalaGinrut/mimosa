@@ -23,5 +23,6 @@
 #include <bsp/stdio.h>
 
 #define __PUT_CHAR__(ch) __BSP_PUT_CHAR__(ch)
+#define __GET_CHAR__() __BSP_GET_CHAR__()
 
 #endif // End of __MIMOSA_LIB_STDIO_H;

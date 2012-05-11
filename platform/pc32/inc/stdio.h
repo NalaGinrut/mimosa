@@ -21,8 +21,9 @@
 
 #include <types.h>
 #include <drivers/console.h>
+#include <drivers/kbd.h>
 
 #define __BSP_PUT_CHAR__(ch) console_putc(ch)
-//#define __BSP_GET_CHAR__() console_getc()
+#define __BSP_GET_CHAR__() kbd_getc()
 
 #endif // End of __MIMOSA_PC32_STDIO_H;
