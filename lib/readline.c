@@ -20,10 +20,15 @@
 #include <libkern.h>
 #include <error.h>
 #include <types.h>
+#include <stdio.h>
 
-static char *read_line_interrupt(const char *prompt);
+#define READ_LINE_BUFLEN 1024
+static char buf[READ_LINE_BUFLEN];
+
 #ifdef __KERN_DEBUG__
 static char *read_line_polling(const char *prompt);
+#else
+static char *read_line_interrupt(const char *prompt);
 #endif 
 
 char *read_line(const char *prompt)
@@ -40,16 +45,10 @@ char *read_line(const char *prompt)
 #endif
 }
 
-static char *read_line_interrupt(const char *prompt)
-{
-  panic("read_line_interrupt didn't finish");
-  return NULL;
-}
-
 #ifdef __KERN_DEBUG__
 static char *read_line_polling(const char *prompt)
 {
-/*
+
   int i, c, echoing;
 
   if(prompt != NULL)
@@ -60,36 +59,40 @@ static char *read_line_polling(const char *prompt)
   
   while(1)
     {
-      c = getchar();
+      c = __GET_CHAR__();
       if(c < 0)
 	{
 	  cprintf("read error: %e\n", c);
 	  return NULL;
 	}
-      else if(c >= ' ' && i < BUFLEN-1)
+      else if(c >= ' ' && i < READ_LINE_BUFLEN-1)
 	{
 	  if (echoing)
-	    cputchar(c);
+	    __PUT_CHAR__(c);
 	  buf[i++] = c;
 	}
       else if(c == '\b' && i > 0)
 	{
 	  if(echoing)
-	    cputchar(c);
+	    __PUT_CHAR__(c);
 	  i--;
 	}
       else if(c == '\n' || c == '\r')
 	{
 	  if(echoing)
-	    cputchar(c);
+	    __PUT_CHAR__(c);
 	  buf[i] = 0;
 	  return buf;
 	}
     }
 
-*/
   return NULL;
 }
-
+#else
+static char *read_line_interrupt(const char *prompt)
+{
+  panic("read_line_interrupt didn't finish");
+  return NULL;
+}
 #endif
 
