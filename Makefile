@@ -59,7 +59,7 @@ $(OBJ)/mimosa.img: kernel.ld mimosa $(OBJ)/boot
 	$(V)dd if=mimosa of=$(OBJ)/$(@F).bak seek=1 conv=notrunc 
 	$(V)mv $(OBJ)/$(@F).bak $(OBJ)/$(@F)
 
-.PHONY: pretty %-lds clean bochs grub qemu
+.PHONY: pretty %-lds clean bochs grub qemu clean-isr
 
 bochs: $(OBJ)/mimosa.img
 	$(V)bochs
@@ -76,11 +76,16 @@ pretty:
 	$(V)find . -name '*~' -exec rm {} \;
 	@echo "It's pretty now!"
 
+clean-isr:
+	@echo "Cleaning auto-generated ISR file..."
+	$(V)find . -name 'isr.S' -exec rm {} \;
+	@echo "Clean OK!"
+
 clean:
 	@echo "Cleaning all objs & generated files..."
 	$(V)rm -frd *.ld *.log .sw{o,p}
 	$(V)test -e $(OBJ) && rm -frd $(OBJ) || echo "No objs generated!"
 	$(V)test -e mimosa && rm -f mimosa || echo "No kernel generated!"
 	$(V)$(MAKE) pretty 
-
+	$(V)$(MAKE) clean-isr
 
