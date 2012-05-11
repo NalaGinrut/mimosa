@@ -34,14 +34,14 @@ int strncmp(const char *s1, const char *s2, size_t n)
   len2 = strnlen(s2 ,max);
   len = (len1 > len2) ? len1 : len2; // get larger length; 
 
-  while(len-- > 0 &&
-	*s1++ == *s2++)
-    ;;;
+  while(len && *s1++ == *s2++)
+    len--;
 
   // both zero if larger length equal to zero;
-  if(len == 0)
+  if(0 == len)
     return 0;
 
   return __STRNCMP_GET_DIFF(s1 ,s2) > 0 ? 1 : -1;
       
 }
+ 
