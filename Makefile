@@ -31,8 +31,6 @@ all: kernel.ld mimosa
 include $(CONF)/conf.mk
 # DO NOT TOUCH!
 
-GCC_LIB := $(shell $(CC) -print-libgcc-file-name)
-
 KERN_LDS := $(addsuffix -lds,kernel)
 
 mimosa-framework := 	$(OBJ)/entry.o \
@@ -47,7 +45,7 @@ endif
 ### TARGET ###
 mimosa: $(mimosa-framework)
 	@echo + generate kernel image... from $^
-	$(V)$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIB)
+	$(V)$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIB) 
 
 kernel.ld:
 	$(V)$(MAKE) $(KERN_LDS)
@@ -59,7 +57,7 @@ $(OBJ)/mimosa.img: kernel.ld mimosa $(OBJ)/boot
 	$(V)dd if=mimosa of=$(OBJ)/$(@F).bak seek=1 conv=notrunc 
 	$(V)mv $(OBJ)/$(@F).bak $(OBJ)/$(@F)
 
-.PHONY: pretty %-lds clean bochs grub qemu clean-isr
+.PHONY: pretty %-lds clean bochs grub qemu clean-isr 
 
 bochs: $(OBJ)/mimosa.img
 	$(V)bochs
@@ -83,9 +81,10 @@ clean-isr:
 
 clean:
 	@echo "Cleaning all objs & generated files..."
-	$(V)rm -frd *.ld *.log .sw{o,p}
-	$(V)test -e $(OBJ) && rm -frd $(OBJ) || echo "No objs generated!"
+	$(V)rm -fr *.ld *.log .sw{o,p}
+	$(V)test -e $(OBJ) && rm -fr $(OBJ) || echo "No objs generated!"
 	$(V)test -e mimosa && rm -f mimosa || echo "No kernel generated!"
 	$(V)$(MAKE) pretty 
 	$(V)$(MAKE) clean-isr
+
 
