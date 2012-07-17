@@ -20,26 +20,28 @@
 
 #include <types.h>
 
+#define LOCK_PREFIX " lock; "
+
 typedef u32_t atomic_t; 
 
-static inline void __atomic_set_bit(void *lock ,u32_t offset);
-static inline void __atomic_clear_bit(void *lock ,u32_t offset);
+static inline void __atomic_set_bit(void *l ,u32_t offset);
+static inline void __atomic_clear_bit(void *l ,u32_t offset);
 
-static inline void __atomic_set_bit(void *lock ,u32_t offset)
+static inline void __atomic_set_bit(void *l ,u32_t offset)
 {
-  __asm__ __volatile__("1: lock bts%z0 %0 ,%1\n\t"
-		       "jnc 1b"
-		       :"=r" (lock)
-		       :"0" (lock) ,"Ir" (offset)
+  __asm__ __volatile__("1: " LOCK_PREFIX "bts%z0 %0 ,%1\n\t"
+  		       "jnc 1b"
+		       :"=r" (l)
+		       :"0" (l) ,"Ir" (offset)
 		       :"cc"
 		       );
 }
 
-static inline void __atomic_clear_bit(void *lock ,u32_t offset)
+static inline void __atomic_clear_bit(void *l ,u32_t offset)
 {
-  __asm__ __volatile__("lock btr%z0 %0 ,%1"
-		       :"=r" (lock)
-		       :"0" (lock) ,"Ir" (offset)
+  __asm__ __volatile__(LOCK_PREFIX "btr%z0 %0 ,%1"
+		       :"=r" (l)
+		       :"0" (l) ,"Ir" (offset)
 		       :"cc"
 		       );
 }
