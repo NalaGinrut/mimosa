@@ -9,4 +9,5 @@
 # Optimize config
 # O_LEV := 
 
-
+# BSP config
+MIMOSA_BSP_FLAGS := -m32
