@@ -22,6 +22,8 @@
 #define KSC_NAME_LEN	64
 #define KSC_BUF_SIZE	80	// enough for one VGA text line
 
+extern char principio[], etext[], edata[], recondo[];
+
 typedef int (*ksc_run_t)(int ,char** ,struct Trapframe*);
 
 typedef struct Kernel_Shell_Command

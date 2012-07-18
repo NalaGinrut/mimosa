@@ -72,8 +72,6 @@ static int ksc_help(int argc ,char **argv ,struct Trapframe *tf)
 
 static int ksc_kerninfo(int argc ,char **argv ,struct Trapframe *tf)
 {
-  extern char principio[], etext[], edata[], recondo[];
-
   cprintf("Special kernel symbols:\n");
   cprintf("  principio %08x (virt)  %08x (phys)\n" ,principio ,principio - KERN_BASE);
   cprintf("  etext  %08x (virt)  %08x (phys)\n" ,etext ,etext - KERN_BASE);
