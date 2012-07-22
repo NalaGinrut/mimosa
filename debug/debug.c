@@ -106,19 +106,17 @@ int debuginfo_eip(uintptr_t addr ,struct Eipdebuginfo *info)
   info->eip_fn_narg = 0;
 
   // Find the relevant set of stabs
-  if(addr >= ULIM)
-    {
-      stabs = __STAB_BEGIN__;
-      stab_end = __STAB_END__;
-      stabstr = __STABSTR_BEGIN__;
-      stabstr_end = __STABSTR_END__;
-    }	
-  else
-    {
-      // Can't search for user-level addresses yet!
-      panic("User address");
-    }
+  if(addr >= ULIM) {
+    stabs = __STAB_BEGIN__;
+    stab_end = __STAB_END__;
+    stabstr = __STABSTR_BEGIN__;
+    stabstr_end = __STABSTR_END__;
+  } else {
+    // Can't search for user-level addresses yet!
+    panic("User address");
+  }
 
+  cprintf("1 ok!\n");
   // String table validity checks
   if (stabstr_end <= stabstr || stabstr_end[-1] != 0)
     return -1;
@@ -127,52 +125,53 @@ int debuginfo_eip(uintptr_t addr ,struct Eipdebuginfo *info)
   lfile = 0;
   rfile = (stab_end - stabs) - 1;
   stab_binsearch(stabs, &lfile, &rfile, N_SO, addr);
+
   if (lfile == 0)
     return -1;
+  cprintf("2 ok!\n");
 
+  
   // Search within that file's stabs for the function definition
   // (N_FUN).
   lfun = lfile;
   rfun = rfile;
   stab_binsearch(stabs, &lfun, &rfun, N_FUN, addr);
 
-  if(lfun <= rfun)
-    {
-      if(stabs[lfun].n_strx < (stabstr_end - stabstr))
-	info->eip_fn_name = stabstr + stabs[lfun].n_strx;
+  if(lfun <= rfun) {
+    if(stabs[lfun].n_strx < (stabstr_end - stabstr))
+      info->eip_fn_name = stabstr + stabs[lfun].n_strx;
 
-      info->eip_fn_addr = stabs[lfun].n_value;
-      addr -= info->eip_fn_addr;
-      // Search within the function definition for the line number.
-      lline = lfun;
-      rline = rfun;
+    info->eip_fn_addr = stabs[lfun].n_value;
+    addr -= info->eip_fn_addr;
+    // Search within the function definition for the line number.
+    lline = lfun;
+    rline = rfun;
+  } else {
+    info->eip_fn_addr = addr;
+    lline = lfile;
+    rline = rfile;
   }
-  else
-    {
-      info->eip_fn_addr = addr;
-      lline = lfile;
-      rline = rfile;
-    }
   // Ignore stuff after the colon.
   info->eip_fn_namelen = (strchr(info->eip_fn_name ,':') - info->eip_fn_name);
 
   stab_binsearch(stabs ,&lline ,&rline ,N_SLINE ,addr);
 
-  if( lline <= rline )
-    {
-      if (stabs[lfun].n_strx < (stabstr_end - stabstr))
-	info->eip_line = lline;
-      else
-	panic("get line error!\n");
-    }else
-    {
-      return -1;
-    }
+  if( lline <= rline ) {
+    if (stabs[lfun].n_strx < (stabstr_end - stabstr))
+      info->eip_line = lline;
+    else
+      panic("get line error!\n");
+  } else {
+    return -1;
+  }
 
-  while (lline >= lfile
-	 && stabs[lline].n_type != N_SOL
-	 && (stabs[lline].n_type != N_SO || !stabs[lline].n_value))
+  cprintf("3 ok!\n");
+
+  while (lline >= lfile &&
+	 stabs[lline].n_type != N_SOL &&
+	 (stabs[lline].n_type != N_SO || !stabs[lline].n_value))
     lline--;
+
   if(lline >= lfile && stabs[lline].n_strx < (stabstr_end - stabstr))
     info->eip_file = stabstr + stabs[lline].n_strx;
 
