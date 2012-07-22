@@ -4,7 +4,7 @@
 # VERBOSE := 1
 
 # Debug config
-# DEBUG := 1
+KDEBUG := 1
 
 # Optimize config
 # O_LEV := 
