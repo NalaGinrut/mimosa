@@ -21,7 +21,7 @@ drv-cfile := $(wildcard $(DRIVERS)/*.c)
 drv-ofile := $(drv-cfile:.c=.o)
 drv-ofile := $(subst $(DRIVERS)/,$(DRV_OBJ)/,$(drv-ofile))
 
-DRV_LDFLAGS := -r $(LDFLAGS)
+DRV_LDFLAGS := -r -nostdlib
 DRV_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ 
 
 $(DRV_OBJ)/%.o : $(DRIVERS)/%.c
