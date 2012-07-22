@@ -136,7 +136,6 @@ void pmap_detect_memory()
 static void* pmap_tmp_alloc(u32_t size ,u32_t align)
 {
   void *va;
-  extern char recondo[];
   
   tmp_freemem = tmp_freemem? tmp_freemem : recondo;
 

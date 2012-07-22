@@ -24,7 +24,7 @@ kernel-ofile := $(kernel-cfile:.c=.o)
 kernel-ofile := $(subst $(KERNEL)/,$(KERN_OBJ)/,$(kernel-ofile))
 
 
-KERN_LDFLAGS := -r -nostdlib 
+KERN_LDFLAGS := -r $(LDFLAGS)
 
 KERN_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ 
 USER_CFLAGS := $(CFLAGS) -D__MIMOSA_USER__ 

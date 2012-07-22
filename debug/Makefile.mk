@@ -8,7 +8,7 @@ debug-ofile := $(debug-cfile:.c=.o)
 debug-ofile := $(subst $(DEBUG)/,$(DEBUG_OBJ)/,$(debug-ofile))
 
 
-DEBUG_LDFLAGS := -r -nostdlib
+DEBUG_LDFLAGS := -r $(LDFLAGS)
 
 DEBUG_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ -gstabs
 

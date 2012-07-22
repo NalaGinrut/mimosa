@@ -19,8 +19,8 @@ bsp-cfile := $(wildcard $(BSP)/*.c)
 bsp-ofile := $(bsp-cfile:.c=.o)
 bsp-ofile := $(subst $(BSP)/,$(BSP_OBJ)/,$(bsp-ofile))
 
-BSP_LDFLAGS := -r -nostdlib 
-BSP_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ $(STABS)
+BSP_LDFLAGS := -r $(LDFLAGS) 
+BSP_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__ $(STABS) 
 
 -include $(BSP)/boot/Makefile.mk
 
