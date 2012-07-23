@@ -1,6 +1,7 @@
 INC := inc
 LIB := lib
 KERNEL := kernel
+SCHEME := scheme
 BSP := platform/bsp
 USERLAND := userland
 OBJDIRS :=
