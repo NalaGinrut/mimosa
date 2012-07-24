@@ -20,10 +20,12 @@
 
 typedef enum MINA_type
   {
-    BOOL ,LIST ,CONS ,NUMBER ,SYMBOL ,STRING ,
-    CONTINUATION ,PROCEDURE ,CLOSURE ,CHAR ,
-    SYNTAX
+    BOOL ,LIST ,CONS ,NUMBER ,SYMBOL ,STRING ,PAIR ,
+    CONTINUATION ,PROCEDURE ,CLOSURE ,CHAR ,SYNTAX
   } mina_type;
+
+// We can only afford 127 types since ATOM_TYPE is 128 ,an atom example: NUMBER|ATOM_TYPE
+#define ATOM_TYPE	0x80
 
 /* MINA is the primitive object structure */
 typedef struct MINA
@@ -55,7 +57,7 @@ typedef struct MINA
 
     struct
     {
-      char	_ch;
+      char	_cvalue;
     } _char;
     
     struct
@@ -81,12 +83,16 @@ typedef struct MINA
 } *MINA;
 
 #define MINA_TYPE(m)	((m)->type)
+
 #define IS_STRING(m)	(STRING == MINA_TYPE(m))
 #define STRING_VAL(m)	((m)->_object._string._svalue)
 #define STRING_LEN(m)	((m)->_object._string._len)
 
 #define IS_NUMBER(m)	(NUMBER == MINA_TYPE(m))
 #define NUMBER_VAL(m)	((m)->_object._number._ivalue)
+
+#define IS_CHAR(m)	(CHAR == MINA_TYPE(m))
+#define CHAR_VAL(m)	((m)->_object._number._cvalue)
 
 #define IS_CONS(m)	(CONS == MINA_TYPE(m))
 #define CAR(m)          ((m)->_object._cons._car)
@@ -101,24 +107,8 @@ typedef struct MINA
 #define IS_PROC(m)	(PROCEDURE == MINA_TYPE(m))
 #define SYNTAX_NAME(m)	strvalue(car(p))
 
-static inline car(MINA mobj);
-static inline cdr(MINA mobj);
-
-static inline car(MINA mobj)
-{
-  if(!mobj)
-    panic("mobj is a NULL ptr!\n");
-
-  return CAR(mobj);
-}
-
-static inline cdr(MINA mobj)
-{
-  if(!mobj)
-    panic("mobj is a NULL ptr!\n");
-
-  return CDR(mobj);
-}
+#define car(mobj)	( (!(mobj) && panic("mobj is a NULL ptr!\n")) || CAR(mobj) )
+#define cdr(mobj)	( (!(mobj) && panic("mobj is a NULL ptr!\n")) || CDR(mobj) )
 
 #define caar(m)         car(car(m))
 #define cadr(m)         car(cdr(m))
@@ -134,5 +124,6 @@ void MINA_show_type(MINA mobj);
 char *MINA_get_type(MINA mobj);
 // type_obj type_of(MINA m);
 
+MINA MINA_cons(MINA a ,MINA b);
 
 #endif // End of __MIMOSA_SCHEME_MINA_H__;

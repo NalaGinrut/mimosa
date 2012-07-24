@@ -46,6 +46,18 @@ char *MINA_get_type(MINA mobj)
   // TODO: finish this function after memory-alloc implementation is done.
 }
 
+MINA MINA_cons(MINA a ,MINA b)
+{
+  register MINA x = get_cell(a ,b);
+  
+  MINA_TYPE(x) = PAIR;
+  car(x) = a;
+  cdr(x) = b;
+
+  return (x);
+}
+
+
 /* TODO: we need something like type_of to get the type and use the type itself as an object.
  */
 // type_obj type_of(MINA m) {}

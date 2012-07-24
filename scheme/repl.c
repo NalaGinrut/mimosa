@@ -22,11 +22,15 @@
 #include <mm/mm.h>
 #include <tm/tm.h>
 #include <env.h>
+#include <repl.h>
 #include <mina.h>
 
 #ifdef __KERN_DEBUG__
 #include <debug.h>
 #include <kshell.h>
 #endif
+
+
+
 
 
