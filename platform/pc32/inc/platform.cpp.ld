@@ -83,7 +83,7 @@
  *
  * (*) Note: The kernel ensures that "Invalid Memory" (ULIM) is *never*
  *     mapped.  "Empty Memory" is normally unmapped, but user programs may
- *     map pages there if desired.  JOS user programs map pages temporarily
+ *     map pages there if desired.  User programs map pages temporarily
  *     at UTEMP.
  */
 

@@ -16,29 +16,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <osconfig.h>
-#include <types.h>
-#include <global.h>
-#include <bsp/pmap.h>
-#include <bsp/bsp_mm.h>
+#include <mm/mm.h>
+#include <mm/mmap.h>
 
-static void* mimosa_pgdir = (void*) GET_BSP_VAR(VPT);
+#ifdef __KERN_DEBUG__
+#include <debug.h>
+#endif
 
-void* __alloc_page(size_t cnt)
+
+void *simple_mmap(physaddr_t pa ,void *va ,size_t size)
 {
-  // TODO: alloc 'cnt' pages and return the head addr
   
-  return NULL;
+  return NULL; 
 }
-
-void __free_page(size_t ppn)
-{
-  // TODO: free the page whose page number is 'ppn'
-}
-
-void __page_remove(void* va)
-{
-  // TODO: the wrapper of pmap_page_remove
-}
-
-

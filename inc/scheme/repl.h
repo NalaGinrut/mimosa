@@ -1,5 +1,7 @@
+#ifndef __MIMOSA_REPL_H__
+#define __MIMOSA_REPL_H__
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -16,29 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <osconfig.h>
-#include <types.h>
-#include <global.h>
-#include <bsp/pmap.h>
-#include <bsp/bsp_mm.h>
-
-static void* mimosa_pgdir = (void*) GET_BSP_VAR(VPT);
-
-void* __alloc_page(size_t cnt)
-{
-  // TODO: alloc 'cnt' pages and return the head addr
-  
-  return NULL;
-}
-
-void __free_page(size_t ppn)
-{
-  // TODO: free the page whose page number is 'ppn'
-}
-
-void __page_remove(void* va)
-{
-  // TODO: the wrapper of pmap_page_remove
-}
+#define SCHEME_PROMPT	"mina> "
 
 
+
+#endif // End of __MIMOSA_REPL_H__;

@@ -27,7 +27,6 @@
 #include <bsp/tlb.h>
 #include <retval.h>
 
-static int debug=0;
 #ifdef __KERN_DEBUG__
 #define kprintf cprintf
 #define MARK_TWAIN kprintf("%s OK\n" ,__func__)
@@ -768,7 +767,6 @@ void pmap_page_check()
   kprintf("page2pa(%p)-%p\n" ,pp0 ,page2pa(pp0));
   assert(PTA(tmp_pgdir[0]) == page2pa(pp0));
   kprintf("ok pg check #5.3\n");
-  debug=1;
   assert(pmap_check_va2pa(tmp_pgdir ,0x0) == page2pa(pp1));
   kprintf("ok pg check #5.4\n");
   assert(pp1->pg_ref == 1);

@@ -47,6 +47,8 @@ extern char GET_BSP_VAR(USTABDATA)[];
 #define BSP_PG_MODE_ON CR0_PM|CR0_PG|CR0_AM|CR0_WP|CR0_NE|CR0_TS|CR0_EM|CR0_MP
 #define BSP_PG_MODE_OFF CR0_TS|CR0_EM
 
+#define __page_free pmap_page_free
+#define __page_alloc pmap_page_alloc
 #define __page_lookup pmap_page_lookup
 #define __boot_pgdir pmap_get_tmp_pgdir()
 				  
