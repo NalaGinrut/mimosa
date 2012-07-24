@@ -1,3 +1,5 @@
+#ifndef __MIMOSA_SCHEME_TOKENIZER_H__
+#define __MIMOSA_SCHEME_TOKENIZER_H__
 /*	
  *  Copyright (C) 2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
@@ -16,22 +18,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <osconfig.h>
-#include <types.h>
-#include <kernel.h>
-#include <mm/mm.h>
-#include <tm/tm.h>
-#include <env.h>
-#include <scheme/repl.h>
-#include <scheme/mina.h>
-#include <scheme/tokenizer.h>
+typedef enum Scheme_Token
+  { TOK_EOF = -1 ,TOK_LPAREN ,TOK_RPAREN ,TOK_DOT ,
+    TOK_ATOM ,TOK_QUOTE ,TOK_COMMENT ,TOK_QUASIQUOTE ,
+    TOK_BACKQUOTE ,TOK_COMMA ,TOK_ATMARK ,TOK_SHARP ,TOK_SHARP_CONST ,
+    TOK_VECTOR ,TOK_LITERAL
+  } scm_tok;
 
-#ifdef __KERN_DEBUG__
-#include <debug.h>
-#include <kshell.h>
-#endif
+scm_tok scheme_tokenizer(scheme sc);
 
 
-
-
-
+#endif // End of __MIMOSA_SCHEME_TOKENIZER_H__;

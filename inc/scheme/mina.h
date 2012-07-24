@@ -24,7 +24,9 @@ typedef enum MINA_type
     CONTINUATION ,PROCEDURE ,CLOSURE ,CHAR ,SYNTAX
   } mina_type;
 
-// We can only afford 127 types since ATOM_TYPE is 128 ,an atom example: NUMBER|ATOM_TYPE
+// FIXME: use u32_t and a tagged style to flag the status&type rather than enum.
+/* We can only afford 64 types ,an atom example: NUMBER|ATOM_TYPE.
+ */
 #define ATOM_TYPE	0x80
 
 /* MINA is the primitive object structure */
