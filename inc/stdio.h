@@ -20,7 +20,7 @@
 
 
 #include <types.h>
-#include <bsp/stdio.h>
+#include <bsp/bsp_io.h>
 
 #define __PUT_CHAR__(ch) __BSP_PUT_CHAR__(ch)
 #define __GET_CHAR__() __BSP_GET_CHAR__()

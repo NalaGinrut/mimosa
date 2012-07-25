@@ -19,6 +19,7 @@
  */
 
 #include <types.h>
+#include <stdio.h>
 #include <stdarg.h>
 #include <osconfig.h>
 
@@ -42,5 +43,8 @@ u32_t fbc(u32_t v);
 int cprintf(const char *format ,...);
 int vcprintf(const char *fmt ,va_list ap);
 char *read_line(const char *prompt);
+
+static inline char getchar()	{ return __GET_CHAR__(); }
+static inline void putchar(char ch)	{ return __PUT_CHAR__(ch); }
 
 #endif // End of __MIMOSA_LIB_KERNEL_H;

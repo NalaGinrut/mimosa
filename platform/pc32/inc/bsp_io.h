@@ -22,6 +22,7 @@
 
 #include <drivers/console.h>
 #include "cpu/port.h"
+#include "stdio.h"
 
 // port/memory IO operation
 #define __readb(a)	port_rb(a)
