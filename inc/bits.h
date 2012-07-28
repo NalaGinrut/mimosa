@@ -28,6 +28,25 @@
  * others coming soon...
  */
 
+#ifdef _E
+#undef _E
+#endif
 #define _E(x)	(-(0xE000 + x))
+
+#ifdef __BIT
+#undef __BIT
+#endif
+#define __BIT	(1UL)
+
+// shift the value "x" to "b" bits;
+#ifdef _S
+#undef _S
+#endif
+#define _S(x,b)		((x)<<(b))
+
+#ifdef _B
+#undef _B
+#endif
+#define _B(b)		(__BIT<<(b))
 
 #endif // End of __MIMOSA_BITS_H;

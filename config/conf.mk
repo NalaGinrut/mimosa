@@ -9,9 +9,6 @@ else
 V :=
 endif
 
-# Debug handler
-KDEBUG := 1
-
 ifdef KDEBUG
 STABS := -gstabs
 else

@@ -18,16 +18,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <types.h>
+#include <bits.h>
+
 typedef enum MINA_type
   {
     BOOL ,LIST ,CONS ,NUMBER ,SYMBOL ,STRING ,PAIR ,
     CONTINUATION ,PROCEDURE ,CLOSURE ,CHAR ,SYNTAX
   } mina_type;
 
-// FIXME: use u32_t and a tagged style to flag the status&type rather than enum.
-/* We can only afford 64 types ,an atom example: NUMBER|ATOM_TYPE.
+// ENHANCEME: use u32_t and a tagged style to flag the status&type rather than enum.
+/* We can only afford 32 types ,an atom example: NUMBER|MINA_ATOM.
  */
-#define ATOM_TYPE	0x80
+#define MINA_ATOM	0x80
+#define MINA_IMMU	0x40 // immutable object
+#define MINA_MARK	0x20 // marked by GC	
 
 /* MINA is the primitive object structure */
 typedef struct MINA
@@ -107,7 +112,21 @@ typedef struct MINA
 
 #define IS_SYNTAX(m)	(SYNTAX == MINA_TYPE(m))
 #define IS_PROC(m)	(PROCEDURE == MINA_TYPE(m))
-#define SYNTAX_NAME(m)	strvalue(car(p))
+#define SYNTAX_NAME(m)	STRING_VAL(car(m))
+
+static inline int IS_IMMUTABLE(MINA m) { return (MINA_TYPE(m)&IMMUTABLE); }
+static inline void SET_IMMUTABLE(MINA m) { MINA_TYPE(m) |= IMMUTABLE; }
+
+static inline int IS_INTEGER(mina m)
+{
+  return IS_NUMBER(m) && ((m)->_object._number.is_fixnum);
+}
+
+static inline int IS_REAL(mina m)
+{
+  return IS_NUMBER(m) && (!(m)->_object._number.is_fixnum);
+}
+
 
 #define car(mobj)	( (!(mobj) && panic("mobj is a NULL ptr!\n")) || CAR(mobj) )
 #define cdr(mobj)	( (!(mobj) && panic("mobj is a NULL ptr!\n")) || CDR(mobj) )
@@ -121,6 +140,112 @@ typedef struct MINA
 #define cadaar(m)       car(cdr(car(car(m))))
 #define cadddr(m)       car(cdr(cdr(cdr(m))))
 #define cddddr(m)       cdr(cdr(cdr(cdr(m))))
+
+typedef void* (*ss_malloc_t)(size_t);
+typedef void (*ss_free_t)(void*);
+
+struct Scheme_System
+{
+  ss_malloc_t malloc;
+  ss_free_t free;
+  
+  // return code
+  s32_t retcode; // FIXME: should we use retval.h instead?
+  // status record
+  u32_t status;	// see SS_* which stands for Scheme-Status
+
+  /* We use 4 registers. */
+  MINA args;	/* register for arguments of function */
+  MINA env;	/* stack register for current environment */
+  MINA code;	/* register for current code */
+  MINA dump;	/* stack register for next evaluation */
+
+  MINA sink;            /* when malloc fails */
+  MINA NIL;             /* special cell representing empty cell */
+  struct MINA _NIL;
+  MINA T;               /* special cell representing #t */
+  struct MINA _T;
+  MINA F;               /* special cell representing #f */
+  struct MINA _F;
+  MINA EOF_OBJ;         /* special cell representing end-of-file object */
+  struct MINA _EOF_OBJ;
+
+  /* FIXME: oblist is actually a symbol table ,
+   *	    but we need a more efficient one like RBtree or hash table.
+   */
+  MINA oblist;          /* pointer to symbol table */
+  MINA global_env;      /* pointer to global environment */
+  MINA c_nest;          /* stack for nested calls from C */
+
+  MINA free_cell;    /* pointer to top of free cells */
+  u32_t fcells;         /* # of free cells */
+  
+  /* global pointers to special symbols */
+  MINA LAMBDA;		/* pointer to syntax lambda */
+  MINA QUOTE;           /* pointer to syntax quote */
+
+  MINA QUASIQUOTE;	/* pointer to symbol quasiquote */
+  MINA UNQUOTE;         /* pointer to symbol unquote */
+  MINA UNQUOTESP;       /* pointer to symbol unquote-splicing */
+  MINA FEED_TO;         /* => */
+  MINA COLON_HOOK;      /* *colon-hook* */
+  MINA ERROR_HOOK;      /* *error-hook* */
+  MINA SHARP_HOOK;	/* *sharp-hook* */
+  MINA COMPILE_HOOK;	/* *compile-hook* */
+
+  MINA inport;
+  MINA outport;
+  MINA save_inport;
+  MINA loadport;
+
+  /* NOTE: buffer should be a stack, which means we put first char in
+   * STRBUFFSIZE-1 position.
+   */
+#define LINESIZE 1024
+  char linebuff[LINESIZE];
+#define STRBUFFSIZE 256
+  char strbuff[STRBUFFSIZE];
+  size_t cnt_cur; // current buffer content bytes count
+  size_t bp; // current buffer pointer
+  
+  scm_tok tok; // current token
+  MINA value;
+  u32_t op;
+
+  void *ext_data;     /* For the benefit of foreign functions */
+  u32_t gensym_cnt;
+
+  void *dump_base;	 /* pointer to base of allocated dump stack */
+  size_t dump_size;	 /* number of frames allocated for dump stack */
+};
+
+// Scheme Status
+#define SS_TRACING   	_B(0) // in tracing mode
+#define SS_INTRACTIVE	_B(1) // for an interactive REPL
+#define SS_NESTING	_B(2) // nesting status?
+#define SS_GC_VERBOSE	_B(3) // if gc_verbose is not zero, print gc status
+#define SS_NOMEM	_B(4) // if malloc has failed
+#define SS_PRINT	_B(5) // print flag
+#define SS_QUIET	_B(6) // if not zero, print banner, prompt, results
+#define SS_AEF		_B(7) // all errors fatal
+
+/* num, for generic arithmetic */
+typedef struct Scheme_Number
+{
+  union
+  {
+    long ivalue;
+    double rvalue;
+  } value;
+
+  u8_t is_fixnum;
+} scm_num;
+
+typedef int (*comp_func_t)(scm_num ,scm_num);
+
+// functions declaration
+void* scheme_malloc(size_t size);
+void scheme_free(void* ptr);
 
 void MINA_show_type(MINA mobj);
 char *MINA_get_type(MINA mobj);
