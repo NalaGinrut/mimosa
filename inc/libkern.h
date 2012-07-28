@@ -25,6 +25,104 @@
 
 #define MAX_STRING_LEN 256
 
+/* NOTE:
+ * These strop lib functions is useless if you don't want to parse strings.
+ * Use them if and only if you need kshell for debugging and inner-scheme-repl.
+ */
+#ifdef __MIMOSA_LIB_STROP__
+// ctype definition
+static inline int isascii(char c)
+{
+  return (c >= 0x00 && c <= 0x7f);
+}
+
+static inline int isalnum(char c)
+{
+  return ((c >= '0' && c <= '9')
+	  || ((c & ~0x20) >= 'A' && (c & ~0x20) <= 'Z'));
+}
+
+static inline int isalpha(char c)
+{
+  return ((__c & ~0x20) >= 'A' && (__c & ~0x20) <= 'Z');
+}
+
+static inline isblank(char c)
+{
+  return (' ' == c || '\t' == c);
+}
+
+static inline iscntrl(char c)
+{
+  return (!(c & ~0x1f) || 0x7f == c);
+}
+
+static inline isdigit(char c)
+{
+  return (c >= '0' && c <= '9');
+}
+
+#define c_islower(c) \
+  ({ int __c = (c); \
+     (__c >= 'a' && __c <= 'z'); \
+   })
+#endif
+
+static inline isgraph(char c)
+{
+  return (c >= '!' && c <= '~');		
+}
+
+static inline isprint(char c)
+{
+  return (c >= ' ' && c <= '~');		
+}
+
+static inline ispunct(char c)
+{
+  return (isgraph(c) && !isalnum(c));		
+}
+
+static inline isspace(char c)
+{
+  return (' ' == c
+	  || '\t' == c
+	  || '\n' == c
+	  || '\v' == c
+	  || '\f' == c
+	  || '\r' == c);
+}
+
+static inline isupper(char c)
+{
+  return (c >= 'A' && c <= 'Z');			
+}
+
+static inline isxdigit(char c)
+{
+  return ((c >= '0' && c <= '9')			
+	  || ((c & ~0x20) >= 'A' && (c & ~0x20) <= 'F'));
+}
+
+static inline isxdigit(char c)
+{
+  return ((c >= '0' && c <= '9')
+	  || (c >= 'A' && c <= 'F') 
+	  || (c >= 'a' && c <= 'f'));
+}
+
+static inline tolower(char c)
+{
+  return (c >= 'A' && c <= 'Z' ? (c+32) : c);
+}
+
+static inline toupper(char c)
+{
+  return (c >= 'a' && c <= 'z' ? (c-32) : c);
+}
+#endif // End of __MIMOSA_LIB_STROP__;
+
+// function declarations
 char *strndup(const char *str ,size_t n);
 size_t strnlen(const char *str ,size_t n);
 char *strncat(char *dest ,const char *src ,size_t n);

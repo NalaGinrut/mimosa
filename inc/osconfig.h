@@ -31,6 +31,9 @@
 
 #define __MULTI_BOOT__
 
+// use string operation lib function
+#define __MIMOSA_LIB_STROP__
+
 #define __BIT32_PAGING__
 #define __BIT32_PAGING_NO_PSE__
 
@@ -64,5 +67,6 @@
 #else
 #define KERN_TMP_MAP_SIZE PT_SIZE
 #endif // End of __KERN_DEBUG__;
+
 
 #endif // End of __OS_CONFIG_H;
