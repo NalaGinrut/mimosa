@@ -141,6 +141,12 @@ void pmap_tlb_invalidate(pde_t* pgdir ,void* va);
 struct Page* pmap_page_lookup(pde_t* pgdir ,void* va ,pde_t** pde_store);
 pde_t *pmap_get_tmp_pgdir();
 
+// page API
+void ____init_page();
+struct Page* ____get_free_page();
+void ____free_this_page(struct Page* pg);
+// --------
+
 #ifdef __KERN_DEBUG__
 void pmap_page_check();
 #endif // End of __KERN_DEBUG__

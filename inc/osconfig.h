@@ -34,6 +34,7 @@
 // use string operation lib function
 #define __MIMOSA_LIB_STROP__
 
+#define __MM_HAS_PAGING__
 #define __BIT32_PAGING__
 #define __BIT32_PAGING_NO_PSE__
 

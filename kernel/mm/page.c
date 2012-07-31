@@ -19,26 +19,45 @@
 #include <osconfig.h>
 #include <types.h>
 #include <global.h>
-#include <bsp/pmap.h>
 #include <bsp/bsp_mm.h>
 
-static void* mimosa_pgdir = (void*) GET_BSP_VAR(VPT);
+#ifdef __MM_HAS_PAGING__
 
-void* __alloc_page(size_t cnt)
+#include <bsp/pmap.h>
+
+// define a mutable var of VPT in case we need to do something with it.
+static void* mimosa_vpt = (void*) GET_BSP_VAR(VPT);
+
+struct Page* __alloc_page()
 {
-  // TODO: alloc 'cnt' pages and return the head addr
+  struct Page* ret = ____get_free_page();
+
+  if(!ret)
+    {
+      /* TODO: If no free page, then do:
+       *	1. give the warn;
+       *	2. try swap then alloc
+       *	3. try free some pages then alloc
+       *	4. panic
+       */
+      panic("no free page!\n");
+    }
   
-  return NULL;
+  return ret;
 }
 
-void __free_page(size_t ppn)
+void __free_page(struct Page* pg)
 {
-  // TODO: free the page whose page number is 'ppn'
+  if(!pg)
+    panic("Try to free an NULL page!");
+
+  return ____free_this_page(pg);
 }
 
 void __page_remove(void* va)
 {
+
   // TODO: the wrapper of pmap_page_remove
 }
 
-
+#endif // End of __MM_HAS_PAGING__;

@@ -710,6 +710,23 @@ void pmap_tlb_invalidate(pde_t* pgdir ,void* va)
   __flush_tlb(va);
 }
 
+void ____init_page()
+{
+  cprintf("BSP page init...\n");
+  LIST_INIT(&pmap_page_free_list);
+  cprintf("OK!\n");
+}
+
+struct Page* ____get_free_page()
+{
+  return pmap_page_alloc();
+}
+
+void ____free_this_page(struct Page* pg)
+{
+  return pmap_page_free(pg);
+}
+
 #ifdef __KERN_DEBUG__
 void pmap_page_check()
 {
@@ -741,6 +758,8 @@ void pmap_page_check()
 
   // temporarily steal the rest of the free pages
   fl = pmap_page_free_list;
+
+  // delete this line, do it in ____page_init()
   LIST_INIT(&pmap_page_free_list);
 
   kprintf("ok pg check #4\n");

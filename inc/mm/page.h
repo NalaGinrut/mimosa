@@ -19,10 +19,15 @@
  */
 
 #include <bsp/bsp_mm.h>
+
+#ifdef __MM_HAS_PAGING__
+
 #include <bsp/pmap.h>
 
-void* __alloc_page(size_t cnt);
-void __free_page(size_t ppn);
+struct Page* __alloc_page();
+void __free_page(struct Page* pg);
 void __page_remove(void* va);
+
+#endif // End of __MM_HAS_PAGING__;
 
 #endif // Enf of __MIMOSA_PAGE_H__;
