@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -21,3 +21,7 @@ It's complete under GPL and FREE. And it's a HFG's official project. We wrote it
 
 I plan to finish this OS(acctually, make it work) till the year. And we may design a more complex and more interesting OS based on this cute OS. It's just a little white rat.
 More.......
+
+[Conventions]
+* Don't do any protections in the lowest level API whose name contains "____"
+
