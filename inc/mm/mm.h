@@ -18,8 +18,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#include <osconfig.h>
 #include <types.h>
+
+#ifdef __MM_HAS_PAGING__
+#include <mm/page.h>
+#endif // End of __MM_HAS_PAGING__;
 
 void *kmalloc(size_t size);
 

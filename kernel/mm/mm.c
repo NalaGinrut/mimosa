@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <osconfig.h>
+#include <types.h>
 #include <mm/mm.h>
 
 #ifdef __KERN_DEBUG__
 #include <debug.h>
 #endif
+
+
