@@ -16,10 +16,89 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <mm/kmalloc.h>
 
-#include <mm/mm.h>
-#include <types.h>
+#ifdef __KERN_DEBUG__
+#include <debug.h>
+#endif
 
+static struct Page* current_page = NULL;
+static size_t cur_page_rest_mem = PG_SIZE;
+
+static inline struct Page* get_current_page();
+static inline struct Page* set_current_page(struct Page*);
+static inline size_t get_current_page_rest_size();
+static inline void current_page_alloc(size_t size);
+static inline void current_page_realloc();
+
+static inline struct Page* get_current_page()
+{
+  return current_page;
+}
+
+static inline struct Page* set_current_page(struct Page* pg)
+{
+  // TODO: must be exclusive!!!
+  // lock
+  current_page = pg;
+  // unlock
+  
+  return current_page;
+}
+
+static inline size_t get_current_page_rest_size()
+{
+  return cur_page_rest_mem;
+}
+
+// >=0: alloc successly, <0 the other size need to alloc.  
+static inline int current_page_alloc(size_t size)
+{
+  if(size > PG_SIZE)
+    pinic("Alloc size too large! This must be a bug!");
+
+  if(!get_current_page())
+    current_page_realloc();
+  
+  cur_page_rest_mem -= size;
+
+  return cur_page_rest_mem;
+}
+
+static inline void current_page_realloc()
+{
+  struct Page* pg = NULL;
+
+  while((pg = __page_alloc()) == NULL)
+    {
+      // TODO: should sleep till there's available page
+      //sleep();
+    }
+
+  return set_current_page(pg);
+}
+
+void* sbrk(size_t amount)
+{
+  size_t c = get_current_page_rest_size();
+  size_t n = current_page_alloc(amount);
+  struct Page* pg = get_current_page();
+  void *m = pg->pg_link;
+    
+  do
+    {
+      c = get_current_page_rest_size();
+      mm_map_to_current_heap(pg->pg_link ,c);
+
+      amount -= n;
+      n = current_page_realloc(amount);
+    }while(n < 0);
+      
+  return m;
+}
+
+int brk(void* end_data_segment)
+{}
 
 void *kmalloc(size_t size)
 {
@@ -27,3 +106,4 @@ void *kmalloc(size_t size)
   // TODO: implement it!
   return NULL;
 }
+

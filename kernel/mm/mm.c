@@ -26,12 +26,18 @@
 
 static struct kmap_table mimosa_kmap_table = { RB_ROOT ,NULL };
 
+static inline void __kmap_init();
 static inline kmap_t __kmap_alloc();
+
+static inline void __kmap_init()
+{
+    
+}
 
 static inline kmap_t __kmap_alloc()
 {
   struct struct kmap* m = NULL;
-
+  
   
   /*   	TODO:
    *	1. alloc a huge block mem in the init step;

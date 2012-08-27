@@ -27,6 +27,11 @@
 #endif // End of __MM_HAS_PAGING__;
 
 
+void* sbrk(size_t amount)
+{}
+
+int brk(void *end_data_segment)
+{}
 
 
 #endif // End of __MIMOSA__KMALLOC_H;
