@@ -20,10 +20,29 @@
 
 #include <osconfig.h>
 #include <types.h>
+#include <bits.h>
+#include <ds/rbtree.h>
 
 #ifdef __MM_HAS_PAGING__
 #include <mm/page.h>
 #endif // End of __MM_HAS_PAGING__;
+
+#define KMAP_CROSS_SEG	_B(0)
+
+typedef struct kmap
+{
+  struct rb_node rb_node;
+  void*	addr;  // head address
+  u32_t size;
+  u32_t flags;
+} *kmap_t;
+
+typedef struct kmap_table
+{
+  struct rb_root rb_root;
+  kmap_t kmap;
+  // spin_lock_t spin;
+} *kmap_table_t;
 
 void *kmalloc(size_t size);
 

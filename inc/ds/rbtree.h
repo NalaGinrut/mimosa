@@ -1,3 +1,5 @@
+#ifndef	__MIMOSA_RBTREE_H__
+#define	__MIMOSA_RBTREE_H__
 /*
   Red Black Trees
   (C) 1999  Andrea Arcangeli <andrea@suse.de>
@@ -89,9 +91,6 @@
   }
   -----------------------------------------------------------------------
 */
-
-#ifndef	__MIMOSA_RBTREE_H__
-#define	__MIMOSA_RBTREE_H__
 
 #include <osconfig.h>
 #include <types.h>

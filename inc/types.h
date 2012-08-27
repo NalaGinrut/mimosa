@@ -97,9 +97,9 @@ typedef __off_t off_t;
  * So here is a ANSI C version.
  */
 #define container_of(elem_addr ,struct_type ,member)	\
-    ( (struct_type*)((stdptr_t)(elem_addr) - offsetof(struct_type ,member)) )
+    ( (struct_type*)((stdptr_t)(elem_addr) - offset_of(struct_type ,member)) )
 
-#define offsetof(type ,member)	\
+#define offset_of(type ,member)	\
   (off_t)(&((type*)0)->member)	
 
 typedef union Dynamic_Integer_Type
