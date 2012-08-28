@@ -22,8 +22,8 @@
 #include <debug.h>
 #endif
 
-static struct Page* current_page = NULL;
-static size_t cur_page_rest_mem = PG_SIZE;
+static kmalloc_info_t
+kmalloc_info = { NULL ,PG_SIZE ,SPIN_INIT };
 
 static inline struct Page* get_current_page();
 static inline struct Page* set_current_page(struct Page*);
@@ -33,22 +33,22 @@ static inline void current_page_realloc();
 
 static inline struct Page* get_current_page()
 {
-  return current_page;
+  return kmalloc_info.current_page;
 }
 
 static inline struct Page* set_current_page(struct Page* pg)
 {
   // TODO: must be exclusive!!!
   // lock
-  current_page = pg;
+  kmalloc_info.current_page = pg;
   // unlock
   
-  return current_page;
+  return kmalloc_info.current_page;
 }
 
 static inline size_t get_current_page_rest_size()
 {
-  return cur_page_rest_mem;
+  return kmalloc_info.cur_page_rest_mem;
 }
 
 // >=0: alloc successly, <0 the other size need to alloc.  
@@ -60,9 +60,9 @@ static inline int current_page_alloc(size_t size)
   if(!get_current_page())
     current_page_realloc();
   
-  cur_page_rest_mem -= size;
+  kmalloc_info.cur_page_rest_mem -= size;
 
-  return cur_page_rest_mem;
+  return kmalloc_info.cur_page_rest_mem;
 }
 
 static inline void current_page_realloc()

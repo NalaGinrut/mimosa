@@ -26,6 +26,7 @@ typedef enum Lock_Type
     LOCK_SPIN ,
   }lock_type;
 
+// FIXME: use atomic_cmpxchg instead
 #define lock_spin_require(l ,o)	atomic_set_bit(l ,o)
 #define lock_release(l ,o)	atomic_clear_bit(l ,o)
 

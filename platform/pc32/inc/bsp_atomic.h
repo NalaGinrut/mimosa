@@ -18,14 +18,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <types.h>
+#include <bsp/bsp_types.h>
 
 #define LOCK_PREFIX " lock; "
 
-typedef u32_t atomic_t; 
 
-static inline void __atomic_set_bit(void *l ,u32_t offset);
-static inline void __atomic_clear_bit(void *l ,u32_t offset);
+static inline void __atomic_set_bit(void *l ,__u32_t offset);
+static inline void __atomic_clear_bit(void *l ,__u32_t offset);
+static inline void* __atomic_cmpxchg(void *l ,__u32_t old ,__u32_t new); 
+
 
 static inline void __atomic_set_bit(void *l ,u32_t offset)
 {
@@ -44,6 +45,18 @@ static inline void __atomic_clear_bit(void *l ,u32_t offset)
 		       :"0" (l) ,"Ir" (offset)
 		       :"cc"
 		       );
+}
+
+static inline void* __atomic_cmpxchg(void *ptr ,__u32_t old ,__u32_t new)
+{
+  volatile u32_t *__ptr = (volatile u32_t *)(ptr);   
+  u32_t __ret;                                    
+  asm volatile( LOCK_PREFIX "cmpxchgl %2,%1"           
+		: "=a" (__ret) ,"+m" (*__ptr)                
+		: "r" (new) ,"0" (old)
+		: "memory" );
+  
+  return __ret;                                         
 }
 
 #endif // End of __MIMOSA_BSP_ATOMIC_H;

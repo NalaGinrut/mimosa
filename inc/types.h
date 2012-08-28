@@ -63,10 +63,6 @@ typedef __l_cp l_cp;
 
 typedef __gptr_t gptr_t;
 typedef __cptr_t cptr_t;
-
-
-
-
 typedef __stdptr_t stdptr_t;
 
 typedef __intptr_t intptr_t;
@@ -86,6 +82,9 @@ typedef __ssize_t ssize_t;
 // off_t is used for file offsets and lengths.
 typedef __off_t off_t;
 
+// atomic types
+typedef __atomic_t atomic_t;
+typedef __spin_lock_t spin_lock_t;
 
 #define MIN(_a ,_b) __MIN(_a ,_b)
 

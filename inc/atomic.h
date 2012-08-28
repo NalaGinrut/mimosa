@@ -23,5 +23,6 @@
 
 #define atomic_set_bit(l ,o)	__atomic_set_bit(l ,o)
 #define atomic_clear_bit(l ,o)	__atomic_clear_bit(l ,o)
+#define atomic_cmpxchg(p ,o ,n) __atomic_cmpxchg(p ,o ,n)
 
 #endif // End of __MIMOSA_ATOMIC_H;

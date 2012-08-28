@@ -104,6 +104,9 @@ typedef __u32_t frame_pt;
 typedef __u32_t ereg_t;
 typedef __u16_t reg_t;
 
+// atomic types
+typedef __u32_t __atomic_t; 
+typedef __u32_t __spin_lock_t;
 
 // gcc attributes;
 // may be need some mechnism to check GCC, but do it later...;

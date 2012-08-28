@@ -26,12 +26,14 @@
 #include <mm/page.h>
 #endif // End of __MM_HAS_PAGING__;
 
+typedef struct kmalloc_info
+{
+  struct Page* current_page;
+  size_t cur_page_rest_mem;
+  spin_lock_t spin;
+}kmalloc_info_t;
 
-void* sbrk(size_t amount)
-{}
-
-int brk(void *end_data_segment)
-{}
-
+void* sbrk(size_t amount);
+int brk(void *end_data_segment);
 
 #endif // End of __MIMOSA__KMALLOC_H;
