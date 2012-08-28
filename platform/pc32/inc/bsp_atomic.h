@@ -51,7 +51,7 @@ static inline void* __atomic_cmpxchg(void *ptr ,__u32_t old ,__u32_t new)
 {
   volatile u32_t *__ptr = (volatile u32_t *)(ptr);   
   u32_t __ret;                                    
-  asm volatile( LOCK_PREFIX "cmpxchgl %2,%1"           
+  __asm__ __volatile__( LOCK_PREFIX "cmpxchgl %2,%1"           
 		: "=a" (__ret) ,"+m" (*__ptr)                
 		: "r" (new) ,"0" (old)
 		: "memory" );
