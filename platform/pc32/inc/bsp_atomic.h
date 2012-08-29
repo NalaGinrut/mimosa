@@ -18,10 +18,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <osconfig.h>
 #include <bsp/bsp_types.h>
 
 #define LOCK_PREFIX " lock; "
 
+// we need 'pause' instruction for hyper-threading CPU
+#ifdef X86_HYPER_THREADING
+#define X86_PAUSE "pause; \n\t"
+#endif
 
 static inline void __atomic_set_bit(void *l ,__u32_t offset);
 static inline void __atomic_clear_bit(void *l ,__u32_t offset);
@@ -31,7 +36,12 @@ static inline void* __atomic_cmpxchg(void *l ,__u32_t old ,__u32_t new);
 static inline void __atomic_set_bit(void *l ,u32_t offset)
 {
   __asm__ __volatile__("1: " LOCK_PREFIX "bts%z0 %0 ,%1\n\t"
-  		       "jnc 1b"
+  		       "jnc 2f\n\t"
+#ifdef X86_PAUSE
+		       X86_PAUSE
+#endif
+		       "jmp 1b\n\t"
+		       "2: ret"
 		       :"=r" (l)
 		       :"0" (l) ,"Ir" (offset)
 		       :"cc"
@@ -58,5 +68,10 @@ static inline void* __atomic_cmpxchg(void *ptr ,__u32_t old ,__u32_t new)
   
   return __ret;                                         
 }
+
+
+#ifdef X86_PAUSE
+#undef X86_PAUSE
+#endif
 
 #endif // End of __MIMOSA_BSP_ATOMIC_H;

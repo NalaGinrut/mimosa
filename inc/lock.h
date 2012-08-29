@@ -28,7 +28,7 @@ typedef enum Lock_Type
 
 // FIXME: use atomic_cmpxchg instead
 #define lock_spin_require(l ,o)	atomic_set_bit(l ,o)
-#define lock_release(l ,o)	atomic_clear_bit(l ,o)
+#define lock_spin_release(l ,o)	atomic_clear_bit(l ,o)
 
 void lock_require(void *lock ,u32_t offset ,lock_type type);
 
