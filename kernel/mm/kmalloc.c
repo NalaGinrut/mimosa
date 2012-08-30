@@ -17,6 +17,7 @@
  */
 
 #include <mm/kmalloc.h>
+#include <lock.h>
 
 #ifdef __KERN_DEBUG__
 #include <debug.h>

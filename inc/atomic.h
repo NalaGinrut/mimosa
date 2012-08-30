@@ -1,7 +1,7 @@
 #ifndef	__MIMOSA_ATOMIC_H
 #define __MIMOSA_ATOMIC_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,10 @@
 
 #include <bsp/bsp_atomic.h>
 
-#define atomic_set_bit(l ,o)	__atomic_set_bit(l ,o)
-#define atomic_clear_bit(l ,o)	__atomic_clear_bit(l ,o)
+#define atomic_set_bit(p ,o)	__atomic_set_bit(p ,o)
+#define atomic_clear_bit(p ,o)	__atomic_clear_bit(p ,o)
 #define atomic_cmpxchg(p ,o ,n) __atomic_cmpxchg(p ,o ,n)
+#define atomic_xchg(p ,v)	__atomic_xchg(p ,v)
+#define atomic_set_u32(p ,u32)	__atomic_set_u32(p ,u32) 
 
 #endif // End of __MIMOSA_ATOMIC_H;
