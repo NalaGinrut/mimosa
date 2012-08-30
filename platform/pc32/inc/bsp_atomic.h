@@ -1,7 +1,7 @@
 #ifndef	__MIMOSA_BSP_ATOMIC_H
 #define __MIMOSA_BSP_ATOMIC_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -29,33 +29,27 @@
 #define X86_PAUSE "pause; \n\t"
 #endif
 
-#define __X86_CASE_B    1
-#define __X86_CASE_W    2
-#define __X86_CASE_L    4
-#ifdef CONFIG_64BIT
-#define __X86_CASE_Q    8
-#else
-#define __X86_CASE_Q    -1              /* sizeof will never return -1 */
+#define __X86_W    "w"
+#define __X86_L    "l"
+#ifdef 	__X86_64BIT__
+#define __X86_Q    "q"
 #endif
 
 static inline void __atomic_set_bit(void *p ,__u32_t offset);
 static inline void __atomic_clear_bit(void *p ,__u32_t offset);
 static inline void* __atomic_cmpxchg(void *p ,__u32_t old ,__u32_t new); 
-#define __atomic_set_u32(p ,v)	__xchg_op
-
-#define __port_read(port ,data)		\
-  do{					\
-  __asm__ __volatile__("in%z0 %w1 ,%0"	\
-		       :"=a" (data)	\
-		       :"d" (port)	\
-		       );		\
-  }while(0);
+#define __atomic_set_u8(p ,v)	__atomic_xchg_u8(p ,v)
+#define __atomic_set_u16(p ,v)	__atomic_xchg_u16(p ,v)
+#define __atomic_set_u32(p ,v)	__atomic_xchg_u32(p ,v)
+#ifdef 	__X86_64BIT__
+#define __atomic_set_u64(p ,v)	__atomic_xchg_u64(p ,v)
+#endif // End of __X86_64BIT;
 
 static inline u8_t __xchg_u8(u8_t* p ,u8_t v)
 {
   u8_t ret = v;
 
-  __xchg_op(p ,ret ,X86_XCHG_OP ,NON_LOCK);
+  __xchg_op_u8(p ,ret ,X86_XCHG_OP ,NON_LOCK);
 
   return ret;
 }
@@ -64,39 +58,82 @@ static inline u8_t __atomic_xchg_u8(u8_t* p ,u8_t v)
 {
   u8_t ret = v;
 
-  __xchg_op(p ,ret ,X86_XCHG_OP ,LOCK_PREFIX);
+  __xchg_op_u8(p ,ret ,X86_XCHG_OP ,LOCK_PREFIX);
 
   return ret;
 }
 
-// FIXME: modify it to data-oriented mechanism
-#define __xchg_op(ptr, arg, op, lock)				\
+static inline __u16_t __xchg_u16(__u16_t* p ,__u16_t v)
+{
+  __u16_t ret = v;
+
+  __xchg_op(p ,ret ,X86_XCHG_OP ,__X86_W ,NON_LOCK);
+
+  return ret;
+}
+
+static inline __u16_t __atomic_xchg_u16(__u16_t* p ,__u16_t v)
+{
+  __u16_t ret = v;
+
+  __xchg_op(p ,ret ,X86_XCHG_OP ,__X86_W ,LOCK_PREFIX);
+
+  return ret;
+}
+
+static inline __u32_t __xchg_u32(__u32_t* p ,__u32_t v)
+{
+  __u32_t ret = v;
+
+  __xchg_op(p ,ret ,X86_XCHG_OP ,__X86_L ,NON_LOCK);
+
+  return ret;
+}
+
+static inline __u32_t __atomic_xchg_u32(__u32_t* p ,__u32_t v)
+{
+  __u32_t ret = v;
+  
+  __xchg_op(p ,ret ,X86_XCHG_OP ,__X86_L ,LOCK_PREFIX);
+
+  return ret;
+}
+
+#ifdef 	__X86_64BIT__
+static inline __u64_t __xchg_u64(__u64_t* p ,__u64_t v)
+{
+  __u64_t ret = v;
+
+  __xchg_op(p ,ret ,X86_XCHG_OP ,__X86_Q ,NON_LOCK);
+
+  return ret;
+}
+
+static inline __u64_t __atomic_xchg_u64(__u64_t* p ,__u64_t v)
+{
+  __u64_t ret = v;
+  
+  __xchg_op(p ,ret ,X86_XCHG_OP ,__X86_Q ,LOCK_PREFIX);
+
+  return ret;
+}
+#endif // End of __X86_64BIT__;
+
+/* In 64-bit mode, r/m8 can not be encoded to access the following
+ * byte registers if a REX prefix is used: AH, BH, CH, DH.
+ * So we have to use "+q" for 8bit xchg. */
+#define __xchg_op_u8(ptr, arg, op, size ,lock)			\
   do{								\
-  int size = sizeof(*(ptr));					\
-    switch (size) {						\
-    case __X86_CASE_B:						\
-      __asm__ __volatile__ (lock #op "b %b0, %1\n"		\
-			    : "+q" (arg) ,"+m" (*(ptr))		\
-			    : : "memory" ,"cc");		\
-      break;							\
-    case __X86_CASE_W:						\
-      __asm__ __volatile__ (lock #op "w %w0, %1\n"		\
-			    : "+r" (arg) ,"+m" (*(ptr))	\
-			    : : "memory" ,"cc");		\
-      break;							\
-    case __X86_CASE_L:						\
-      __asm__ __volatile__ (lock #op "l %0, %1\n"		\
-			    : "+r" (arg) ,"+m" (*(ptr))	\
-			    : : "memory" ,"cc");		\
-      break;							\
-    case __X86_CASE_Q:						\
-      __asm__ __volatile__ (lock #op "q %q0, %1\n"		\
-			    : "+r" (arg) ,"+m" (*(ptr))	\
-			    : : "memory" ,"cc");		\
-      break;							\
-    default:							\
-      panic("error size: %u\n" ,size);				\
-    }								\
+  __asm__ __volatile__ (lock #op "b %b0 ,%1\n"			\
+			: "+q" (arg) ,"+m" (*(ptr))		\
+			: : "memory" ,"cc");			\
+  while(0);
+
+#define __xchg_op(ptr, arg, op, size ,lock)			\
+  do{								\
+  __asm__ __volatile__ (lock #op #size " %" #size "0 ,%1\n"	\
+			: "+r" (arg) ,"+m" (*(ptr))		\
+			: : "memory" ,"cc");			\
   }while(0);
 
 static inline void __atomic_set_bit(void *ptr ,u32_t offset)
@@ -139,5 +176,12 @@ static inline void* __atomic_cmpxchg(void *ptr ,__u32_t old ,__u32_t new)
 #ifdef X86_PAUSE
 #undef X86_PAUSE
 #endif
+
+#undef __X86_W
+#undef __X86_L
+
+#ifdef 	__X86_64BIT__
+#undef __X86_Q
+#endif 
 
 #endif // End of __MIMOSA_BSP_ATOMIC_H;
