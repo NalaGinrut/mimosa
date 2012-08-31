@@ -1,7 +1,7 @@
-#ifndef	__MIMOSA_ATOMIC_H
-#define __MIMOSA_ATOMIC_H
+#ifndef	__MIMOSA_X86_CPU_BTX_H__
+#define __MIMOSA_X86_CPU_BTX_H__
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -18,15 +18,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../bsp_types.h"
 
-#include <bsp/bsp_atomic.h>
+//			 X86_PAUSE				\
 
-#define atomic_set_bit(p ,o)	__atomic_set_bit(p ,o)
-#define atomic_clear_bit(p ,o)	__atomic_clear_bit(p ,o)
-#define atomic_cmpxchg(p ,o ,n) __atomic_cmpxchg(p ,o ,n)
-#define atomic_xchg(p ,v)	__atomic_xchg(p ,v)
-#define atomic_set_u8(p ,u8)	__atomic_set_u8(p ,v)
-#define atomic_set_u16(p ,u16)	__atomic_set_u16(p ,v)
-#define atomic_set_u32(p ,u32)	__atomic_set_u32(p ,u32) 
+#define __set_bit_op(p ,o ,lock)				\
+  do{								\
+    __asm__ __volatile__("1: " lock "bts%z0 %0 ,%1\n\t"		\
+			 "jnc 2f\n\t"				\
+			 "jmp 1b\n\t"				\
+			 "2: ret"				\
+			 :"=r" (ptr)				\
+			 :"0" (ptr) ,"Ir" (offset)		\
+			 :"cc"					\
+			 );					\
+  }while(0);
 
-#endif // End of __MIMOSA_ATOMIC_H;
+#define __clear_bit_op(p ,o ,lock)				\
+  do{								\
+    __asm__ __volatile__(lock "btr%z0 %0 ,%1"			\
+			 :"=r" (ptr)				\
+			 :"0" (ptr) ,"Ir" (offset)		\
+			 :"cc"					\
+			 );					\
+  }while(0);
+
+#endif // End of __MIMOSA_X86_CPU_BTX_H__;
