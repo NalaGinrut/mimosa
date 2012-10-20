@@ -93,4 +93,8 @@ SECTIONS
 	}
 	PROVIDE(KERN_SYM(init_end) = .);
 
+	/DISCARD/ : {
+		  *(.eh_frame)
+		  *(.eh_frame_hdr)
+        }
 }
