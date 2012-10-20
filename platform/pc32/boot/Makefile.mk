@@ -14,5 +14,5 @@ $(OBJ)/boot: $(BOOT_OBJ)/boot.o
 	@echo + ld $@ from $^
 	@mkdir -p $(@D)
 	$(V)$(LD) -N -e start -Ttext 0x7C00 -o $@.1st $^
-	$(V)$(OBJCOPY) -S -O binary $@.1st $@
+	$(V)$(OBJCOPY) -S -R .eh_frame -R .eh_frame_hdr -O binary $@.1st $@ # remove eh_frame* segment for gcc-4.6+
 	$(V)$(GUILE) -e main $(TOOLS)/sign.gl $(OBJ)/boot
