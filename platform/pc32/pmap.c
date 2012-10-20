@@ -708,7 +708,7 @@ void pmap_tlb_invalidate(pde_t* pgdir ,void* va)
    *	    But I need an arbitrary n-level page table. so fixme later please.
    */	
   //TLB_flush_mem(va);
-  __flush_tlb(va);
+  __flush_tlb_page(va);
 }
 
 #ifdef __KERN_DEBUG__

@@ -65,4 +65,7 @@
 #define KERN_TMP_MAP_SIZE PT_SIZE
 #endif // End of __KERN_DEBUG__;
 
+#define __CPU_HAS_TLB__
+
+
 #endif // End of __OS_CONFIG_H;
