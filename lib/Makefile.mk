@@ -9,8 +9,7 @@ lib-ofile := $(lib-cfile:.c=.o)
 lib-ofile := $(subst $(LIB)/,$(LIB_OBJ)/,$(lib-ofile))
 
 
-LIB_LDFLAGS := -r -nostdlib
-
+LIB_LDFLAGS := -r -nostdlib $(MIMOSA_BSP_LDFLAGS)
 LIB_CFLAGS := $(CFLAGS) -D__MIMOSA_KERNEL__
 
 

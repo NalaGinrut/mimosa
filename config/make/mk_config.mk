@@ -10,4 +10,5 @@ KDEBUG := 1
 # O_LEV := 
 
 # BSP config
-MIMOSA_BSP_FLAGS := -m32
+MIMOSA_BSP_CFLAGS := -m32
+MIMOSA_BSP_LDFLAGS := -m elf_i386

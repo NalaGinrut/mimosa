@@ -1,7 +1,7 @@
 # tool chain def
 MAKE	:= gmake
 CC	:= $(GCCPREFIX)gcc -pipe
-GCC_LIB := $(shell $(CC) -print-libgcc-file-name $(MIMOSA_BSP_FLAGS))
+GCC_LIB := $(shell $(CC) -print-libgcc-file-name $(MIMOSA_BSP_CFLAGS))
 AS	:= $(GCCPREFIX)as
 AR	:= $(GCCPREFIX)ar
 LD	:= $(GCCPREFIX)ld
@@ -16,7 +16,7 @@ TAR	:= gtar
 GUILE	:= guile
 
 LDPATH := -L$(OBJ) -L$(CONF) -L$(TOP) 
-LDFLAGS := $(LDPATH) -T$(TOP)/kernel.ld -nostdlib -E
+LDFLAGS := $(LDPATH) -T$(TOP)/kernel.ld -nostdlib -E $(MIMOSA_BSP_LDFLAGS)
 
 CFLAGS := $(CFLAGS) -O$(O_LEV) -nostdinc -fno-builtin -fno-stack-protector \
-	-I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror -std=c99 $(STABS) $(MIMOSA_BSP_FLAGS)
+	-I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror -std=c99 $(STABS) $(MIMOSA_BSP_CFLAGS)
