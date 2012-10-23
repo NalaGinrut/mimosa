@@ -17,13 +17,12 @@
   (lambda (args)
     (and (< (length args) 2) (error "usage: ~a filename ~%" (car args)))
     (let* ((filename (cadr args))
-	   (fp (open-file filename "a"))) ;; use "a" for append ,don't use "w" or "w+"
+	   (fp (open-file filename "r+"))) ;; use "r+", or we can't do 'seek trick'.
       (unless (<= (stat:size (stat filename)) 510) 
 	(format #t "File: ~s size is larger than 510B!~%" filename) (primitive-exit))
       (copy-file filename (string-append filename ".bak")) ;; A backup for debug
-      ;;(seek fp 510 SEEK_SET) ;; pad zero automatically
-      (format fp "~a" (string-append (make-string (- 510 (stat:size (stat filename))) #\00) "\x55\xAA"))
-      (close fp)
+      (seek fp 510 SEEK_SET) ;; pad zero automatically
+      (format fp "~a" "\x55\xAA") (close fp)
       (rename-file filename (string-append filename ".out"))
       (display "Seems the MBR has been generated successfully!!!\n"))))
 
