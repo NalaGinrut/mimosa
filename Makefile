@@ -26,7 +26,7 @@ CONF := $(TOP)/config
 # Again! The Mimosa build framework is based on these lines. So let them alone!
 
 all: kernel.ld mimosa 
-	@echo "Mimosa kernel generated!\n"
+	@echo "Mimosa kernel generated!"
 
 include $(CONF)/conf.mk
 # DO NOT TOUCH!
