@@ -1,5 +1,5 @@
 # tool chain def
-MAKE	:= gmake
+MAKE	:= make
 CC	:= $(GCCPREFIX)gcc -pipe
 GCC_LIB := $(shell $(CC) -print-libgcc-file-name $(MIMOSA_BSP_CFLAGS))
 AS	:= $(GCCPREFIX)as
