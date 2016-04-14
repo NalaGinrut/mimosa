@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -32,4 +32,3 @@ void mc146818_write_byte(u32_t index ,int data)
 	writeb(RTC_PORT ,index);
 	writeb(RTC_PORT+1 ,data);
 }
-
