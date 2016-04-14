@@ -1,4 +1,4 @@
-#  Copyright (C) 2010-2012  
+#  Copyright (C) 2010-2012, 2016
 #	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -86,5 +86,3 @@ clean:
 	$(V)test -e mimosa && rm -f mimosa || echo "No kernel generated!"
 	$(V)$(MAKE) pretty 
 	$(V)$(MAKE) clean-isr
-
-
