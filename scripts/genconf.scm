@@ -1,8 +1,8 @@
 #! /usr/local/bin/guile \
--L mimosa -e main -s
+-L scripts -e main
 !#
 
-;;  Copyright (C) 2011  "Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
+;;  Copyright (C) 2016  "Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
 
 ;;  This program is free software: you can redistribute it and/or modify
 ;;  it under the terms of the GNU General Public License as published by
@@ -18,19 +18,7 @@
 ;;  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-(use-modules (mimosa sxml)
-	     (oop goops)
-	     (ice-9 getopt-long)
-	     (ice-9 match)
-	     )
+(use-modules (mimosa config))
   
-
-
-(define main
-  (lambda (args)
-    (let* (config (make <config>))
-	   
-
-	   ;;whatever blablabla......
-	   )
-	   ))
+(define (main args)
+  (gen-osconfig (cadr args)))

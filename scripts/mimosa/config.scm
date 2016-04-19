@@ -1,4 +1,4 @@
-;;  Copyright (C) 2011  "Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
+;;  Copyright (C) 2016  "Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
 
 ;;  This program is free software: you can redistribute it and/or modify
 ;;  it under the terms of the GNU General Public License as published by
@@ -13,88 +13,51 @@
 ;;  You should have received a copy of the GNU General Public License
 ;;  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 (define-module (mimosa config)
-  #:use-module (mimosa sxml)
+  #:use-module (sxml simple)
   #:use-module (sxml xpath)
-  #:use-module (oop goops)
-  #:use-module (ice-9 getopt-long)
   #:use-module (ice-9 match)
-  
-  #:export (<config>
-	    config:gen-memlayout
-	    config:gen-osconfig
-	    config:gen-ldconfig
-	    config:gen-mkconfig
-	    )
-  )
+  #:export (gen-osconfig))
 
-(define-class <config> ()
-  (work-list #:init-value '())
-  (mem-layout #:init-value '())
-  (page-setup #:init-value '())
-  (sxml #:init-value #f)
-  (init #:accessor config:init
-	#:allocation #:virtual
-	#:slot-set! (lambda (o v) #f)
-	#:slot-ref 
-	(lambda (o)
-	  (let* ((sxml (make <sxml>)) 
-		 (cache '())
-		 )
-	    (sxml:read sxml "config/config.xml")
-	    (slot-set! o 'sxml sxml)
-	    )))
-  )
+(define (get-from path key)
+  (lambda (sxml)
+    (and=> (assoc-ref (assoc-ref ((sxpath path) sxml)
+                                 (list-ref path (1- (length path))))
+                      key)
+           car)))
 
+(define platform '(config platform))
+(define platform-name (get-from platform 'name))
+(define platform-bitwidth (get-from platform 'bitwidth))
 
-(define gen-code-list 
-  (lambda (entry)
-    (lambda (sxml)
-      (let* ((conf-list (make-conf-list sxml entry))
-	     (code-list '()) 
-	     )
-	(for-each (lambda (x)
-		    (if (pair? x) 
-			(set! code-list
-			      (cons
-			       (format #f "#define ~a ~a"
-				       (car x) (cadr x))
-			       code-list))))
-		  conf-list
-		  )
-	(set! sxml entry code-list)
-	))))
+(define memory '(config memory))
+(define memeory-kernbase (get-from memory 'kern_base))
+(define memory-kernstack (get-from memory 'kern_stack))
+(define memory-kernbegin (get-from memory 'kern_begin))
+(define memory-fulladdr (get-from memory 'full_addr))
 
-(define config:gen-memlayout
-  (gen-code-list 'memlayout))
+(define page '(config mmu page))
+(define page-enabled (get-from page 'enabled))
+(define page-ptlevel (get-from page 'pt_level))
+(define page-pgsize (get-from page 'pg_size))
 
-(define config:gen-osconfig
-  (gen-code-list 'osconfig))
+(define boot '(config boot))
+(define boot-grub (get-from boot 'grub))
 
-(define config:gen-ldconfig
-  (gen-code-list 'ldconfig))
+(define (num->hex num) (format #f "0x~x" num))
 
-(define config:gen-mkconfig
-  (gen-code-list 'mkconfig))
+(define (->bool str)
+  (let ((s (string-downcase str)))
+    (cond
+     ((string=? "true" s) #t)
+     ((string=? "false" s) #f)
+     (else (error ->bool "Invalid value!" str)))))
 
-(define get-attr-value
-  (lambda (conf-list-item)
-    (match conf-list-item
-	   ((name (@ (attribute value)) data))
-	   )
-    )
-  )
-
-(define make-conf-list
-  (lambda (sxml entry)
-    (cdar ((sxpath `(,entry)) sxml))))
-      
-
-       
-(define number-to-hex-string
-  (lambda (number)
-    (format #t "0x~a" (number->string number 16))
-    )
-  )
+(define (gen-osconfig bsp)
+  (let* ((conf (format #f "config/platforms-xml/~a.xml" bsp))
+         (sxml (call-with-input-file conf
+                 (lambda (port) (xml->sxml port #:trim-whitespace? #t)))))
+    (when (->bool (boot-grub sxml)) (format #t "#define __MULTI_BOOT__~%"))
+    (format #t "#define MIMOSA_BSP ~s~%" (platform-name sxml))
+    (format #t "#define FULL_ADDR ~a~%" (platform-fulladdr sxml))
+    ))
