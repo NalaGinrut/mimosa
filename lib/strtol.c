@@ -1,5 +1,6 @@
-/*	
- *  Copyright (C) 2012
+#ifdef USE_LIB_STRTOL
+/*
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -65,3 +66,4 @@ long strtol(const char *s ,char **endptr ,int base)
   return (neg ? -val : val);
 }
 
+#endif // End of USE_LIB_STRTOL;

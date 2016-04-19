@@ -1,5 +1,6 @@
+#ifdef USE_LIB_STRCHR
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -28,3 +29,5 @@ char *strchr(void const *str ,int c_in)
   
   return (char*)memchr(str ,c_in ,len);
 }
+
+#endif // End of USE_LIB_STRCHR;

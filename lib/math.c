@@ -1,5 +1,6 @@
+#ifdef USE_LIB_MATH
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -53,3 +54,5 @@ inline u32_t abs(s32_t a)
 {
   return a>=0? a : -a;
 }
+
+#endif // End of USE_LIB_MATH;

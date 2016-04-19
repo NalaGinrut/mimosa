@@ -1,5 +1,6 @@
+#ifdef USE_LIB_PRINTF
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -396,3 +397,5 @@ static void vprintfmt(putch_func_t putch ,spbuf_t *spb ,const char *fmt ,va_list
 }
 
 #undef MAXERROR
+
+#endif // End USE_LIB_PRINTF;

@@ -1,5 +1,6 @@
+#ifdef USE_LIB_MEMCHR
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -79,3 +80,5 @@ void *memchr(void const *str ,int c_in ,size_t n)
 
   return NULL;
 }
+
+#endif // End of USE_LIB_MEMCHR;

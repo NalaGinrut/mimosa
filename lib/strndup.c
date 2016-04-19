@@ -1,5 +1,6 @@
-/*	
- *  Copyright (C) 2010-2011  
+#ifdef USE_LIB_STRNDUP
+/*
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -31,3 +32,5 @@ char *strndup(char const *str ,size_t n)
   new[len] = '\0';
   return memcpy (new, str, len);
 }
+
+#endif // End of USE_LIB_STRNDUP;

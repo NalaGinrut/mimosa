@@ -1,5 +1,6 @@
+#ifdef USE_LIB_MEMCPY
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -30,3 +31,4 @@ void *memcpy(void *dest ,void const *src ,size_t n)
   return dest;
 }
 
+#endif // End of USE_LIB_MEMCPY;

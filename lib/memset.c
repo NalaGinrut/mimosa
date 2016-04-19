@@ -1,5 +1,6 @@
+#ifdef USE_LIB_MEMSET
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -28,3 +29,5 @@ void *memset(void *str, int c, size_t n)
   
   return str;
 }
+
+#endif // End of USE_LIB_MEMSET;

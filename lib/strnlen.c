@@ -1,5 +1,6 @@
-/*	
- *  Copyright (C) 2010-2011  
+#ifdef USE_LIB_STRNLEN
+/*
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -24,3 +25,5 @@ size_t strnlen(const char *str ,size_t n)
   const char *end = memchr(str ,'\0' ,n);
   return end ? (size_t) (end - str) : n;
 }
+
+#endif // End of USE_LIB_STRNLEN;

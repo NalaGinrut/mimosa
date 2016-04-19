@@ -1,5 +1,6 @@
-/*	
- *  Copyright (C) 2010-2011  
+#ifdef USE_LIB_STRNCPY
+/*
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -36,3 +37,5 @@ char *strncpy(char *dest, const char *src, size_t n)
   
   return ret;
 }
+
+#endif // End of USE_LIB_STRNCPY;

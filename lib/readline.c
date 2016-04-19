@@ -1,5 +1,6 @@
-/*	
- *  Copyright (C) 2012
+#ifdef USE_LIB_READLINE
+/*
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -94,5 +95,6 @@ static char *read_line_interrupt(const char *prompt)
   panic("read_line_interrupt didn't finish");
   return NULL;
 }
-#endif
+#endif // End of __KERN_DEBUG__;
 
+#endif // End of USE_LIB_READLINE;

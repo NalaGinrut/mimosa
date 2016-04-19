@@ -1,5 +1,6 @@
+#ifdef USE_LIB_BITWISE
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -41,3 +42,4 @@ u32_t lbc(u32_t v)
   return r;
 }
 
+#endif // End of USE_LIB_BITWISE;

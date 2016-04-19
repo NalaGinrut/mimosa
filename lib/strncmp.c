@@ -1,5 +1,6 @@
+#ifdef USE_LIB_STRNCMP
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -45,3 +46,4 @@ int strncmp(const char *s1, const char *s2, size_t n)
       
 }
  
+#endif // End of USE_LIB_STRNCMP;
