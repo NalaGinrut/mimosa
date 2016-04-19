@@ -1,7 +1,7 @@
 #ifndef	__MIMOSA_LOCK_H
 #define __MIMOSA_LOCK_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#include <types.h>
 #include <atomic.h>
 
 typedef enum Lock_Type
@@ -29,6 +29,6 @@ typedef enum Lock_Type
 #define lock_spin_require(l ,o)	atomic_set_bit(l ,o)
 #define lock_release(l ,o)	atomic_clear_bit(l ,o)
 
-void lock_require(void *lock ,u32_t offset ,lock_type type);
+void lock_require(void *lock ,off_t offset ,lock_type type);
 
 #endif // End of __MIMOSA_LOCK_H;

@@ -1,7 +1,8 @@
 #ifndef __MIMOSA_DEBUG_TRACE_H
 #define __MIMOSA_DEBUG_TRACE_H
+#ifdef USE_PC32_TRACE
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -32,5 +33,5 @@ typedef struct Frame_Info
 retval pcall_backtrace(frame_info_t fi ,u32_t back_count);  
 
 
-
+#endif // End of USE_PC32_TRACE;
 #endif // End of __MIMOSA_DEBUG_TRACE_H;

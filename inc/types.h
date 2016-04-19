@@ -40,11 +40,14 @@ typedef __s8_t s8_t;
 typedef __u8_t u8_t;
 typedef __s16_t s16_t;
 typedef __u16_t u16_t;
+#ifndef __NO_32_T
 typedef __s32_t s32_t;
 typedef __u32_t u32_t;
+#endif
+#ifndef __NO_64_T 
 typedef __s64_t s64_t;
 typedef __u64_t u64_t;
-
+#endif
 
 // generic pointer, one step vary pointer
 typedef __bptr bptr;
@@ -75,7 +78,9 @@ typedef __physaddr_t physaddr_t;
 
 // FIXME: how to deal with 64bit_ARCH for other things, such as "page"?
 
+#ifndef __CPU_HAS_NO_PAGE__
 typedef __ppn_t ppn_t;
+#endif
 
 // size_t is used for memory object sizes.
 typedef __size_t size_t;
@@ -86,6 +91,8 @@ typedef __ssize_t ssize_t;
 // off_t is used for file offsets and lengths.
 typedef __off_t off_t;
 
+// mutex type
+typedef __mutex_t _mutex_t;
 
 #define MIN(_a ,_b) __MIN(_a ,_b)
 
@@ -102,6 +109,7 @@ typedef __off_t off_t;
 #define offsetof(type ,member)	\
   (off_t)(&((type*)0)->member)	
 
+#ifndef __NO_DIT__
 typedef union Dynamic_Integer_Type
 {
   s64_t s64;
@@ -109,6 +117,7 @@ typedef union Dynamic_Integer_Type
   s16_t s16;
   s8_t s8;
 }dint_t;
+#endif
 
 #endif // !__ASSEMBLER__
 

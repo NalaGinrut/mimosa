@@ -1,7 +1,8 @@
 #ifndef __MIMOSA_KSHELL_H__
 #define __MIMOSA_KSHELL_H__
+#ifdef USE_KERN_SHELL
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -45,5 +46,5 @@ void mimosa_kshell_run(struct Trapframe *tf);
 int get_pgstat(const char *);
 
 
-
+#endif // End of USE_KERN_SHELL;
 #endif // End of __MIMOSA_KSHELL_H__;

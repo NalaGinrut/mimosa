@@ -1,7 +1,7 @@
 #ifndef	__MIMOSA_LIB_KERNEL_H
 #define __MIMOSA_LIB_KERNEL_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -24,23 +24,61 @@
 
 #define MAX_STRING_LEN 256
 
+#ifdef USE_LIB_STRNDUP
 char *strndup(const char *str ,size_t n);
+#endif
+
+#ifdef USE_LIB_STRNLEN
 size_t strnlen(const char *str ,size_t n);
+#endif
+
+#ifdef USE_LIB_STRNCAT
 char *strncat(char *dest ,const char *src ,size_t n);
+#endif
+
+#ifdef USE_LIB_STRNCPY
 char *strncpy(char *dest ,const char *src ,size_t n);
+#endif
+
+#ifdef USE_LIB_STRNCMP
 int strncmp(const char *p ,const char *q ,size_t n);
+#endif
+
+#ifdef USE_LIB_STRCHR
 char *strchr(void const *str ,int c_in);
+#endif
+
+#ifdef USE_LIB_STRTOL
 long strtol(const char *s ,char **endptr ,int base);
+#endif
 
+#ifdef USE_LIB_MEMCPY
 void *memcpy (void *dest ,void const *src ,size_t n);
+#endif
+
+#ifdef USE_LIB_MEMSET
 void *memset(void *str, int c ,size_t n);
+#endif
+
+#ifdef USE_LIB_MEMCHR
 void *memchr(void const *str ,int c_in ,size_t n);
+#endif
+
+#ifdef USE_LIB_MEMMOVE
 void *memmove(void *dest ,void const *src ,size_t n);
+#endif
 
-u32_t fbc(u32_t v);
+#ifdef USE_LIB_BITWISE
+u32_t lbc(u32_t v);
+#endif
 
+#ifdef USE_LIB_PRINTF
 int cprintf(const char *format ,...);
 int vcprintf(const char *fmt ,va_list ap);
+#endif
+
+#ifdef USE_LIB_READLINE
 char *read_line(const char *prompt);
+#endif
 
 #endif // End of __MIMOSA_LIB_KERNEL_H;

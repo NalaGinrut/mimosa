@@ -1,7 +1,8 @@
 #ifndef	__MIMOSA_GENERIC_STREAM_H
 #define __MIMOSA_GENERIC_STREAM_H
+#ifdef USE_GENERIC_STREAM
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -92,4 +93,5 @@ gs_obj_t *generic_stream_create(char *name ,char *buffer,
 retval generic_stream_shoot(void const *data ,gs_obj_t *gso ,size_t size);
 retval generic_stream_imbibe(gs_obj_t *gso ,void *data ,size_t size);
 retval generic_stream_dry(gs_obj_t *gso);
+#endif // End of USE_GENERIC_STREAM;
 #endif // End of __MIMOSA_GENERIC_STREAM_H;

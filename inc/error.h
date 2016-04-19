@@ -1,5 +1,6 @@
 #ifndef __MIMOSA_ERROR_H
 #define __MIMOSA_ERROR_H
+#ifdef USE_LIB_PRINTF
 /*	
  *  Copyright (C) 2010-2012  
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
@@ -56,6 +57,7 @@ void _panic(const char* ,const char* ,int ,const char* ,...) no_return;
 
 static void print_errmsg(retval rv);
 
+#endif // End of USE_LIB_PRINTF;
 #endif // End of __MIMOSA_ERROR_H;
 
 

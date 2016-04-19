@@ -1,7 +1,7 @@
 #ifndef	__MIMOSA_MUTEX_H
 #define __MIMOSA_MUTEX_H
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016 
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 
 // all mutex is spin type;
-typedef u32_t mutex_t;
+typedef _mutex_t mutex_t;
 
 void mutex_wait(mutex_t *mutex);
 void mutex_signal(mutex_t *mutex);

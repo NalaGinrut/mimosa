@@ -1,7 +1,8 @@
 #ifndef	__MIMOSA_DEBUG_H
 #define __MIMOSA_DEBUG_H
+#ifdef USE_PC32_DEBUG
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -48,4 +49,5 @@ struct Eipdebuginfo {
 
 int debuginfo_eip(uintptr_t eip ,struct Eipdebuginfo *info);
 
+#endif // End of USE_PC32_DEBUG;
 #endif // End of __MIMOSA_DEBUG_H;

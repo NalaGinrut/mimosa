@@ -1,7 +1,8 @@
 #ifndef __MIMOSA_STAB_H__
 #define __MIMOSA_STAB_H__
+#ifdef USE_PC32_STAB
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -56,4 +57,5 @@ struct Stab
   u8_t n_other; // misc info (usually empty)
 } __attribute__((aligned(1)));
 
+#endif // End of USE_PC32_STAB;
 #endif // End of __MIMOSA_STAB_H__;
