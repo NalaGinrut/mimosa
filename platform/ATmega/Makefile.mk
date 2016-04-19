@@ -1,4 +1,4 @@
-#  Copyright (C) 2010-2011  
+#  Copyright (C) 2016
 #	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -40,4 +40,3 @@ $(BSP_OBJ)/%.o: $(BSPDIR)/%.c
 $(OBJ)/bsp-obj: $(bsp-ofile)
 	@echo + merge $@
 	$(V)$(LD) $(BSP_LDFLAGS) -o $@ $^
-

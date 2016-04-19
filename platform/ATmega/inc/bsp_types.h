@@ -1,7 +1,7 @@
-#ifndef __MIMOSA_BSP_TYPES_H
-#define __MIMOSA_BSP_TYPES_H
+#ifndef __MIMOSA_BSP_ATMEGA_TYPES_H
+#define __MIMOSA_BSP_ATMEGA_TYPES_H
 /*	
- *  Copyright (C) 2010-2011,2016
+ *  Copyright (C) 2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -35,76 +35,62 @@ typedef signed char	__s8_t;
 typedef unsigned char	__u8_t;
 typedef short	 	__s16_t;
 typedef unsigned short	__u16_t;
-typedef int 		__s32_t;
-typedef unsigned int 	__u32_t;
-typedef long long 	__s64_t;
-typedef unsigned long long __u64_t;
+#define __NO_32_T
+#define __NO_64_T
+#define __NO_DIT__
 
-// CPU word long ,pc32 is 32bit
-typedef __u32_t __longword;
+// CPU word long ,ATmega is 16bit
+typedef __u16_t __longword;
 
-// Pointers and addresses are 32 bits long.
+// Pointers and addresses are 16 bits long.
 // We use pointer types to represent virtual addresses,
 // uintptr_t to represent the numerical values of virtual addresses,
 // and physaddr_t to represent physical addresses.
-#ifndef ADDRESS_64
-
-typedef __s32_t __intptr_t;
-typedef __u32_t __uintptr_t;
-typedef __u32_t __physaddr_t;
-
-#else
-
-typedef __s64_t __intptr_t;
-typedef __u64_t __uintptr_t;
-typedef __u64_t __physaddr_t;
-
-#endif // End of ADDRESS_64;
-
+typedef __s16_t __intptr_t;
+typedef __u16_t __uintptr_t;
+typedef __u16_t __physaddr_t;
 
 // FIXME: how to deal with 64bit_ARCH for other things, such as "page"?
 
 // generic pointer, one step vary pointer.
 typedef __u8_t *__bptr;
 typedef __u16_t *__wptr;
-typedef __u32_t *__lptr;
+typedef __u16_t *__lptr;
 
 // ptr to constant
 typedef const __u8_t *__cb_p;
 typedef const __u16_t *__cw_p;
-typedef const __u32_t *__cl_p;
+typedef const __u16_t * __cl_p;
 
 // constant ptr
 typedef __u8_t *const __b_cp;
 typedef __u16_t *const __w_cp;
-typedef __u32_t *const __l_cp;
+typedef __u16_t *const __l_cp;
 
 typedef void* __gptr_t;
 typedef const void *__cptr_t;
 typedef char*	__stdptr_t;
 typedef __stdptr_t __mem_t;
 
-// Page numbers are 32 bits long.
-typedef __u32_t __ppn_t;
-//typedef __u32_t __pde_t;
-//typedef __u32_t __pte_t;
+// Page numbers
+#define __CPU_HAS_NO_PAGE__
 
 // size_t is used for memory object sizes.
-typedef __u32_t __size_t;
+typedef __u16_t __size_t;
 // ssize_t is a signed version of ssize_t, used in case there might be an
 // error return.
-typedef __s32_t __ssize_t;
+typedef __s16_t __ssize_t;
 
 // off_t is used for file offsets and lengths.
-typedef __s32_t __off_t;
+typedef __s16_t __off_t;
 
 // mutex type
-typedef __u32_t __mutex_t;
+typedef __u16_t __mutex_t;
 
 // types bsp should use;
-typedef __u32_t frame_pt;
-typedef __u32_t ereg_t;
-typedef __u16_t reg_t;
+typedef __u16_t frame_pt;
+typedef __u16_t ereg_t;
+typedef __u8_t reg_t;
 
 
 // gcc attributes;
@@ -129,4 +115,4 @@ typedef void (*entry_t)(void);
 
 #endif // !__ASSEMBLER__
 
-#endif // End of __MIMOSA_BSP_TYPES_H;
+#endif // End of __MIMOSA_BSP_ATMEGA_TYPES_H;

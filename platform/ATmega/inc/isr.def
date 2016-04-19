@@ -1,0 +1,3 @@
+
+@isrdef timer_isr
+@isrdef kbd_isr

@@ -27,15 +27,26 @@
 #include <bsp/tlb.h>
 #include <retval.h>
 
-static int debug=0;
-#ifdef __KERN_DEBUG__
-#define kprintf cprintf
-#define MARK_TWAIN kprintf("%s OK\n" ,__func__)
-static void pmap_check_boot_pgdir();
-static physaddr_t pmap_check_va2pa(pte_t *pgdir ,laddr_t va);
-#else
 #define kprintf
 #define MARK_TWAIN
+
+static int debug=0;
+
+#ifndef USE_LIB_MEMSET
+#error "PC32 must use `memset'!!!"
+#endif // End of USE_LIB_MEMSET;
+
+#ifdef __KERN_DEBUG__
+
+#ifdef USE_LIB_PRINTF
+#undef kprintf
+#undef MARK_TWAIN
+#define kprintf cprintf
+#define MARK_TWAIN kprintf("%s OK\n" ,__func__)
+#endif // End of USE_LIB_PRINTF;
+
+static void pmap_check_boot_pgdir();
+static physaddr_t pmap_check_va2pa(pte_t *pgdir ,laddr_t va);
 #endif 
 
 static void pmap_jump_into_paging_mode(pde_t* pgdir);

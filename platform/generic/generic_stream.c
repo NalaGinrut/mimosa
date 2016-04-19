@@ -1,5 +1,6 @@
+#ifdef USE_GENERIC_STREAM
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -109,4 +110,4 @@ retval generic_stream_dry(gs_obj_t *gso)
   return OK;
 }
 
-  
+#endif // End of USE_GENERIC_STREAM;
