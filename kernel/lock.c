@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -26,8 +26,11 @@
 #define kprintf
 #endif // End of __KERN_DEBUG__
 
+#ifndef USE_LIB_PRINTF
+#define panic
+#endif
 
-void lock_require(void *lock ,u32_t offset ,lock_type type)
+void lock_require(void *lock ,off_t offset ,lock_type type)
 {
   switch(type)
     {
@@ -37,7 +40,3 @@ void lock_require(void *lock ,u32_t offset ,lock_type type)
       panic("invalid lock type!\n");
     }
 }
-
-
-  
-  

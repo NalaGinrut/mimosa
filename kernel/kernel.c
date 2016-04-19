@@ -34,7 +34,11 @@ void kernel_init()
   //TODO: init all kernel modules
 
 #ifdef __KERN_DEBUG__
+
+#ifdef USE_KERN_SHELL
   mimosa_kshell_run(NULL);
+#endif // End of USE_KERN_SHELL;
+
 #endif
 
   /*

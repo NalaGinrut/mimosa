@@ -1,5 +1,6 @@
+#ifdef USE_KERN_SHELL
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -369,3 +370,4 @@ static void ksc_error_handler(retval rv ,char *cmd)
 	  rv ,cmd ,strnlen(cmd ,KSC_BUF_SIZE));
 }
 
+#endif // End of USE_KERN_SHELL;

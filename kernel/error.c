@@ -1,5 +1,6 @@
+#ifdef USE_LIB_PRINTF
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -70,3 +71,5 @@ void _warn(const char* func ,const char *file ,int line ,const char *fmt ,...)
 
 // static_assert(x) will generate a compile-time error if 'x' is false.
 //#define static_assert(x)	switch (x) cas
+
+#endif // End of USE_LIB_PRINTF;
