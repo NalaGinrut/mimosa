@@ -6,3 +6,6 @@ bochs.img
 kernel.ld
 obj/*
 obj
+inc/bsp
+platform/bsp
+*~
