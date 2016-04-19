@@ -1,5 +1,6 @@
+#ifdef USE_DRV_CONSOLE
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -146,3 +147,4 @@ void cga_putc(u16_t ch)
   cga_update_cursor();
 }
 
+#endif // End of USE_DRV_CONSOLE;

@@ -1,3 +1,4 @@
+#ifdef USE_DRV_RTC_MC14618
 /*	
  *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
@@ -32,3 +33,5 @@ void mc146818_write_byte(u32_t index ,int data)
 	writeb(RTC_PORT ,index);
 	writeb(RTC_PORT+1 ,data);
 }
+
+#endif // End of USE_DRV_RTC_MC14618;

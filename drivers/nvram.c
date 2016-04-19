@@ -1,5 +1,6 @@
+#ifdef USE_DRV_NVRAM
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -51,3 +52,5 @@ void nvram_write_byte(u32_t index ,int data)
   mc146818_write_byte(index ,data);
   // UNLOCK
 }
+
+#endif // End of USE_DRV_NVRAM;

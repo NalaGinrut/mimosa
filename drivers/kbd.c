@@ -1,5 +1,6 @@
+#ifdef USE_DRV_KBD
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -240,3 +241,5 @@ void kbd_intr(void)
 void kbd_init(void)
 {
 }
+
+#endif // End of USE_DRV_KBD;
