@@ -25,15 +25,18 @@ TOP := $(shell pwd)
 CONF := $(TOP)/config
 # Again! The Mimosa build framework is based on these lines. So let them alone!
 
-all: kernel.ld mimosa 
+# default BSP is PC32
+BSP := pc32
+
+all: kernel.ld
+	#$(V)scripts/genconf.scm $(BSP)
+	$(V)make mimosa
 	@echo "Mimosa kernel generated!"
 
 include $(CONF)/conf.mk
 # DO NOT TOUCH!
 
-KERN_LDS := $(addsuffix -lds,kernel)
-
-mimosa-framework := 	$(OBJ)/entry.o \
+mimosa-framework :=	$(OBJ)/entry.o \
 			$(OBJ)/bsp-obj \
 			$(OBJ)/kern-obj \
 			$(OBJ)/lib-obj \
@@ -43,12 +46,18 @@ mimosa-framework += $(OBJ)/debug-obj
 endif
 
 ### TARGET ###
+kernel.ld:
+	@echo "Preparing $(BSP) BSP..."
+	$(V)rm -f inc/bsp platform/bsp config/conf.ld
+	$(V)ln -s $(BSP) platform/bsp
+	$(V)ln -s ../platform/bsp/inc inc/bsp
+	$(V)ln -s ../platform/bsp/conf.ld config/conf.ld
+	$(V)$(CPP) kernel/kernel.cpp.ld -I$(INC) -okernel.ld
+	$(V)sed -i "/^#.*/d" kernel.ld
+
 mimosa: $(mimosa-framework)
 	@echo + generate kernel image... from $^
 	$(V)$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIB) 
-
-kernel.ld:
-	$(V)$(MAKE) $(KERN_LDS)
 
 $(OBJ)/mimosa.img: kernel.ld mimosa $(OBJ)/boot
 	@echo + mk $@
@@ -57,17 +66,18 @@ $(OBJ)/mimosa.img: kernel.ld mimosa $(OBJ)/boot
 	$(V)dd if=mimosa of=$(OBJ)/$(@F).bak seek=1 conv=notrunc 
 	$(V)mv $(OBJ)/$(@F).bak $(OBJ)/$(@F)
 
-.PHONY: pretty %-lds clean bochs grub qemu clean-isr 
+.PHONY: echo pretty clean bochs grub qemu clean-isr
+
+echo:
+	@echo $(BSP)
+	@echo $(MIMOSA_LIB_CFLAGS)
+	@echo $(MIMOSA_BSP_LDFLAGS)
 
 bochs: $(OBJ)/mimosa.img
 	$(V)bochs
 
 qemu: $(OBJ)/mimosa.img
 	$(V)qemu -hda $^ -m 32
-
-%-lds:
-	$(V)$(CPP) $*/$*.cpp.ld -I$(INC) -o$*.ld
-	$(V)sed -i "/^#.*/d" $*.ld
 
 pretty:
 	@echo "Deleting backup file..."
@@ -86,3 +96,4 @@ clean:
 	$(V)test -e mimosa && rm -f mimosa || echo "No kernel generated!"
 	$(V)$(MAKE) pretty 
 	$(V)$(MAKE) clean-isr
+	$(V)rm -f inc/bsp platform/bsp config/conf.ld
