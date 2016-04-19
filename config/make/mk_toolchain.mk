@@ -11,7 +11,7 @@ NM	:= $(GCCPREFIX)nm
 CPP	:= $(GCCPREFIX)cpp
 
 # Native commands
-NCC	:= gcc $(CC_VER) -pipe
+NCC	:= $(GCCPREFIX)gcc $(CC_VER) -pipe
 TAR	:= gtar
 GUILE	:= guile
 
@@ -19,4 +19,6 @@ LDPATH := -L$(OBJ) -L$(CONF) -L$(TOP)
 LDFLAGS := $(LDPATH) -T$(TOP)/kernel.ld -nostdlib -E $(MIMOSA_BSP_LDFLAGS)
 
 CFLAGS := $(CFLAGS) -O$(O_LEV) -nostdinc -fno-builtin -fno-stack-protector \
-	-I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror -std=c99 $(STABS) $(MIMOSA_BSP_CFLAGS)
+	-I$(INC) -MD -Wall -Wno-format -Wno-unused -Werror -std=c99 $(STABS) $(MIMOSA_BSP_CFLAGS) \
+	$(MIMOSA_LIB_CFLAGS) $(MIMOSA_KERN_CFLAGS) $(MIMOSA_GENERIC_CFLAGS) $(MIMOSA_BSP_SPECIFIC) \
+	$(MIMOSA_DRIVER_CFLAGS)

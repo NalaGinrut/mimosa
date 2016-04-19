@@ -1,6 +1,6 @@
 # YOU MUST USE "-include", NOT "include"
 
--include $(BSP)/Makefile.mk
+-include $(BSPDIR)/Makefile.mk
 -include $(KERNEL)/Makefile.mk
 -include $(LIB)/Makefile.mk
 -include $(DRIVERS)/Makefile.mk

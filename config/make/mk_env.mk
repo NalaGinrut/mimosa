@@ -1,11 +1,11 @@
 INC := inc
 LIB := lib
 KERNEL := kernel
-BSP := platform/bsp
+BSPDIR := platform/bsp
 USERLAND := userland
 OBJDIRS :=
 OBJ := obj
-BOOT := $(BSP)/boot
+BOOT := $(BSPDIR)/boot
 TOOLS := scripts
 DEBUG := debug
 DRIVERS := drivers
