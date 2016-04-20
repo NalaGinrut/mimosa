@@ -2,24 +2,41 @@
 <!DOCTYPE config PUBLIC "mimosa-config" "../config.dtd">
 <config>
   
-  <arch>
-    <family>i386</family>
-    <bitwidth>32</bitwidth>
-  </arch>
+  <platform>
+    <name>ATmega</name>
+    <bitwidth>8</bitwidth>
+  </platform>
 
   <memory>
-    <kern_base>0xC010000C</kern_base>
-    <kern_stack>1</kern_stack>
+    <kern_base>0x0000</kern_base>
+    <kern_begin>0x0000</kern_begin>
+    <kern_stack>32</kern_stack>
+    <full_addr>0xFFFF</full_addr>
+    <addr_bits>16</addr_bits>
+    <mem_holeend></mem_holeend>
+    <io_phymem></io_phymem>
   </memory>
 
   <mmu>  
     <page>
-      <enabled>true</enabled>
-      <pt_level>3</pt_level>
-      <pg_size>0x1000</pg_size>  
+      <enabled>false</enabled>
+      <pt_level></pt_level>
+      <pg_size></pg_size>
+      <pg_entries></pg_entries>
+      <pt_size></pt_size>
+      <pd_size></pd_size>
     </page>
   </mmu>
 
+  <debug>
+    <enable>
+      <kern_tmp_map_size>(FULL_ADDR - KERN_BASE + 1)</kern_tmp_map_size>
+    </enable>
+    <disable>
+      <kern_tmp_map_size>PT_SIZE</kern_tmp_map_size>
+    </disable>
+  </debug>
+  
   <boot>
     <grub>true</grub>
   </boot>
