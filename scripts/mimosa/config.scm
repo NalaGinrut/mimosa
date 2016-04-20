@@ -40,6 +40,9 @@
 (define page-enabled (get-from page 'enabled))
 (define page-ptlevel (get-from page 'pt_level))
 (define page-pgsize (get-from page 'pg_size))
+(define page-pgentries (get-from page 'pg_entries))
+(define page-ptsize (get-from page 'pt_size))
+(define page-pdsize (get-from page 'pd_size))
 
 (define boot '(config boot))
 (define boot-grub (get-from boot 'grub))
@@ -60,4 +63,14 @@
     (when (->bool (boot-grub sxml)) (format #t "#define __MULTI_BOOT__~%"))
     (format #t "#define MIMOSA_BSP ~s~%" (platform-name sxml))
     (format #t "#define FULL_ADDR ~a~%" (platform-fulladdr sxml))
+
+    (when (->bool (page-enabled sxml))
+          (format #t "#define PT_LEVEL ~a~%" (page-ptlevel sxml))
+          (format #t "#define PG_SIZE ~a~%" (page-pgsize sxml))
+          (format #t "#define PG_ENTRIES ~a~%" (page-pgentries sxml))
+          (format #t "#define PT_SIZE ~a~%" (page-ptsize sxml))
+          (format #t "#define PD_SIZE ~a~%" (page-pdsize sxml)))
+
+    (when (->bool (boot-grub sxml))
+          (format #t "#define __MULTI_BOOT__~%"))
     ))
