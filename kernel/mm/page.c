@@ -1,5 +1,6 @@
+#ifdef PLATFORM_HAS_PAGE
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -37,4 +38,4 @@ void __page_remove(void* va)
   // TODO: the wrapper of pmap_page_remove
 }
 
-
+#endif // End of PLATFORM_HAS_PAGE;

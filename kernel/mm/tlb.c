@@ -1,5 +1,6 @@
+#ifdef PLATFORM_HAS_TLB
 /*	
- *  Copyright (C) 2012
+ *  Copyright (C) 2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -86,8 +87,4 @@ void flush_tlb_pgtables(void *who ,void *pt)
 void flush_tlb_page(void *who)
 {}
 
-
- 
-
-
-
+#endif // End of PLATFORM_HAS_TLB;
