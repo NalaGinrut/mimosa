@@ -8,4 +8,6 @@ obj/*
 obj
 inc/bsp
 platform/bsp
+mimosa
+config/conf.ld
 *~
