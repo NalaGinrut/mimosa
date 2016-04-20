@@ -97,7 +97,7 @@ typedef __u8_t reg_t;
 // may be need some mechnism to check GCC, but do it later...;
 #ifdef __GNUC__
 #define __no_return __attribute__((noreturn))
-#define __true_inline __attribute__((always_inline));
+#define __true_inline // ATmega shouldn't inline for smaller size
 #else
 #define __no_return
 #define __true_inline

@@ -25,16 +25,16 @@
 // memory IO operation
 #define __readb(a)   mmio_readb(a)
 #define __readw(a)   mmio_readw(a)
-#define __readl(a)   \
+#define __readl(a)                                              \
   do { panic("__readl isn't supported by ATmega!"); } while(0);
 
 #define __readnb(s,d,n)	mmio_rnb(s,d,n)
 #define __readnw(s,d,n)	mmio_rnw(s,d,n)
-#define __readnl(s,d,n)	\
+#define __readnl(s,d,n)                                                 \
   do { panic("__readnl isn't supported by ATmega!"); } while(0);
 
-#define __writeb(a,x)	port_wb(a,x)
-#define __writew(a,x)	port_ww(a,x)
+#define __writeb(a,x)	mmio_writeb(a,x)
+#define __writew(a,x)	mmio_writew(a,x)
 #define __writel(a,x)	port_wl(a,x)
 
 #define __writenb(d,s,n) port_wnb(d,s,n)
@@ -47,5 +47,15 @@
 // TODO: display buffer
 #define __VIDEO_BUFFER	CGA_DISP_BUF
 
+// For ATmega32u4 specific
+#define __SFR_OFFSET 0x20
+
+#define _SFR_IO8(io_addr) mmio_readb((io_addr) + __SFR_OFFSET)
+#define _SFR_IO16(io_addr) mmio_readw((io_addr) + __SFR_OFFSET)
+
+#define _SFR_MEM8(mem_addr) mmio_readb(mem_addr)
+#define _SFR_MEM16(mem_addr) mmio_readw(mem_addr)
+
+#define _VECTOR(N) __vector_ ## N
 
 #endif // End of __MIMOSA_BSP_IO_H;
