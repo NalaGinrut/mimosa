@@ -15,6 +15,7 @@
     <addr_bits>16</addr_bits>
     <mem_holeend></mem_holeend>
     <io_phymem></io_phymem>
+    <align_size>4</align_size>
   </memory>
 
   <mmu>  

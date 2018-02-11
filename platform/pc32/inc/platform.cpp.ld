@@ -1,7 +1,7 @@
 #ifndef __MIMOSA_PC32_PLATFORM_CPP_LD
 #define __MIMOSA_PC32_PLATFORM_CPP_LD
 /*	
- *  Copyright (C) 2010-2011  
+ *  Copyright (C) 2010-2011,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -104,5 +104,6 @@ BSP_SYM(UTEMP) = PT_SIZE;
 BSP_SYM(PFTEMP) = GET_BSP_VAR(UTEMP) + PT_SIZE - PG_SIZE;
 BSP_SYM(USTABDATA) = PT_SIZE / 2;
 
+#define BSP_SPECFIC_SECTION
 
 #endif // End of __MIMOSA_PC32_PLATFORM_CPP_LD

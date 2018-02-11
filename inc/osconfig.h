@@ -1,7 +1,7 @@
 #ifndef __OS_CONFIG_H
 #define __OS_CONFIG_H
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -55,6 +55,7 @@
 #define KERN_STACK_SIZE	4096
 #define MEM_HOLE_END	0x100000	// end of memory hole for well known historical reason.
 #define IO_PHY_MEM	0xA0000		// IO mem start
+#define ALIGN_SIZE      8
 
 /* how many bytes you need map in boot tmp map.
  * mimosa will map all available kernel space in debug mode.

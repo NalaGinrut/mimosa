@@ -1,3 +1,5 @@
+#ifndef __BSP_ATMEGA_DELAY_H
+#define __BSP_ATMEGA_DELAY_H
 /*	
  *  Copyright (C) 2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
@@ -16,23 +18,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <osconfig.h>
-#include <kernel.h>
-#include <types.h>
-#include <bsp/bsp_init.h>
+#include <bsp/bsp_types.h>
 
-#ifdef __KERN_DEBUG__
-#include <debug.h>
-#endif
+#define F_CPU 16000000ul // only for ATmega32u4
 
-void platform_init()
+extern void __builtin_avr_delay_cycles(unsigned long);
+extern double __builtin_ceil(double);
+extern double __builtin_fabs(double);
+
+#define ceil __builtin_ceil
+#define fabs __builtin_fabs
+
+void _delay_ms(double __ms)
 {
-  kernel_init();
+  double __tmp = 0; 
+  __u32_t __ticks_dc = 0;
+
+  //round up by default
+  __ticks_dc = (__u32_t)(ceil(fabs(__tmp)));
+
+  __builtin_avr_delay_cycles(__ticks_dc);
 }
 
-static void bsp_init_platform_specific()
-{
-  /* TODO:
-   * All platform specific init code should be put here
-   */
-}
+#endif // End of __BSP_ATMEGA_PMAP_H;

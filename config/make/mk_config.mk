@@ -48,4 +48,27 @@ MIMOSA_KERN_CFLAGS :=
 MIMOSA_GENERIC_CFLAGS :=
 MIMOSA_BSP_SPECIFIC :=
 MIMOSA_DRIVER_CFLAGS :=
+
+MCU := atmega32u4
+TARGET := mimosa
+AVRDUDE := avrdude
+AVRDUDE_PROGRAMMER = avr109
+AVRDUDE_PORT := /dev/ttyACM0
+AVRDUDE_WRITE_FLASH := -U flash:w:$(TARGET).hex
+AVRDUDE_BASIC := -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FLAGS := $(AVRDUDE_BASIC) $(AVRDUDE_NO_VERIFY) $(AVRDUDE_VERBOSE) $(AVRDUDE_ERASE_COUNTER)
+AVR_CFLAGS := -mmcu=$(MCU) -I. $(CFLAGS)
+AVR_ASFLAGS := -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
+AVR_FORMAT := ihex
+
+.PHONY: program
+
+$(TARGET).hex: all
+	$(OBJCOPY) -O $(AVR_FORMAT) -R .eeprom mimosa $@
+
+$(TARGET).eep: all
+	$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O $(AVR_FORMAT) mimosa $@
+
+program: $(TARGET).hex $(TARGET).eep
+	$(V)$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) -b 57600 -v
 endif

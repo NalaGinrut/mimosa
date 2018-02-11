@@ -2,6 +2,7 @@ INC := inc
 LIB := lib
 KERNEL := kernel
 BSPDIR := platform/bsp
+APPDIR := app/run
 USERLAND := userland
 OBJDIRS :=
 OBJ := obj

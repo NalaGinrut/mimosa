@@ -27,6 +27,7 @@ CONF := $(TOP)/config
 
 # default BSP is PC32
 BSP := pc32
+APP :=
 
 all: kernel.ld
 	#$(V)scripts/genconf.scm $(BSP)
@@ -41,8 +42,12 @@ mimosa-framework :=	$(OBJ)/entry.o \
 			$(OBJ)/kern-obj \
 			$(OBJ)/lib-obj \
 			$(OBJ)/drivers-obj
-ifdef KDEBUG
+ifeq ($(KDEBUG),1)
 mimosa-framework += $(OBJ)/debug-obj
+endif
+
+ifneq ($(APP),)
+mimosa-framework += $(OBJ)/app-obj
 endif
 
 ### TARGET ###
@@ -52,6 +57,7 @@ kernel.ld:
 	$(V)ln -s $(BSP) platform/bsp
 	$(V)ln -s ../platform/bsp/inc inc/bsp
 	$(V)ln -s ../platform/bsp/conf.ld config/conf.ld
+	$(V)if [ -n "$(APP)" ]; then rm -f $(APPDIR); ln -s $(APP) $(APPDIR); fi;
 	$(V)$(CPP) kernel/kernel.cpp.ld -I$(INC) -okernel.ld
 	$(V)sed -i "/^#.*/d" kernel.ld
 
@@ -77,7 +83,7 @@ bochs: $(OBJ)/mimosa.img
 	$(V)bochs
 
 qemu: $(OBJ)/mimosa.img
-	$(V)qemu -hda $^ -m 32
+	$(V)qemu-system-i386 --enable-kvm -hda $^ -m 32
 
 pretty:
 	@echo "Deleting backup file..."
@@ -96,4 +102,5 @@ clean:
 	$(V)test -e mimosa && rm -f mimosa || echo "No kernel generated!"
 	$(V)$(MAKE) pretty 
 	$(V)$(MAKE) clean-isr
-	$(V)rm -f inc/bsp platform/bsp config/conf.ld
+	$(V)rm -f inc/bsp platform/bsp config/conf.ld app/run
+	$(V)rm -f *.hex *.eep

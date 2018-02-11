@@ -30,5 +30,15 @@
 #define KERN_BASE 0x0000
 #undef KERNEL_BEGIN
 #define KERNEL_BEGIN 0x0000
+#undef ALIGN_SIZE
+#define ALIGN_SIZE 4
+#undef PG_SIZE
+#define PG_SIZE 32
+
+#define BSP_SPECFIC_SECTION                                     \
+        PROVIDE(bsp_begin = .);                            \
+        *(eeprom fuse lock signature user_signatures);          \
+        PROVIDE(bsp_end = .);
+        
 
 #endif // End of __MIMOSA_ATMEGA_PLATFORM_CPP_LD

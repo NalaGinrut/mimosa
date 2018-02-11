@@ -22,7 +22,7 @@
 #include <global.h>
 
 /* Align . to 8, it's maximum function alignment */
-#define ALIGN_FUNC()	. = ALIGN(8)
+#define ALIGN_FUNC()	. = ALIGN(ALIGN_SIZE)
 
 #define DATA_SECTION		\
 	*(.data)		

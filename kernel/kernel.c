@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2010-2012  
+ *  Copyright (C) 2010-2012,2016
  *	"Mu Lei" known as "NalaGinrut" <NalaGinrut@gmail.com>
  
  *  This program is free software: you can redistribute it and/or modify
@@ -41,6 +41,10 @@ void kernel_init()
 
 #endif
 
+#ifdef __MIMOSA_APP__
+  mimosa_app_run();
+#endif
+  
   /*
   mimosa_memory_init();
   mimosa_fs_init();

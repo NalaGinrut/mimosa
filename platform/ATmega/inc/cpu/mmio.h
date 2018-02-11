@@ -21,14 +21,14 @@
 #include <bsp/bsp_types.h>
 #include <bsp/bsp_bits.h>
 
-static inline __u8_t mmio_readb(__u16_t addr);
+static inline __u8_t mmio_readb(__u8_t addr);
 static inline __u16_t mmio_readw(__u16_t addr);
 static inline void mmio_writeb(__u16_t addr, __u8_t data);
 static inline void mmio_writew(__u16_t addr, __u16_t data);
 
-static inline void mmio_rnb(__u16_t addr, __gptr_t addr, __u16_t cnt);
+static inline void mmio_rnb(__u32_t des, __gptr_t src, __u32_t cnt);
 
-static inline void mmio_rnw(__u16_t addr, __gptr_t addr, __u16_t cnt);
+static inline void mmio_rnw(__u32_t des, __gptr_t src, __u32_t cnt);
 
 // ======================================================================
 static inline __u8_t mmio_readb(__u8_t addr)
@@ -37,7 +37,7 @@ static inline __u8_t mmio_readb(__u8_t addr)
 static inline __u16_t mmio_readw(__u16_t addr)
 { return  (*(volatile __u16_t *)(addr)); }
 
-static inline void mmio_rnb(__u32_t addr, __gptr_t addr, __u32_t cnt)
+static inline void mmio_rnb(__u32_t des, __gptr_t src, __u32_t cnt)
 {}
 
 static inline void mmio_writeb(__u16_t addr, __u8_t data)

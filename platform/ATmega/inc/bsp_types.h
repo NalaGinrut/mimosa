@@ -35,8 +35,10 @@ typedef signed char	__s8_t;
 typedef unsigned char	__u8_t;
 typedef short	 	__s16_t;
 typedef unsigned short	__u16_t;
-#define __NO_32_T
-#define __NO_64_T
+typedef int             __s32_t;
+typedef unsigned int    __u32_t;
+typedef long long       __s64_t;
+typedef unsigned long long __u64_t;
 #define __NO_DIT__
 
 // CPU word long ,ATmega is 16bit
