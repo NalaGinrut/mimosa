@@ -3,6 +3,7 @@ Makefile
 *.d
 *-obj
 bochs.img
+bochs.log
 kernel.ld
 obj/*
 obj
